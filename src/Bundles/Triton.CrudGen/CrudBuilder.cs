@@ -105,7 +105,7 @@ namespace TheXDS.Triton.CrudGen
     {
         public PageViewModel Build()
         {
-            
+            return null;
         }
 
         /// <summary>

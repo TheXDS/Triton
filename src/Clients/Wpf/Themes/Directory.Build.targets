@@ -5,6 +5,6 @@
     <RootNamespace>TheXDS.Triton.Workstation.Themes.$(ProjectName)</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)Clients\Wpf\Triton.Workstation.Client\Triton.Workstation.Client.csproj" />
+    <ProjectReference Include="$(SolutionDir)Clients\Wpf\Triton.Workstation.WpfClient\Triton.Workstation.WpfClient.csproj" />
   </ItemGroup>
 </Project>

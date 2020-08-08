@@ -62,7 +62,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="ws:MainWindow">
+    <Style TargetType="trt:MainWindow">
         <Setter Property="fw:AcrylicWindow.Enabled" Value="True"/>
     </Style>
 </ResourceDictionary>

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Bundles\Triton.CrudNotify\Triton.CrudNotify.csproj" />
+    <ProjectReference Include="..\..\..\Clients\Wpf\Triton.CrudGen.Wpf\Triton.CrudGen.Wpf.csproj" />
+    <ProjectReference Include="..\..\..\Clients\Wpf\Triton.Workstation.WpfClient\Triton.Workstation.WpfClient.csproj" />
+    <ProjectReference Include="..\BookstoreUi\BookstoreUi.csproj" />
+    <ProjectReference Include="..\Bookstore\Bookstore.csproj" />
+  </ItemGroup>
+
+</Project>
