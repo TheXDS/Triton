@@ -10,7 +10,7 @@ namespace TheXDS.Triton.Ui.ViewModels
     /// <summary>
     /// ViewModel que describe una página visual.
     /// </summary>
-    public class PageViewModel : ViewModelBase
+    public class PageViewModel : ViewModelBase, IPageViewModel
     {
         private string? _title;
         private bool _closeable = true;

@@ -8,23 +8,28 @@ using TheXDS.MCART.Types.Extensions;
 using TheXDS.MCART.ViewModel;
 using TheXDS.Triton.Ui.Component;
 using TheXDS.MCART;
+using TheXDS.MCART.UI.Base;
+using TheXDS.MCART.Types.Base;
+using System.Windows.Input;
+using TheXDS.MCART.Types;
+using static TheXDS.MCART.Types.Extensions.ObservingCommandExtensions;
+using St = TheXDS.Triton.Ui.Resources.Strings;
 
 namespace TheXDS.Triton.Ui.ViewModels
 {
     /// <summary>
     /// Clase base para un ViewModel que contenga páginas.
     /// </summary>
-    public class HostViewModel : ViewModelBase
+    public class HostViewModel : ViewModelBase, IHostViewModel
     {
-        private string _title = ReflectionHelpers.GetEntryPoint()?.DeclaringType?.Assembly.GetName().Name ?? string.Empty;
         private protected readonly ObservableCollection<PageViewModel> _pages = new ObservableCollection<PageViewModel>();
-        
+
         /// <summary>
         /// Se produce cuando se ha agregado una página a la colección de
         /// páginas de este host.
         /// </summary>
         public event EventHandler<ValueEventArgs<PageViewModel>> PageAdded;
-        
+
         /// <summary>
         /// Se produce cuando se ha cerrado una página en la colección de
         /// páginas de este host.
@@ -45,7 +50,8 @@ namespace TheXDS.Triton.Ui.ViewModels
         public virtual void AddPage(PageViewModel page)
         {
             page.PushInto(_pages).Host = this;
-            PageAdded?.Invoke(this,page);
+            PageAdded?.Invoke(this, page);
+            Notify(nameof(Pages));
         }
 
         /// <summary>
@@ -58,17 +64,8 @@ namespace TheXDS.Triton.Ui.ViewModels
         {
             page.Host = null;
             _pages.Remove(page);
-            PageClosed?.Invoke(this,page);
-        }
-
-        /// <summary>
-        ///     Obtiene o establece el valor Title.
-        /// </summary>
-        /// <value>El valor de Title.</value>
-        public string Title
-        {
-            get => _title;
-            set => Change(ref _title, value);
+            PageClosed?.Invoke(this, page);
+            Notify(nameof(Pages));
         }
     }
 
@@ -126,5 +123,51 @@ namespace TheXDS.Triton.Ui.ViewModels
         /// <see cref="PageViewModel"/> abiertos dentro de esta instancia.
         /// </summary>
         public IEnumerable<T> Children => _pages.Select(_visualBuilder.Build);
+    }
+
+    /// <summary>
+    /// <see cref="HostViewModel{T}"/> que implementa un sistema de menús.
+    /// </summary>
+    /// <typeparam name="TVisual">
+    /// Tipo de contenedor visual para las páginas abiertas.
+    /// </typeparam>
+    public class MenuViewModel : ViewModelBase, IMenuViewModel
+    {
+        private bool _MenuVisible;
+
+        /// <summary>
+        /// Enumera las opciones de menú disponibles en este
+        /// <see cref="MenuHostViewModel{TVisual}"/>.
+        /// </summary>
+        public IEnumerable<InteractionBase> Menu { get; }
+
+        /// <summary>
+        /// Obtiene o establece un valor que indica si el menú debe o no ser
+        /// visible.
+        /// </summary>
+        /// <value>
+        /// <see langword="true"/> si el menú debe ser visible,
+        /// <see langword="false"/> en caso contrario.
+        /// </value>
+        public bool MenuVisible
+        {
+            get => _MenuVisible;
+            set => Change(ref _MenuVisible, value);
+        }
+
+        /// <summary>
+        /// Inicializa una nueva instancia de la clase <see cref="MenuHostViewModel{TVisual}"/>.
+        /// </summary>
+        /// <param name="visualBuilder">
+        /// Constructor de contenedores visuales a utilizar para presentar
+        /// las páginas.
+        /// </param>
+        /// <param name="menu">
+        /// Enumeración de entradas de menú a incluir.
+        /// </param>
+        public MenuViewModel(IEnumerable<InteractionBase> menu)
+        {
+            Menu = menu;
+        }
     }
 }
