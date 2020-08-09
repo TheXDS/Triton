@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:TheXDS.Triton.WpfClient.ViewModels"
     mc:Ignorable="d"    
-    Title="MainWindow" Height="450" Width="600">
+    Title="{Binding Title}" Height="450" Width="600">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>

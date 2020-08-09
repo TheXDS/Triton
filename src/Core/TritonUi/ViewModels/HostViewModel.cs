@@ -7,6 +7,7 @@ using TheXDS.MCART.Events;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.MCART.ViewModel;
 using TheXDS.Triton.Ui.Component;
+using TheXDS.MCART;
 
 namespace TheXDS.Triton.Ui.ViewModels
 {
@@ -15,6 +16,7 @@ namespace TheXDS.Triton.Ui.ViewModels
     /// </summary>
     public class HostViewModel : ViewModelBase
     {
+        private string _title = ReflectionHelpers.GetEntryPoint()?.DeclaringType?.Assembly.GetName().Name ?? string.Empty;
         private protected readonly ObservableCollection<PageViewModel> _pages = new ObservableCollection<PageViewModel>();
         
         /// <summary>
@@ -57,6 +59,16 @@ namespace TheXDS.Triton.Ui.ViewModels
             page.Host = null;
             _pages.Remove(page);
             PageClosed?.Invoke(this,page);
+        }
+
+        /// <summary>
+        ///     Obtiene o establece el valor Title.
+        /// </summary>
+        /// <value>El valor de Title.</value>
+        public string Title
+        {
+            get => _title;
+            set => Change(ref _title, value);
         }
     }
 

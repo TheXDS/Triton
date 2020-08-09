@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using TheXDS.MCART.Exceptions;
+using TheXDS.Triton.Ui.Resources;
 using TheXDS.Triton.Ui.ViewModels;
 
 namespace TheXDS.Triton.Ui.Component
