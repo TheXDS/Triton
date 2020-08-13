@@ -8,6 +8,7 @@ using TheXDS.MCART.ViewModel;
 using System.Linq.Expressions;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.CrudGen.ViewModels;
+using TheXDS.Triton.Ui.Component;
 
 namespace TheXDS.Triton.CrudGen
 {
@@ -20,32 +21,45 @@ namespace TheXDS.Triton.CrudGen
     /// Contexto en el cual se comprobará la posibilidad de ejecutar una acción
     /// Crud.
     /// </param>
+    /// <returns>
+    /// <see langword="true"/> si la acción Crud puede ejecutarse en el estado
+    /// actual, <see langword="false"/> en caso contrario.
+    /// </returns>
     public delegate bool EntityCrudActionCheck(CrudViewModel vmContext);
-    public delegate bool EntityCrudActionCheck<TModel>(TModel entity) where TModel : Model;
-    
-    
-    public interface ICrudBuilder
-    {
-        PageViewModel Build();
-    }
 
     /// <summary>
-    /// Define una serie de miembros a implementar por un tipo que permita 
-    /// establecer un contexto de datos para utilizar internamente.
+    /// Define un delegado para un método que determina si la acción de Crud
+    /// solicitada se puede realizar basada en la información de estado
+    /// provista por el <typeparamref name="TModel"/> activo.
     /// </summary>
-    /// <remarks>
-    /// Para C#9, esta interfaz es candidato a mudarse a la característica de
-    /// "shapes".
-    /// </remarks>
-    public interface IDataContext
+    /// <typeparam name="TModel">
+    /// Tipo de modelo que está siendo editado en un
+    /// <see cref="CrudViewModel"/> activo.
+    /// </typeparam>
+    /// <param name="entity">
+    /// Entidad que está siendo editada en el <see cref="CrudViewModel"/>
+    /// activo.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> si la acción Crud puede ejecutarse en el estado
+    /// actual, <see langword="false"/> en caso contrario.
+    /// </returns>
+    public delegate bool EntityCrudActionCheck<TModel>(TModel entity) where TModel : Model;
+    
+    /// <summary>
+    /// Define una serie de miembros a implementar por un tipo que permita
+    /// construir un <see cref="PageViewModel"/> utilizando un conjunto de
+    /// propiedades configuradas.
+    /// </summary>
+    public interface ICrudBuilder
     {
         /// <summary>
-        /// Obtiene o establece el contexto de datos utilizado por esta
-        /// instancia.
+        /// Construye un <see cref="PageViewModel"/>.
         /// </summary>
-        object? DataContext { get; set; }
+        /// <returns></returns>
+        PageViewModel Build();
     }
-
+    
     /// <summary>
     /// Define una serie de miembros a implementar por un tipo que permita
     /// configurar la generación de una interfaz gráfica con capacidades Crud.
