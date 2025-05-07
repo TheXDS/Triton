@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TheXDS.Triton.EFCore.Services;
 using TheXDS.Triton.SecurityEssentials.Ef.Models;
 using TheXDS.Triton.Services;
 

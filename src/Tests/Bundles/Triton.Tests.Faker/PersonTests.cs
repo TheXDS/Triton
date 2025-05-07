@@ -36,11 +36,20 @@ public class PersonTests
     }
 
     [Test]
-    public void Kid_Test()
+    public void Child_Test()
     {
         for (var j = 0; j < 1000; j++)
         {
-            Assert.That(Person.Kid().Age.IsBetween(5, 18), Is.True);
+            Assert.That(Person.Child().Age.IsBetween(5, 12), Is.True);
+        }
+    }
+
+    [Test]
+    public void Juvenile_Test()
+    {
+        for (var j = 0; j < 1000; j++)
+        {
+            Assert.That(Person.Juvenile().Age.IsBetween(12, 18), Is.True);
         }
     }
 

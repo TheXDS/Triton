@@ -1,5 +1,4 @@
 ﻿using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Dapper.Services;
 
@@ -7,10 +6,13 @@ namespace TheXDS.Triton.Dapper.Services;
 /// Implementa un <see cref="ITransactionFactory"/> que crea y administra
 /// operaciones de datos utilizando la librería Dapper.
 /// </summary>
-public class DapperTransactionFactory : ITransactionFactory
+/// <param name="factory">
+/// Fábrica de conexiones a bases de datos a utilzar.
+/// </param>
+public class DapperTransactionFactory(IDbConnectionFactory factory) : ITransactionFactory
 {
-    private readonly IDbConnectionFactory _factory;
-    private readonly IDictionary<Type, DapperModelDescriptor> _modelOverrides;
+    private readonly IDbConnectionFactory _factory = factory;
+    private readonly IDictionary<Type, DapperModelDescriptor> _modelOverrides = new Dictionary<Type, DapperModelDescriptor>();
 
     /// <summary>
     /// Define un delegado que permite configurar un diccionario de sustitución
@@ -20,19 +22,6 @@ public class DapperTransactionFactory : ITransactionFactory
     /// Diccionario de sustituciones de metadatos para cada modelo.
     /// </param>
     public delegate void ModelOverrideConfigurator(IDictionary<Type, DapperModelDescriptor> overridesDictionary);
-    
-    /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="DapperTransactionFactory"/>.
-    /// </summary>
-    /// <param name="factory">
-    /// Fábrica de conexiones a bases de datos a utilzar.
-    /// </param>
-    public DapperTransactionFactory(IDbConnectionFactory factory)
-    {
-        _factory = factory;
-        _modelOverrides = new Dictionary<Type, DapperModelDescriptor>();
-    }
 
     /// <summary>
     /// Inicializa una nueva instancia de la clase

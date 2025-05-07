@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
+using TheXDS.Triton.EFCore.Services.Base;
+using TheXDS.Triton.Services;
 
-namespace TheXDS.Triton.Services;
+namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
 /// Obtiene una transacción compleja que permite operaciones de lectura
@@ -11,8 +13,8 @@ namespace TheXDS.Triton.Services;
 /// </typeparam>
 public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransaction<T> where T : DbContext
 {
-    private readonly ICrudReadTransaction _readTransaction;
-    private readonly ICrudWriteTransaction _writeTransaction;
+    private readonly CrudReadTransaction<T> _readTransaction;
+    private readonly CrudWriteTransaction<T> _writeTransaction;
 
     /// <summary>
     /// Obtiene a la instancia de contexto activa en esta transacción.
@@ -255,12 +257,6 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <inheritdoc/>
-    public ServiceResult CreateOrUpdate<TModel>(params TModel[] entities) where TModel : Model
-    {
-        return _writeTransaction.CreateOrUpdate(entities);
-    }
-
-    /// <inheritdoc/>
     public ServiceResult Delete<TModel>(params string[] stringKeys) where TModel : Model, new()
     {
         return _writeTransaction.Delete<TModel>(stringKeys);
@@ -270,5 +266,53 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     public ServiceResult Discard()
     {
         return _writeTransaction.Discard();
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<TModel?> Read<TModel>(object key) where TModel : Model, new()
+    {
+        return _readTransaction.Read<TModel>(key);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<Model?> Read(Type model, object key)
+    {
+        return _readTransaction.Read(model, key);
+    }
+
+    /// <inheritdoc/>
+    public QueryServiceResult<Model> All(Type model)
+    {
+        return _readTransaction.All(model);
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<TModel?>> ReadAsync<TModel>(object key) where TModel : Model, new()
+    {
+        return _readTransaction.ReadAsync<TModel>(key);
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<Model?>> ReadAsync(Type model, object key)
+    {
+        return _readTransaction.ReadAsync(model, key);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Create(params Model[] entities)
+    {
+        return _writeTransaction.Create(entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Update(params Model[] entities)
+    {
+        return _writeTransaction.Update(entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Delete(params Model[] entities)
+    {
+        return _writeTransaction.Delete(entities);
     }
 }

@@ -7,7 +7,6 @@ using TheXDS.MCART.Security;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials.IUserServiceTests;
 
@@ -105,7 +104,7 @@ public class Authenticate
     [Test]
     public async Task Authenticate_with_unknown_user_returns_forbidden()
     {
-        var getCredResult = ServiceResult.FailWith<ServiceResult<LoginCredential?>>(FailureReason.NotFound);
+        var getCredResult = new ServiceResult<LoginCredential?>(FailureReason.NotFound);
 
         var svcMock = new Mock<IUserService>() { CallBase = true };
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult).Verifiable(Times.Once);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TheXDS.Triton.EFCore.Services;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.EFCore.Models;
 using TheXDS.Triton.Tests.Models;
@@ -29,13 +30,12 @@ public class BlogService : TritonService
     /// </returns>
     public IEnumerable<IGrouping<User, Post>> GetAllUsersFirst3Posts()
     {
-        return WithReadTransaction(t =>
-            t.All<User>()
-                .Include(p => p.Posts)
-                .ThenInclude(p => p.Author)
-                .SelectMany(p => p.Posts.Take(3).OrderBy(q => q.CreationTime))
-                .ToList()
-                .GroupBy(p => p.Author)
-        );
+        using var t = GetReadTransaction();
+        return t.All<User>()
+            .Include(p => p.Posts)
+            .ThenInclude(p => p.Author)
+            .SelectMany(p => p.Posts.Take(3).OrderBy(q => q.CreationTime))
+            .ToList()
+            .GroupBy(p => p.Author);
     }
 }

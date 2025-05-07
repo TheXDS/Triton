@@ -1,6 +1,6 @@
 ﻿using Ers = TheXDS.ServicePool.Triton.Ef.Resources.Strings.Errors;
 
-namespace TheXDS.ServicePool.Triton.Resources;
+namespace TheXDS.ServicePool.Triton.Ef.Resources;
 
 internal static class Errors
 {

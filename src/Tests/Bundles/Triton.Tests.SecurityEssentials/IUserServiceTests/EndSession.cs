@@ -5,7 +5,6 @@ using NUnit.Framework;
 using TheXDS.MCART.Helpers;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials.IUserServiceTests;
 
@@ -51,7 +50,7 @@ public class EndSession
         var testSession = new Session() { EndTimestamp = null };
         var writeTransactionMock = new Mock<ICrudWriteTransaction>();
         writeTransactionMock.Setup(p => p.Update(testSession)).Returns(ServiceResult.Ok).Verifiable(Times.Once);
-        writeTransactionMock.Setup(p => p.CommitAsync()).ReturnsAsync(ServiceResult.FailWith<ServiceResult>(FailureReason.NetworkFailure)).Verifiable(Times.Once);
+        writeTransactionMock.Setup(p => p.CommitAsync()).ReturnsAsync(new ServiceResult(FailureReason.NetworkFailure)).Verifiable(Times.Once);
 
         var svcMock = new Mock<IUserService>() { CallBase = true };
         svcMock.Setup(p => p.GetWriteTransaction()).Returns(writeTransactionMock.Object).Verifiable(Times.Once);

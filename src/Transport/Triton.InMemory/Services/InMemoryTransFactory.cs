@@ -8,7 +8,7 @@ namespace TheXDS.Triton.InMemory.Services;
 /// </summary>
 public class InMemoryTransFactory : CollectionTransFactory
 {
-    private static readonly List<Model> _store = new();
+    private static readonly List<Model> _store = [];
 
     /// <summary>
     /// Inicializa una nueva instancia de la clase

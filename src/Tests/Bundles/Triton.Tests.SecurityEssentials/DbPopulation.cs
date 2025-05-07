@@ -1,11 +1,10 @@
 ﻿#pragma warning disable CS1591
 
 using NUnit.Framework;
-using TheXDS.MCART.Security;
 using TheXDS.MCART.Types.Extensions;
+using TheXDS.Triton.InMemory.Services;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Tests.Services;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials;
 
@@ -76,7 +75,7 @@ public class DbPopulation
             }.PushInto(lc.Sessions));
             t.Create(new UserGroupMembership()
             {
-                SecurityObject = lc,
+                Member = lc,
                 Group = g,
                 Id = Guid.NewGuid(),
             }.PushInto(lc.Membership).PushInto(g.Membership));
@@ -98,6 +97,6 @@ public class DbPopulation
     [OneTimeTearDown]
     public void Teardown()
     {
-        TestCrudTransaction.Wipe();
+        InMemoryTransFactory.Wipe();
     }
 }

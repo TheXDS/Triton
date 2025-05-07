@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NUnit.Framework;
 using TheXDS.MCART.Types.Extensions;
+using TheXDS.Triton.EFCore.Services.Base;
 using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 using TheXDS.Triton.Tests.EFCore.Models;
 
 namespace TheXDS.Triton.Tests.EFCore.Services.Base;
@@ -15,7 +15,7 @@ public class CrudTransactionBaseTests
 {
     private class TestClass : CrudTransactionBase<BlogContext>
     {
-        public TestClass() : base(new TransactionConfiguration(), (DbContextOptions?)null) { }
+        public TestClass() : base(((IMiddlewareConfigurator)new TransactionConfiguration()).GetRunner(), (DbContextOptions?)null) { }
 
         public IMiddlewareConfigurator Configurator => (IMiddlewareConfigurator)_configuration;
 
@@ -182,7 +182,7 @@ public class CrudTransactionBaseTests
         bool delegateRan = false;
         var test = new TestClass();
 
-        ServiceResult? Stop(CrudAction crudAction, IEnumerable<Model>? entity) => FailureReason.Tamper;
+        ServiceResult? Stop(CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity) => FailureReason.Tamper;
 
         int TestDelegate(bool arg)
         {
@@ -190,7 +190,7 @@ public class CrudTransactionBaseTests
             return 1;
         }
 
-        test.Configurator.AddProlog(Stop);
+        test.Configurator.AddPrologue(Stop);
         var result = test.Test_TryCall<int>(CrudAction.Create, TestDelegate, true);
 
         Assert.That(result, Is.Not.Null);

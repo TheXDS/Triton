@@ -1,6 +1,7 @@
 ﻿#pragma warning disable 1591
 
 using NUnit.Framework;
+using TheXDS.Triton.EFCore.Services;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.EFCore.Models;
 using TheXDS.Triton.Tests.Models;
@@ -9,7 +10,7 @@ namespace TheXDS.Triton.Tests.EFCore.Services;
 
 public class CrudTransactionTests
 {
-    private static CrudTransaction<BlogContext> GetTestTransaction() => new(new TransactionConfiguration(), null);
+    private static CrudTransaction<BlogContext> GetTestTransaction() => new(((IMiddlewareConfigurator)new TransactionConfiguration()).GetRunner(), null);
 
     [Test]
     public void CrudTransaction_class_contains_Context_property()

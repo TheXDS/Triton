@@ -1,4 +1,4 @@
-﻿namespace TheXDS.Triton.Services;
+﻿namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
 /// Clase base que define un objeto que obtiene la configuración a utilizar

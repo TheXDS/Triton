@@ -8,7 +8,6 @@ using TheXDS.MCART.Security;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials.IUserServiceTests;
 
@@ -58,11 +57,11 @@ public class AddNewLoginCredential
             Assert.That(newCredential?.Enabled, Is.True);
             Assert.That(newCredential?.Membership.Count, Is.EqualTo(3));
             Assert.That(newCredential?.Membership.ToArray()[0].Group, Is.SameAs(testGroups[0]));
-            Assert.That(newCredential?.Membership.ToArray()[0].SecurityObject, Is.SameAs(newCredential));
+            Assert.That(newCredential?.Membership.ToArray()[0].Member, Is.SameAs(newCredential));
             Assert.That(newCredential?.Membership.ToArray()[1].Group, Is.SameAs(testGroups[1]));
-            Assert.That(newCredential?.Membership.ToArray()[1].SecurityObject, Is.SameAs(newCredential));
+            Assert.That(newCredential?.Membership.ToArray()[1].Member, Is.SameAs(newCredential));
             Assert.That(newCredential?.Membership.ToArray()[2].Group, Is.SameAs(testGroups[2]));
-            Assert.That(newCredential?.Membership.ToArray()[2].SecurityObject, Is.SameAs(newCredential));
+            Assert.That(newCredential?.Membership.ToArray()[2].Member, Is.SameAs(newCredential));
             Assert.That(newCredential?.Sessions, Is.Empty);
             Assert.That(newCredential?.RegisteredMfa, Is.Empty);
             Assert.That(newCredential?.Descriptors, Is.Empty);

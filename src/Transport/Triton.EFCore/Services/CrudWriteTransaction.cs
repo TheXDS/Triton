@@ -1,7 +1,9 @@
 ﻿using TheXDS.MCART.Types.Extensions;
+using TheXDS.Triton.EFCore.Services.Base;
+using TheXDS.Triton.Services;
 using static TheXDS.Triton.Services.FailureReason;
 
-namespace TheXDS.Triton.Services;
+namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
 /// Clase que describe una transacción que permite realizar operaciones
@@ -125,16 +127,6 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     }
 
     /// <inheritdoc/>
-    public ServiceResult CreateOrUpdate<TModel>(params TModel[] entities) where TModel : Model
-    {
-        return TryCall(CrudAction.Update | CrudAction.Create, e => {
-            var groups = e.Cast<TModel>().GroupBy(p => _context.Set<TModel>().Contains(p) ? CrudAction.Update : CrudAction.Create).ToDictionary(p => p.Key);
-            if (groups[CrudAction.Update].Any()) _context.UpdateRange(groups.Cast<object>().ToArray());
-            if (groups[CrudAction.Create].Any()) _context.AddRange(groups.Cast<object>().ToArray());
-        }, entities);
-    }
-
-    /// <inheritdoc/>
     public ServiceResult Delete<TModel, TKey>(params TKey[] keys)
         where TModel : Model<TKey>, new()
         where TKey : IComparable<TKey>, IEquatable<TKey>
@@ -166,5 +158,23 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     public ServiceResult Discard()
     {
         return TryCall(CrudAction.Discard, _context.ChangeTracker.Clear, null) ?? ServiceResult.Ok;
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Create(params Model[] entities)
+    {
+        return TryCall(CrudAction.Create, _context.AddRange, entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Update(params Model[] entities)
+    {
+        return TryCall(CrudAction.Update, _context.UpdateRange, entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Delete(params Model[] entities)
+    {
+        return TryCall(CrudAction.Delete, _context.RemoveRange, entities);
     }
 }

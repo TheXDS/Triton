@@ -1,320 +1,367 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
+using TheXDS.MCART.Exceptions;
+using TheXDS.MCART.Helpers;
 using TheXDS.MCART.Types.Base;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
+using System.Linq;
+using System;
 
 namespace TheXDS.Triton.InMemory.Services;
 
 /// <summary>
-/// Representa una transacción de prueba que almacena los datos guardados
-/// en la memoria de la aplicación. Los datos almacenados no se persistirán
-/// y serán borrados al finalizar la ejecución.
+/// Represents a transaction for a dataset that lives in memory, whose contents
+/// will only persist through the lifespan of the application.
 /// </summary>
-public class InMemoryCrudTransaction : AsyncDisposable, ICrudReadWriteTransaction
+/// <param name="runner">Middleware runner to use.</param>
+/// <param name="store">
+/// Temporary collection where the data is stored.
+/// </param>
+public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model> store) : AsyncDisposable, ICrudReadWriteTransaction
 {
-    private class PreconditionsCheckDefaultMiddleware : ITransactionMiddleware
-    {
-        private readonly ICollection<Model> _storeRef;
-        private readonly ICollection<Model> _tempRef;
-
-        private readonly Dictionary<CrudAction, Func<IEnumerable<Model>?, ServiceResult?>> _prologPreconditions = new();
-
-        public PreconditionsCheckDefaultMiddleware(ICollection<Model> storeRef, ICollection<Model> tempRef)
-        {
-            _storeRef = storeRef;
-            _tempRef = tempRef;
-
-            _prologPreconditions.Add(CrudAction.Create, e =>
-                e.NotNull().Any(p => FindInternal(p.GetType(), p.IdAsString) is not null)
-                ? (ServiceResult)FailureReason.EntityDuplication
-                : null);
-
-            _prologPreconditions.Add(CrudAction.Update, CheckExists);
-            _prologPreconditions.Add(CrudAction.Delete, CheckExists);
-        }
-
-        private ServiceResult? CheckExists(IEnumerable<Model>? entities)
-        {
-            return entities.NotNull().All(p => FullSet(p.GetType()).Any(q => p.IdAsString == q.IdAsString))
-                ? null
-                : (ServiceResult)FailureReason.NotFound;
-        }
-
-        private Model? FindInternal(Type model, object key)
-        {
-            return FullSet(model).FirstOrDefault(p => p.IdAsString == key.ToString());
-        }
-
-        private IEnumerable<Model> FullSet(Type model)
-        {
-            return FullSet().OfType(model);
-        }
-
-        private IEnumerable<Model> FullSet()
-        {
-            return _storeRef.Concat(_tempRef);
-        }
-
-        ServiceResult? ITransactionMiddleware.PrologAction(CrudAction action, IEnumerable<Model>? entities)
-        {
-            return _prologPreconditions.TryGetValue(action, out var func) ? func(entities) : null;
-        }
-    }
-
     private static readonly object _syncLock = new();
-    private readonly ICollection<Model> _temp = new List<Model>();
-    private readonly ICollection<Model> _store;
+    private readonly IMiddlewareRunner runner = runner;
+    private readonly ICollection<Model> _store = store;
+    private readonly ICollection<ChangeTrackerItem> _temp = [];
 
-    private ServiceResult Execute(CrudAction action, Action operation, IEnumerable<Model>? middlewareData = null)
+    private static ChangeTrackerChangeType Map(CrudAction action)
     {
-        return Execute(action, () => { operation.Invoke(); return ServiceResult.Ok; }, middlewareData);
+        return action switch
+        {
+            CrudAction.Create => ChangeTrackerChangeType.Create,
+            CrudAction.Update => ChangeTrackerChangeType.Update,
+            CrudAction.Delete => ChangeTrackerChangeType.Delete,
+            _ => ChangeTrackerChangeType.NoChange
+        };
     }
 
     private TResult Execute<TResult>(CrudAction action, Func<TResult> operation, IEnumerable<Model>? middlewareData = null)
         where TResult : ServiceResult, new()
     {
-        return Execute(action, () => (operation.Invoke(), middlewareData), middlewareData);
+        return Execute(action, () => (operation.Invoke(), middlewareData), (middlewareData ?? []).Select(p => new ChangeTrackerItem(Map(action), p)));
     }
 
-    private TResult Execute<TResult>(CrudAction action, Func<(TResult, IEnumerable<Model>?)> operation, IEnumerable<Model>? prologData = null)
+    private TResult Execute2<TResult, TModel>(CrudAction action, Func<(TResult, IEnumerable<TModel>?)> operation, IEnumerable<TModel>? middlewareData = null)
+        where TResult : ServiceResult, new()
+        where TModel : Model
+    {
+        return Execute(action, operation.Invoke, (middlewareData ?? []).Select(p => new ChangeTrackerItem(Map(action), p)));
+    }
+
+    private TResult Execute<TResult>(CrudAction action, Func<(TResult, IEnumerable<Model>?)> operation, IEnumerable<ChangeTrackerItem>? prologueData = null)
         where TResult : ServiceResult, new()
     {
         lock (_syncLock)
         {
-            if (Configuration.RunProlog(action, prologData) is { } failure) return failure.CastUp<TResult>();
+            if (runner.RunPrologue(action, prologueData) is { } failure) return failure.CastUp<TResult>();
             var (result, epilogData) = operation.Invoke();
-            return (result.Success ? Configuration.RunEpilog(action, epilogData)?.CastUp<TResult>() : null) ?? result;
+            return (result.Success ? runner.RunEpilogue(action, (epilogData ?? []).Select(p => new ChangeTrackerItem(Map(action), p)))?.CastUp<TResult>() : null) ?? result;
         }
     }
 
-    /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="InMemoryCrudTransaction"/>.
-    /// </summary>
-    /// <param name="configuration">
-    /// Configuración de transacciones a utilizar.
-    /// </param>
-    /// <param name="store">
-    /// Collección de almacenamiento de datos.
-    /// </param>
-    public InMemoryCrudTransaction(IMiddlewareRunner configuration, ICollection<Model> store)
+    private TResult Execute<TResult, TModel>(CrudAction action, Func<(TResult, IEnumerable<TModel>?)> operation, IEnumerable<ChangeTrackerItem>? prologueData = null)
+        where TResult : ServiceResult, new()
+        where TModel : Model
     {
-        _store = store;
-        configuration.Configurator.Attach(new PreconditionsCheckDefaultMiddleware(_store, _temp));
-        Configuration = configuration;
+        lock (_syncLock)
+        {
+            if (runner.RunPrologue(action, prologueData) is { } failure) return failure.CastUp<TResult>();
+            var (result, epilogData) = operation.Invoke();
+            return (result.Success ? runner.RunEpilogue(action, (epilogData ?? []).Select(p => new ChangeTrackerItem(Map(action), p)))?.CastUp<TResult>() : null) ?? result;
+        }
+    }
+    
+    private TModel? ReadInternal<TModel, TKey>(TKey key) where TModel : Model<TKey>, new() where TKey : notnull, IComparable<TKey>, IEquatable<TKey> => FullSet().OfType<TModel>().FirstOrDefault(p => p.Id.Equals(key));
+
+    private TModel? ReadInternal<TModel>(object key) where TModel : Model, new() => FullSet().OfType<TModel>().FirstOrDefault(p => p.IdAsString == key.ToString());
+
+    private IEnumerable<Model> FullSet() => _store.Concat(_temp.Select(p => p.NewEntity)).NotNull();
+
+    private ServiceResult? StoreDelete(IEnumerable<ChangeTrackerItem> j)
+    {
+        foreach (var l in j.ToArray())
+        {
+            if ((FindOnStore(l) ?? l.OldEntity) is not { } oldEntity) return FailureReason.NotFound;
+            _ = _store.Remove(oldEntity) || _temp.Remove(l);
+        }
+        return null;
+    }
+
+    private ServiceResult? StoreUpdates(IEnumerable<ChangeTrackerItem> j)
+    {
+        foreach (var l in j)
+        {
+            if (FindOnStore(l) is not { } oldEntity) return FailureReason.NotFound;
+            (l.NewEntity ?? throw new TamperException()).ShallowCopyTo(oldEntity, l.Model);
+        }
+        return null;
+    }
+
+    private Model? FindOnStore(ChangeTrackerItem item)
+    {
+        return _store.OfType(item.Model).FirstOrDefault(p => p.IdAsString == (item.OldEntity?.IdAsString ?? throw new InvalidOperationException()).ToString());
+    }
+
+    private ServiceResult? StoreNewEntities(IEnumerable<ChangeTrackerItem> j)
+    {
+        foreach (var k in j.GroupBy(p => p.Model))
+        {
+            var storeKeys = _store.OfType(k.Key).Select(q => q.IdAsString).ToArray();
+            if (j.Any(p => storeKeys.Contains(p.NewEntity!.IdAsString)))
+            {
+                return FailureReason.EntityDuplication;
+            }
+        }
+        _store.AddRange(j.Select(p => p.NewEntity).NotNull());
+        return null;
     }
 
     /// <summary>
-    /// Obtiene la configuración de transacciones que ha sido establecida
-    /// en esta transacción.
+    /// Initializes a new instance of the <see cref="InMemoryCrudTransaction"/>
+    /// class.
     /// </summary>
-    public IMiddlewareRunner Configuration { get; }
+    /// <param name="store">
+    /// Temporary collection where the data is stored.
+    /// </param>
+    public InMemoryCrudTransaction(ICollection<Model> store) : this(((IMiddlewareConfigurator)new TransactionConfiguration()).GetRunner(), store)
+    {
+    }
 
     /// <inheritdoc/>
-    public ServiceResult<Model?> Read(Type model, object key)
-    {
-        return Execute(CrudAction.Query, () => new ServiceResult<Model?>(FullSet(model).FirstOrDefault(p => p.IdAsString == key.ToString())));
-    }
-
-    /// <summary>
-    /// Obtiene un <see cref="ServiceResult"/> con un Query de todas las
-    /// entidades de la base de datos que corresponden a un modelo
-    /// específico.
-    /// </summary>
-    /// <typeparam name="TModel">
-    /// Modelo a obtener desde la base de datos.
-    /// </typeparam>
-    /// <returns>
-    /// Un <see cref="IQueryable{TModel}"/> que representa el Query de
-    /// todas las entidades del modelo especificado desde la base de datos.
-    /// </returns>
     public QueryServiceResult<TModel> All<TModel>() where TModel : Model
     {
         return Execute(CrudAction.Query, () =>
         {
-            var r = new QueryServiceResult<TModel>(FullSet<TModel>().AsQueryable());
+            var r = new QueryServiceResult<TModel>(FullSet().OfType<TModel>().AsQueryable());
             return (r, r);
         });
     }
 
-    /// <summary>
-    /// Guarda los cambios en la base de datos de forma asíncrona.
-    /// </summary>
-    /// <returns></returns>
-    public Task<ServiceResult> CommitAsync()
+    /// <inheritdoc/>
+    public QueryServiceResult<Model> All(Type model)
     {
-        return Task.Run(() => Execute(CrudAction.Commit, () => {
-            foreach (var t in _temp.GroupBy(p => p.GetType()))
+        return Execute(CrudAction.Query, () =>
+        {
+            var r = new QueryServiceResult<Model>(FullSet().OfType(model).AsQueryable());
+            return (r, r);
+        });
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Commit()
+    {
+        return Execute(CrudAction.Commit, () =>
+        {
+            var callbacks = new Dictionary<ChangeTrackerChangeType, Func<IEnumerable<ChangeTrackerItem>, ServiceResult?>>
             {
-                var newItemIds = _temp.OfType(t.Key).Select(p => p.IdAsString).ToArray();
-                _store.RemoveAll(p => p.GetType() == t.Key && newItemIds.Contains(p.IdAsString));
+                { ChangeTrackerChangeType.Create, StoreNewEntities },
+                { ChangeTrackerChangeType.Update, StoreUpdates },
+                { ChangeTrackerChangeType.Delete, StoreDelete }
+            };
+            foreach (var j in _temp)
+            {
+                if (callbacks.TryGetValue(j.ChangeType, out var callback) && callback.Invoke(_temp.Where(p => p.ChangeType == j.ChangeType)) is { } fail) return fail;
             }
-            _store.AddRange(_temp);
-            var committed = _temp.ToArray();
             _temp.Clear();
             return ServiceResult.Ok;
-        }));
+        });
     }
 
-    /// <summary>
-    /// Crea una nueva entidad en la base de datos.
-    /// </summary>
-    /// <typeparam name="TModel">Modelo de la nueva entidad.</typeparam>
-    /// <param name="newEntities">
-    /// Nueva entidad a agregar a la base de datos.
-    /// </param>
-    /// <returns>
-    /// Un <see cref="ServiceResult"/> que representa el éxito o fracaso de
-    /// la operación.
-    /// </returns>
-    public ServiceResult Create<TModel>(params TModel[] newEntities) where TModel : Model
+    /// <inheritdoc/>
+    public Task<ServiceResult> CommitAsync()
     {
-        return Execute(CrudAction.Create, () => _temp.AddRange(newEntities), newEntities);
+        return Task.Run(Commit);
     }
 
-    /// <summary>
-    /// Elimina una entidad de la base de datos.
-    /// </summary>
-    /// <typeparam name="TModel">Modelo de la entidad.</typeparam>
-    /// <param name="entities">
-    /// Entidad a eliminar de la base de datos.
-    /// </param>
-    /// <returns>
-    /// Un <see cref="ServiceResult"/> que representa el éxito o fracaso de
-    /// la operación.
-    /// </returns>
-    public ServiceResult Delete<TModel>(params TModel[] entities) where TModel : Model
+    /// <inheritdoc/>
+    public ServiceResult Create(params Model[] entities)
     {
-        return Execute(CrudAction.Delete, () => {
+        return Execute(CrudAction.Create, () =>
+        {
             foreach (var entity in entities)
             {
-                _ = _store.Remove(entity) || _temp.Remove(entity);
+                if (FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                {
+                    return FailureReason.EntityDuplication;
+                }
             }
+            _temp.AddRange(entities.Select(p => new ChangeTrackerItem(Map(CrudAction.Create), p)));
+            return ServiceResult.Ok;
         }, entities);
     }
 
-    /// <summary>
-    /// Elimina una entidad de la base de datos.
-    /// </summary>
-    /// <typeparam name="TModel">Modelo de la entidad.</typeparam>
-    /// <typeparam name="TKey">
-    /// Tipo del campo llave utilizado para identificar a la entidad.
-    /// </typeparam>
-    /// <param name="keys">
-    /// Llaves de las entidades que deberán ser eliminadas de la base de datos.
-    /// </param>
-    /// <returns>
-    /// Un <see cref="ServiceResult"/> que representa el éxito o fracaso de
-    /// la operación.
-    /// </returns>
+    /// <inheritdoc/>
+    public ServiceResult Delete<TModel>(params TModel[] entities) where TModel : Model
+    {
+        return Execute(CrudAction.Delete, () =>
+        {
+            if (!FullSet().Any()) return FailureReason.NotFound;
+            foreach (var entity in entities)
+            {
+                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                {
+                    return FailureReason.NotFound;
+                }
+            }
+            _temp.AddRange(entities.Select(p => new ChangeTrackerItem(Map(CrudAction.Delete), p)));
+            return ServiceResult.Ok;
+        });
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Delete(params Model[] entities)
+    {
+        return Execute(CrudAction.Delete, () =>
+        {
+            if (!FullSet().Any()) return FailureReason.NotFound;
+            foreach (var entity in entities)
+            {
+                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                {
+                    return FailureReason.NotFound;
+                }
+            }
+            _temp.AddRange(entities.Select(p => new ChangeTrackerItem(Map(CrudAction.Delete), p)));
+            return ServiceResult.Ok;
+        });
+    }
+
+    /// <inheritdoc/>
     public ServiceResult Delete<TModel, TKey>(params TKey[] keys)
         where TModel : Model<TKey>, new()
         where TKey : IComparable<TKey>, IEquatable<TKey>
     {
         return Execute(CrudAction.Delete, () =>
         {
-            var entities = FullSet<TModel>().Where(p => keys.Contains(p.Id)).ToArray();
-            foreach (var entity in entities)
+            if (!FullSet().Any()) return FailureReason.NotFound;
+            foreach (var key in keys)
             {
-                _ = _store.Remove(entity) || _temp.Remove(entity);
+                if (!FullSet().OfType<TModel>().Any(p => p.Id.Equals(key) && p.GetType().IsAssignableTo(typeof(TModel))))
+                {
+                    return FailureReason.NotFound;
+                }
             }
-            return (ServiceResult.Ok, entities);
-        }, keys.Select(p => new TModel { Id = p }));
+            _temp.AddRange(keys.Select(p => new ChangeTrackerItem(Map(CrudAction.Delete), ReadInternal<TModel, TKey>(p))));
+            return ServiceResult.Ok;
+        }, keys.Select(ReadInternal<TModel, TKey>).NotNull());
     }
 
-    /// <summary>
-    /// Elimina una entidad de la base de datos.
-    /// </summary>
-    /// <typeparam name="TModel">Modelo de la entidad.</typeparam>
-    /// <param name="keys">
-    /// Llaves de las entidades que deberán ser eliminadas de la base de datos.
-    /// </param>
-    /// <returns>
-    /// Un <see cref="ServiceResult"/> que representa el éxito o fracaso de
-    /// la operación.
-    /// </returns>
-    public ServiceResult Delete<TModel>(params string[] keys)
-        where TModel : Model, new()
+    /// <inheritdoc/>
+    public ServiceResult Delete<TModel>(params string[] stringKeys) where TModel : Model, new()
     {
         return Execute(CrudAction.Delete, () =>
         {
-            var entities = FullSet<TModel>().Where(p => keys.Contains(p.IdAsString));
-            foreach (var entity in entities)
+            if (!FullSet().Any()) return FailureReason.NotFound;
+            foreach (var key in stringKeys)
             {
-                _ = _store.Remove(entity) || _temp.Remove(entity);
+                if (!FullSet().Any(p => p.IdAsString == key && p.GetType().IsAssignableTo(typeof(TModel))))
+                {
+                    return FailureReason.NotFound;
+                }
             }
-            return (ServiceResult.Ok, entities);
-        }, null);
-    }
-
-    /// <summary>
-    /// Lee una entidad desde la base de datos.
-    /// </summary>
-    /// <typeparam name="TModel">Modelo de la entidad.</typeparam>
-    /// <typeparam name="TKey">
-    /// Tipo del campo llave utilizado para identificar a la entidad.
-    /// </typeparam>
-    /// <param name="key">
-    /// Valor del campo llave utilizado para identificar a la entidad.
-    /// </param>
-    /// <returns>
-    /// Un <see cref="ServiceResult"/> que representa el éxito o fracaso de
-    /// la operación, incluyendo a la entidad obtenida.
-    /// </returns>
-    public Task<ServiceResult<TModel?>> ReadAsync<TModel, TKey>(TKey key)
-        where TModel : Model<TKey>, new()
-        where TKey : IComparable<TKey>, IEquatable<TKey>
-    {
-        return Task.Run(() => Execute(CrudAction.Read, () =>
-            FullSet<TModel>().FirstOrDefault(p => p.Id.Equals(key)) is { } e
-            ? (new ServiceResult<TModel?>(e), new[] { e })
-            : (FailureReason.NotFound, null), new Model[] { new TModel { Id = key } }));
-    }
-
-    /// <summary>
-    /// Actualiza los datos de una entidad existente.
-    /// </summary>
-    /// <typeparam name="TModel">Modelo de la entidad.</typeparam>
-    /// <param name="entities">
-    /// Entidad con los nuevos datos a ser escritos. Debe existir en la
-    /// base de datos una entidad con el mismo Id de este objeto.
-    /// </param>
-    /// <returns>
-    /// Un <see cref="ServiceResult"/> que representa el éxito o fracaso de
-    /// la operación.
-    /// </returns>
-    public ServiceResult Update<TModel>(params TModel[] entities) where TModel : Model
-    {
-        var oldEntities = entities.Select(p => FullSet<TModel>().Single(q => p.IdAsString == q.IdAsString)).ToArray();
-        return Execute(CrudAction.Update, () => {
-            _temp.AddRange(entities);
-            return (ServiceResult.Ok, entities);
-        }, oldEntities);
-    }
-
-    /// <inheritdoc/>
-    public ServiceResult CreateOrUpdate<TModel>(params TModel[] entities) where TModel : Model
-    {
-        return Execute(CrudAction.Create | CrudAction.Update, () =>
-        {
-            _temp.AddRange(entities);
-            return (ServiceResult.Ok, entities);
-        }, entities);
-    }
-
-    /// <inheritdoc/>
-    public async Task<ServiceResult<TModel[]?>> SearchAsync<TModel>(Expression<Func<TModel, bool>> predicate) where TModel : Model
-    {
-        return (await _store.OfType<TModel>().AsQueryable().Where(predicate).ToListAsync()).ToArray();
+            _temp.AddRange(stringKeys.Select(p => new ChangeTrackerItem(Map(CrudAction.Delete), Read<TModel>(p))));
+            return ServiceResult.Ok;
+        });
     }
 
     /// <inheritdoc/>
     public ServiceResult Discard()
     {
-        return Execute(CrudAction.Discard, () => _temp.Clear(), _temp);
+        return Execute(CrudAction.Discard, () =>
+        {
+            _temp.Clear();
+            return ServiceResult.Ok;
+        });
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<TModel?> Read<TModel, TKey>(TKey key)
+        where TModel : Model<TKey>, new()
+        where TKey : notnull, IComparable<TKey>, IEquatable<TKey>
+    {
+        return Execute(CrudAction.Read, () =>
+        {
+            var result = ReadInternal<TModel, TKey>(key);
+            return (new ServiceResult<TModel?>(result), ((IEnumerable<TModel?>)[result]).NotNull());
+        });
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Read<TModel, TKey>(TKey key, out TModel? entity)
+        where TModel : Model<TKey>, new()
+        where TKey : notnull, IComparable<TKey>, IEquatable<TKey>
+    {
+        entity = Execute(CrudAction.Read, () => new ServiceResult<TModel?>(ReadInternal<TModel, TKey>(key)));
+        return entity is not null ? ServiceResult.Ok : FailureReason.NotFound;
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<TModel?> Read<TModel>(object key) where TModel : Model, new()
+    {
+        return Execute(CrudAction.Read, () => new ServiceResult<TModel?>(ReadInternal<TModel>(key)));
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<Model?> Read(Type model, object key)
+    {
+        return Execute(CrudAction.Read, () => new ServiceResult<Model?>(FullSet().OfType(model).FirstOrDefault(p => p.IdAsString == key.ToString())));
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<TModel?>> ReadAsync<TModel, TKey>(TKey key)
+        where TModel : Model<TKey>, new()
+        where TKey : notnull, IComparable<TKey>, IEquatable<TKey>
+    {
+        return Task.FromResult(Read<TModel, TKey>(key));
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<TModel?>> ReadAsync<TModel>(object key) where TModel : Model, new()
+    {
+        return Task.FromResult(Read<TModel>(key));
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<Model?>> ReadAsync(Type model, object key)
+    {
+        return Task.FromResult(Read(model, key));
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<TModel[]?>> SearchAsync<TModel>(Expression<Func<TModel, bool>> predicate) where TModel : Model
+    {
+        return Task.FromResult(Execute(CrudAction.Query, () => new ServiceResult<TModel[]?>([.. FullSet().OfType<TModel>().Where(predicate.Compile())])));
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Update<TModel>(params TModel[] entities) where TModel : Model
+    {
+        return Execute2(CrudAction.Update, () =>
+        {
+            if (!FullSet().Any()) return (FailureReason.NotFound, null);
+            foreach (var entity in entities)
+            {
+                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                {
+                    return (FailureReason.NotFound, null);
+                }
+            }
+            _temp.AddRange(entities.Select(p => new ChangeTrackerItem(Map(CrudAction.Update), p)));
+            return (ServiceResult.Ok, entities);
+        }, entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Update(params Model[] entities)
+    {
+        return Execute(CrudAction.Update, () =>
+        {
+            _temp.AddRange(entities.Select(p => new ChangeTrackerItem(Map(CrudAction.Update), p)));
+            return ServiceResult.Ok;
+        });
     }
 
     /// <summary>
@@ -322,7 +369,7 @@ public class InMemoryCrudTransaction : AsyncDisposable, ICrudReadWriteTransactio
     /// </summary>
     protected override void OnDispose()
     {
-        if (_temp.Any()) CommitAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        if (_temp.Count != 0) ((ICrudWriteTransaction)this).CommitAsync().ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <summary>
@@ -335,16 +382,6 @@ public class InMemoryCrudTransaction : AsyncDisposable, ICrudReadWriteTransactio
     /// </returns>
     protected override async ValueTask OnDisposeAsync()
     {
-        if (_temp.Any()) await CommitAsync().ConfigureAwait(false);
-    }
-
-    private IEnumerable<TModel> FullSet<TModel>()
-    {
-        return _store.Concat(_temp).OfType<TModel>();
-    }
-
-    private IEnumerable<Model> FullSet(Type model)
-    {
-        return _store.Concat(_temp).OfType(model);
+        if (_temp.Count != 0) await ((ICrudWriteTransaction)this).CommitAsync().ConfigureAwait(false);
     }
 }

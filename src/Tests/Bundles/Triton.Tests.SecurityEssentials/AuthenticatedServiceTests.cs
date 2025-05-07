@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Diagnostics.CodeAnalysis;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Component;
+using TheXDS.Triton.InMemory.Services;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials;
@@ -13,7 +14,7 @@ public class AuthenticatedServiceTests
     [ExcludeFromCodeCoverage]
     private class TestAuthService : AuthenticatedService
     {
-        public TestAuthService() : base(new TestUserService())
+        public TestAuthService() : base(new TestUserService(), new InMemoryTransFactory())
         {
         }
     }

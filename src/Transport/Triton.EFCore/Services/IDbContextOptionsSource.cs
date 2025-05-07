@@ -1,4 +1,4 @@
-﻿namespace TheXDS.Triton.Services;
+﻿namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
 /// Define una serie de miembros a implementar por un tipo que permita obtener

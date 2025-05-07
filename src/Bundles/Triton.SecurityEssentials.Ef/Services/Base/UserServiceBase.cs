@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TheXDS.Triton.EFCore.Services;
 using TheXDS.Triton.SecurityEssentials.Ef.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.SecurityEssentials.Ef.Services.Base;
 
@@ -22,29 +22,8 @@ public abstract class UserServiceBase<T> : UserServiceBase, IEfUserService<T> wh
     /// <see cref="UserServiceBase{T}"/>, buscando automáticamente la
     /// configuración de transacciones a utilizar.
     /// </summary>
-    public UserServiceBase() : base()
-    {
-    }
-
-    /// <summary>
-    /// Inicializa una nueva instancia de la clase 
-    /// <see cref="UserServiceBase{T}"/>, buscando automáticamente la
-    /// configuración de transacciones a utilizar.
-    /// </summary>
     /// <param name="factory">Fábrica de transacciones a utilizar.</param>
     public UserServiceBase(ITransactionFactory factory) : base(factory)
-    {
-    }
-    /// <summary>
-    /// Inicializa una nueva instancia de la clase 
-    /// <see cref="UserServiceBase{T}"/>, buscando automáticamente la
-    /// configuración de transacciones a utilizar.
-    /// </summary>
-    /// <param name="transactionConfiguration">
-    /// Configuración a utilizar para las transacciones generadas por este
-    /// servicio.
-    /// </param>
-    public UserServiceBase(IMiddlewareConfigurator transactionConfiguration) : base(transactionConfiguration)
     {
     }
 
