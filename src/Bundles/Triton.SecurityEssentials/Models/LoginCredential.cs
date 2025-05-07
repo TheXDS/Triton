@@ -1,63 +1,56 @@
 namespace TheXDS.Triton.Models;
 
 /// <summary>
-/// Model representing an individual user with the ability to log in to a
-/// system that requires authentication.
+/// Modelo que representa a un usuario individual con facultad de iniciar sesión en un sistema que requiere autenticación.
 /// </summary>
-public class LoginCredential : SecurityObject
+/// <param name="username">
+/// Nombre de inicio de sesión a asociar con el usuario.
+/// </param>
+/// <param name="passwordHash">
+/// Blob binario con el Hash a utilizar para autenticar al usuario.
+/// </param>
+public class LoginCredential(string username, byte[] passwordHash) : SecurityObject
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoginCredential"/> class.
+    /// Inicializa una nueva instancia de la clase <see cref="LoginCredential"/>.
     /// </summary>
-    public LoginCredential() { }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LoginCredential"/> class
-    /// with the specified username and password hash.
-    /// </summary>
-    /// <param name="username">
-    /// The login name to associate with the user.
-    /// </param>
-    /// <param name="passwordHash">
-    /// The binary blob containing the precomputed hash used for authentication.
-    /// </param>
-    public LoginCredential(string username, byte[] passwordHash)
+    public LoginCredential() : this(null!, null!)
     {
-        Username = username;
-        PasswordHash = passwordHash;
     }
 
     /// <summary>
-    /// Gets or sets the login name to associate with this entity.
+    /// Obtiene o establece el nombre de inicio de sesión a asociar con esta
+    /// entidad.
     /// </summary>
-    public string Username { get; set; } = null!;
+    public string Username { get; set; } = username;
 
     /// <summary>
-    /// Gets or sets the precomputed hash used for authentication.
+    /// Obtiene o establece el Hash precomputado utilizado para autenticar al
+    /// usuario.
     /// </summary>
-    public byte[] PasswordHash { get; set; } = null!;
+    public byte[] PasswordHash { get; set; } = passwordHash;
 
     /// <summary>
-    /// Gets or sets a value indicating whether this credential is enabled or
-    /// not.
+    /// Obtiene o establece un valor que indica si la credencial está
+    /// habilitada o no.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether a password change has been
-    /// scheduled for this credential.
+    /// Obtiene o establece un valor que indica si se ha programado un cambio
+    /// de contraseña para la credencial.
     /// </summary>
     public bool PasswordChangeScheduled { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of active sessions for the user represented
-    /// by this entity.
+    /// Obtiene o establece la colección de sesiones activas para el usuario
+    ///  representado por esta entidad.
     /// </summary>
-    public virtual ICollection<Session> Sessions { get; set; } = new List<Session>();
+    public virtual ICollection<Session> Sessions { get; set; } = [];
 
     /// <summary>
-    /// Gets or sets the collection of registered two-factor authentication
-    /// objects for the user.
+    /// Obtiene o establece la colección de objetos de autenticación en dos
+    /// factores registrados para el usuario.
     /// </summary>
-    public virtual ICollection<MultiFactorEntry> RegisteredMfa { get; set; } = new List<MultiFactorEntry>();
+    public virtual ICollection<MultiFactorEntry> RegisteredMfa { get; set; } = [];
 }

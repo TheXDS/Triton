@@ -1,37 +1,38 @@
 ﻿using TheXDS.ServicePool.Extensions;
 using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.ServicePool.Triton;
 
 /// <summary>
-/// Defines the contract for types that expose a set of 
-/// configuration functions for Tritón when used with a
-/// <see cref="ServicePool.Pool"/>.
+/// Define una serie de miembros a implementar por un tipo que exponga
+/// funciones de configuración para Tritón cuando se utiliza en conjunto
+/// con un <see cref="ServicePool"/>.
 /// </summary>
 public interface ITritonConfigurable
 {
     /// <summary>
-    /// Gets a reference to the service pool in which this instance has been
-    /// registered.
+    /// Obtiene una referencia al repositorio de servicios en el cual se ha
+    /// registrado esta instancia.
     /// </summary>
     Pool Pool { get; }
 
     /// <summary>
-    /// Registers a service for data access.
+    /// Registra un servicio para acceder a datos.
     /// </summary>
     /// <param name="serviceBuilder">
-    /// A method to call to create the service.
+    /// Método a llamar para crear el servicio.
     /// </param>
     /// <param name="transactionFactoryBuilder">
-    /// A method to call to create the transaction factory object.
+    /// Método a llamar para crear al objeto a utilizar como fábrica de
+    /// transacciones.
     /// </param>
     /// <param name="configurator">
-    /// Middleware configuration to use when generating transactions. Defaults
-    /// to <see langword="null"/>.
+    /// Configuración de Middleware a utilizar al generar transacciones.
     /// </param>
     /// <returns>
-    /// The same instance of the object used to configure Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     ITritonConfigurable UseService(Func<IMiddlewareConfigurator, ITransactionFactory, ITritonService> serviceBuilder, Func<ITransactionFactory> transactionFactoryBuilder, IMiddlewareConfigurator? configurator = null)
     {
@@ -40,26 +41,26 @@ public interface ITritonConfigurable
     }
 
     /// <summary>
-    /// Adds a Middleware to the default transaction configuration used by
-    /// Tritón services.
+    /// Agrega un Middleware a la configuración predeterminada de transacciones
+    /// a utilizar por los servicios de Tritón.
     /// </summary>
-    /// <typeparam name="T">Type of Middleware to add.</typeparam>
+    /// <typeparam name="T">Tipo de Middleware a agregar.</typeparam>
     /// <returns>
-    /// The same instance of the object used to configure Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     /// <seealso cref="ConfigureMiddlewares(Action{IMiddlewareConfigurator})"/>.
     ITritonConfigurable UseMiddleware<T>() where T : ITransactionMiddleware, new() => UseMiddleware<T>(out _);
 
     /// <summary>
-    /// Adds a Middleware to the default transaction configuration used by
-    /// Tritón services.
+    /// Agrega un Middleware a la configuración predeterminada de transacciones
+    /// a utilizar por los servicios de Tritón.
     /// </summary>
     /// <param name="newMiddleware">
-    /// Parameter output. The newly created and registered Middleware.
+    /// Parámetro de salida. Middleware que ha sido creado y registrado.
     /// </param>
-    /// <typeparam name="T">Type of Middleware to add.</typeparam>
+    /// <typeparam name="T">Tipo de Middleware a agregar.</typeparam>
     /// <returns>
-    /// The same instance of the object used to configure Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     /// <seealso cref="ConfigureMiddlewares(Action{IMiddlewareConfigurator})"/>.
     ITritonConfigurable UseMiddleware<T>(out T newMiddleware) where T : ITransactionMiddleware, new()
@@ -70,21 +71,21 @@ public interface ITritonConfigurable
     }
 
     /// <summary>
-    /// Executes a default middleware configuration method to be used when no
-    /// custom configuration is specified when registering a context or
-    /// service.
+    /// Ejecuta un método de configuración de middlewares predeterminados a
+    /// utilizar cuando no se especifique una configuración personalizada al
+    /// registrar un contexto o un servicio de Tritón.
     /// </summary>
     /// <param name="configuratorCallback">
-    /// Method to use to configure the Middlewares to be used in the
-    /// transactions of the configured Tritón instance.
+    /// Método a utilizar para configurar los Middlewares a utilizar en las
+    /// transacciones de la instancia de Tritón configurada.
     /// </param>
     /// <returns>
-    /// The same instance of the object used to configure Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     /// <remarks>
-    /// For objects that implement <see cref="ITransactionMiddleware"/>, you
-    /// can use the methods <see cref="UseMiddleware{T}(out T)"/> or
-    /// <see cref="UseMiddleware{T}()"/> instead.
+    /// Para objetos que implementan <see cref="ITransactionMiddleware"/>,
+    /// puede utilizar el método <see cref="UseMiddleware{T}(out T)"/> o
+    /// <see cref="UseMiddleware{T}()"/> en su lugar.
     /// </remarks>
     /// <seealso cref="UseMiddleware{T}(out T)"/>.
     /// <seealso cref="UseMiddleware{T}()"/>.
@@ -96,35 +97,35 @@ public interface ITritonConfigurable
     }
 
     /// <summary>
-    /// Adds a collection of prologue Middleware actions to the registered
-    /// transaction configuration.
+    /// Agrega una colección de acciones de Middleware de prólogo a la
+    /// configuración de transacciones registrada.
     /// </summary>
-    /// <param name="actions">Prologue Middleware actions to add.</param>
+    /// <param name="actions">Acciones de prólogo a agregar.</param>
     /// <returns>
-    /// The same instance of the object used to configure Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
-    ITritonConfigurable UseTransactionPrologues(params MiddlewareAction[] actions)
+    ITritonConfigurable UseTransactionPrologs(params MiddlewareAction[] actions)
     {
         foreach (MiddlewareAction j in actions)
         {
-            GetMiddlewareConfigurator().AddPrologue(j);
+            GetMiddlewareConfigurator().AddProlog(j);
         }
         return this;
     }
 
     /// <summary>
-    /// Adds a collection of epilogue Middleware actions to the registered
-    /// transaction configuration.
+    /// Agrega una colección de acciones de Middleware de epílogo a la
+    /// configuración de transacciones registrada.
     /// </summary>
-    /// <param name="actions">Epilogue Middleware actions to add.</param>
+    /// <param name="actions">Acciones de epílogo a agregar.</param>
     /// <returns>
-    /// The same instance of the object used to configure Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
-    ITritonConfigurable UseTransactionEpilogues(params MiddlewareAction[] actions)
+    ITritonConfigurable UseTransactionEpilogs(params MiddlewareAction[] actions)
     {
         foreach (MiddlewareAction j in actions)
         {
-            GetMiddlewareConfigurator().AddEpilogue(j);
+            GetMiddlewareConfigurator().AddEpilog(j);
         }
         return this;
     }

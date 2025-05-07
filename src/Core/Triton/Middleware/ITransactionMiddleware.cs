@@ -1,44 +1,49 @@
-﻿using TheXDS.Triton.Services;
+﻿using TheXDS.Triton.Models.Base;
+using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Middleware;
 
 /// <summary>
-/// This interface defines a set of members to be implemented by a type that
-/// serves as the Middleware for a Crud operation during a transaction.
+/// Define una serie de miembros a implementar por un tipo que funcione
+/// como el Middleware de una operación Crud durante una transacción.
 /// </summary>
 public interface ITransactionMiddleware
 {
     /// <summary>
-    /// Defines a series of actions to be performed before the Crud operation.
+    /// Define una serie de acciones a realizar antes de la operación
+    /// Crud.
     /// </summary>
     /// <param name="action">
-    /// The Crud action that will be executed.
+    /// Acción Crud que se realizará.
     /// </param>
     /// <param name="entities">
-    /// The entities on which the Crud action will be executed. For read or
-    /// query operations, this parameter can be <see langword="null"/>.
+    /// Entidades sobre las cual se ejecutará una operación Crud. Para
+    /// operaciones de lectura o de Query, este parámetro puede ser
+    /// <see langword="null"/>.
     /// </param>
     /// <returns>
-    /// <see langword="null"/> if the Middleware has been executed correctly,
-    /// or a <see cref="ServiceResult"/> that describes a failure in case it
-    /// occurs.
+    /// <see langword="null"/> si el Middleware se ha ejecutado
+    /// correctamente, o un <see cref="ServiceResult"/> que describa
+    /// una falla en caso que esta ocurra.
     /// </returns>
-    ServiceResult? PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => null;
+    ServiceResult? PrologAction(CrudAction action, IEnumerable<Model>? entities) => null;
 
     /// <summary>
-    /// Defines a series of actions to be performed after the Crud operation.
+    /// Define una serie de acciones a realizar después de la operación
+    /// Crud.
     /// </summary>
     /// <param name="action">
-    /// The Crud action that was executed.
+    /// Acción Crud que se realizará.
     /// </param>
     /// <param name="entities">
-    /// The entities on which the Crud action was executed. For read or query
-    /// operations, this parameter can be null.
+    /// Entidades sobre al cual se ha ejecutado una operación Crud. Para
+    /// operaciones de lectura o de Query, este parámetro puede ser
+    /// <see langword="null"/>.
     /// </param>
     /// <returns>
-    /// <see langword="null"/> if the Middleware has been executed correctly,
-    /// or a <see cref="ServiceResult"/> that describes a failure in case it
-    /// occurs.
+    /// <see langword="null"/> si el Middleware se ha ejecutado
+    /// correctamente, o un <see cref="ServiceResult"/> que describa
+    /// una falla en caso que esta ocurra.
     /// </returns>
-    ServiceResult? EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => null;
+    ServiceResult? EpilogAction(CrudAction action, IEnumerable<Model>? entities) => null;
 }

@@ -1,80 +1,79 @@
 ﻿namespace TheXDS.Triton.Models;
 
 /// <summary>
-/// Defines permission flags that can be granted or denied to a
-/// <see cref="SecurityObject"/>.
+/// Define las banderas de permisos que pueden ser otorgados o denegados a un
+///  objeto <see cref="SecurityObject"/>
 /// </summary>
 [Flags]
 public enum PermissionFlags : byte
 {
     /// <summary>
-    /// No permissions.
+    /// Ningún permiso.
     /// </summary>
     None = 0,
 
     /// <summary>
-    /// Visibility permission.
+    /// Permiso de visibilidad.
     /// </summary>
     View = 1,
 
     /// <summary>
-    /// Read permission.
+    /// Permiso de lectura.
     /// </summary>
     Read = 2,
 
     /// <summary>
-    /// Permission to create new entities.
+    /// Permisos de creación de nuevas entidades.
     /// </summary>
     Create = 4,
 
     /// <summary>
-    /// Permission to update existing entities.
+    /// Permisos de actualización de entidades.
     /// </summary>
     Update = 8,
 
     /// <summary>
-    /// Permission to delete entities.
+    /// Permisos de borrado.
     /// </summary>
     Delete = 16,
 
     /// <summary>
-    /// Permission to export data. Also affects the ability to create reports.
+    /// Permisos de exportación de datos. También afecta la capacidad de crear reportes.
     /// </summary>
     Export = 32,
 
     /// <summary>
-    /// Exclusive access permission.
+    /// Permisos de acceso exclusivo.
     /// </summary>
     Lock = 64,
 
     /// <summary>
-    /// Elevation permission. Grants or denies the ability to request
-    /// non-existent permissions.
+    /// Permisos de elevación. Otorga o deniega la posibilidad de solicitar permisos no existentes.
     /// </summary>
     Elevate = 128,
 
     /// <summary>
-    /// All read permissions.
+    /// Todos los permisos de lectura.
     /// </summary>
     FullRead = View | Read,
 
     /// <summary>
-    /// All write permissions.
+    /// Todos los permisos de escritura.
     /// </summary>
     FullWrite = Create | Update | Delete,
 
     /// <summary>
-    /// All common read and write permissions.
+    /// Todos los permisos comunes de lectura y escritura.
     /// </summary>
     ReadWrite = FullRead | FullWrite,
 
     /// <summary>
-    /// Special permissions.
+    /// Permisos especiales.
     /// </summary>
     Special = Export | Lock | Elevate,
 
     /// <summary>
-    /// All possible permissions.
+    /// Todos los permisos posibles
     /// </summary>
     All = byte.MaxValue
 }

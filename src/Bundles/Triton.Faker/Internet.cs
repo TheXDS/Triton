@@ -8,15 +8,15 @@ using static TheXDS.Triton.Faker.Globals;
 namespace TheXDS.Triton.Faker;
 
 /// <summary>
-/// Contains methods for generating test data in the context of online accounts
-/// and the Internet.
+/// Contiene funciones de generación de datos de pruebas en el contexto de
+/// cuentas en línea e internet.
 /// </summary>
 public static class Internet
 {
     private static string[] _fakeDomains;
 
     /// <summary>
-    /// Initializes the class <see cref="Internet"/>
+    /// Inicializa la clase <see cref="Internet"/>
     /// </summary>
     static Internet()
     {
@@ -24,11 +24,12 @@ public static class Internet
     }
 
     /// <summary>
-    /// Generates a completely random email address.
+    /// Genera una dirección de correo totalmente aleatoria.
     /// </summary>
     /// <returns>
-    /// A valid email address. Subsequent calls to this method can obtain
-    /// email addresses from the same domain.
+    /// Una dirección de correo con un formato válido. Subsecuentes
+    /// llamadas a este método podrán obtener direcciones de correo del
+    /// mismo dominio.
     /// </returns>
     public static string FakeEmail()
     {
@@ -36,14 +37,16 @@ public static class Internet
     }
 
     /// <summary>
-    /// Generates a random email address for the specified person object.
+    /// Genera una dirección de correo electrónico aleatoria para el objeto
+    /// <see cref="Person"/> especificado.
     /// </summary>
     /// <param name="person">
-    /// The person for whom to generate the email address.
+    /// Persona para la cual generar la dirección de correo.
     /// </param>
     /// <returns>
-    /// A valid email address. Subsequent calls to this method can obtain
-    /// email addresses from the same domain.
+    /// Una dirección de correo con un formato válido. Subsecuentes
+    /// llamadas a este método podrán obtener direcciones de correo del
+    /// mismo dominio.
     /// </returns>
     public static string FakeEmail(Person? person)
     {
@@ -51,9 +54,9 @@ public static class Internet
     }
 
     /// <summary>
-    /// Generates a completely random username.
+    /// Genera un nombre de usuario totalmente aleatorio.
     /// </summary>
-    /// <returns>A completely random username.</returns>
+    /// <returns>Un nombre de usuario totalmente aleatorio.</returns>
     public static string FakeUsername()
     {
         var sb = new StringBuilder();
@@ -68,12 +71,16 @@ public static class Internet
     }
 
     /// <summary>
-    /// Generates a random username suitable for the specified person.
+    /// Genera un nombre de usuario aleatorio satisfactorio para la persona
+    /// especificada.
     /// </summary>
     /// <param name="person">
-    /// The person for whom to generate a random username.
+    /// Persona para la cual generar un nombre de usuario aleatorio.
     /// </param>
-    /// <returns>A randomly generated username based on the properties of the specified person.</returns>
+    /// <returns>
+    /// Un nombre de usuario aleatorio basado en las propiedades de la 
+    /// persona especificada.
+    /// </returns>
     public static string FakeUsername(Person? person)
     {
         person ??= Person.Someone();
@@ -89,24 +96,25 @@ public static class Internet
     }
 
     /// <summary>
-    /// Creates a new domain name given the specified component names.
+    /// Crea un nuevo nombre de dominio dados los componentes de nombres
+    /// especificados.
     /// </summary>
     /// <param name="names">
-    /// Names to use for generating the domain name.
+    /// Nombres a utilizar para generar el nombre de dominio.
     /// </param>
     /// <returns>
-    /// A string with a domain name.
+    /// Una cadena con un nombre de dominio.
     /// </returns>
     public static string NewDomain(params string[] names) => NewDomain(names.AsEnumerable());
 
     /// <summary>
-    /// Creates a new domain name given the specified component names.
+    /// Crea un nuevo nombre de dominio dados los componentes de nombres especificados.
     /// </summary>
     /// <param name="names">
-    /// Names to use for generating the domain name.
+    /// Nombres a utilizar para generar el nombre de dominio.
     /// </param>
     /// <returns>
-    /// A string with a domain name.
+    /// Una cadena con un nombre de dominio.
     /// </returns>
     public static string NewDomain(IEnumerable<string> names)
     {
@@ -114,16 +122,18 @@ public static class Internet
     }
 
     /// <summary>
-    /// Creates a new domain name given the specified component names.
+    /// Crea un nuevo nombre de dominio dados los componentes de nombres
+    /// especificados.
     /// </summary>
     /// <param name="names">
-    /// Names to use for generating the domain name.
+    /// Nombres a utilizar para generar el nombre de dominio.
     /// </param>
     /// <param name="countryHint">
-    /// Address containing a country hint for the domain name.
+    /// Dirección que contiene una sugerencia de país para el nombre de
+    /// dominio.
     /// </param>
     /// <returns>
-    /// A string with a domain name.
+    /// Una cadena con un nombre de dominio.
     /// </returns>
     public static string NewDomain(IEnumerable<string> names, Address? countryHint)
     {
@@ -133,32 +143,31 @@ public static class Internet
     }
 
     /// <summary>
-    /// Tells the domain generator to use the specified domains.
+    /// Indica al generador de dominios que debe utilizar los dominios especificados.
     /// </summary>
-    /// <param name="domainNames">
-    /// Domains to be used when generating random URLs/email addresses.
-    /// </param>
+    /// <param name="domainNames"></param>
     [MemberNotNull(nameof(_fakeDomains))]
     public static void UseDomains(IEnumerable<string?>? domainNames)
     {
-        _fakeDomains = (domainNames?.NotNull() ?? GetFauxDomains(15)).ToArray();
+        _fakeDomains = (domainNames.NotNull().OrNull() ?? GetFauxDomains(15)).ToArray();
     }
 
     /// <summary>
-    /// Tells the domain generator to use automatically generated fake domains.
+    /// Indica al generador de dominios que debe utilizar dominios falsos
+    /// generados automáticamente.
     /// </summary>
-    /// <param name="count">Number of domains to generate.</param>
+    /// <param name="count">Cantidad de dominios a generar.</param>
     public static void UseFauxDomains(in int count)
     {
         UseDomains(GetFauxDomains(count));
     }
 
     /// <summary>
-    /// Gets a list of fake web domain names.
+    /// Obtiene una lista de dominios web falsos.
     /// </summary>
-    /// <param name="count">Number of domains to generate.</param>
+    /// <param name="count">Cantidad de dominios a generar.</param>
     /// <returns>
-    /// A sequence of randomly generated fake domain names.
+    /// Un arreglo de dominios falsos generados aleatoriamente.
     /// </returns>
     public static IEnumerable<string> GetFauxDomains(in int count)
     {

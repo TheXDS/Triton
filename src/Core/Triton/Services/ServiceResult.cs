@@ -4,10 +4,10 @@ using St = TheXDS.Triton.Resources.Strings.Common;
 namespace TheXDS.Triton.Services;
 
 /// <summary>
-/// Represents the result returned by a service when attempting to
-/// perform an operation.
+/// Representa el resultado devuelto por un servicio al intentar
+/// realizar una operación.
 /// </summary>
-public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
+public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>, IServiceResult
 {
     private static string MessageFrom(in FailureReason reason)
     {
@@ -30,65 +30,154 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     }
 
     /// <summary>
-    /// Gets a simple result indicating that the operation was successful.
+    /// Obtiene un resultado simple que indica que la operación se ha
+    /// completado satisfactoriamente.
     /// </summary>
     public static ServiceResult Ok { get; } = SucceedWith<ServiceResult>(null);
 
     /// <summary>
-    /// Gets a value indicating whether the operation was successful.
+    /// Obtiene un <typeparamref name="TServiceResult"/> fallido a
+    /// partir de la excepción producida.
     /// </summary>
-    [MemberNotNullWhen(false, nameof(Reason))]
+    /// <typeparam name="TServiceResult">
+    /// Tipo de <see cref="ServiceResult"/> a generar.
+    /// </typeparam>
+    /// <param name="ex">
+    /// Excepción producida.
+    /// </param>
+    /// <returns>
+    /// Un <typeparamref name="TServiceResult"/> que representa una
+    /// operación fallida.
+    /// </returns>
+    public static TServiceResult FailWith<TServiceResult>(Exception ex) where TServiceResult : ServiceResult, new()
+    {
+        return new TServiceResult()
+        {
+            Success = false,
+            Message = ex.Message,
+            Reason = (FailureReason)ex.HResult
+        };
+    }
+
+    /// <summary>
+    /// Obtiene un <typeparamref name="TServiceResult"/> fallido a
+    /// partir del fallo informado.
+    /// </summary>
+    /// <typeparam name="TServiceResult">
+    /// Tipo de <see cref="ServiceResult"/> a generar.
+    /// </typeparam>
+    /// <param name="reason">
+    /// Fallo producido durante la operación.
+    /// </param>
+    /// <returns>
+    /// Un <typeparamref name="TServiceResult"/> que representa una
+    /// operación fallida.
+    /// </returns>
+    public static TServiceResult FailWith<TServiceResult>(in FailureReason reason) where TServiceResult : ServiceResult, new()
+    {
+        return new TServiceResult()
+        {
+            Success = false,
+            Reason = reason,
+            Message = MessageFrom(reason)
+        };
+    }
+
+    /// <summary>
+    /// Obtiene un <typeparamref name="TServiceResult"/> fallido a
+    /// partir del mensaje de error.
+    /// </summary>
+    /// <typeparam name="TServiceResult">
+    /// Tipo de <see cref="ServiceResult"/> a generar.
+    /// </typeparam>
+    /// <param name="message">
+    /// Mensaje de error producido durante la operación.
+    /// </param>
+    /// <returns>
+    /// Un <typeparamref name="TServiceResult"/> que representa una
+    /// operación fallida.
+    /// </returns>
+    public static TServiceResult FailWith<TServiceResult>(string? message) where TServiceResult : ServiceResult, new()
+    {
+        return new TServiceResult()
+        {
+            Success = false,
+            Reason = FailureReason.Unknown,
+            Message = message ?? St.FailureUnknown
+        };
+    }
+
+    /// <summary>
+    /// Obtiene un <typeparamref name="TServiceResult"/> exitoso a
+    /// partir del mensaje.
+    /// </summary>
+    /// <typeparam name="TServiceResult">
+    /// Tipo de <see cref="ServiceResult"/> a generar.
+    /// </typeparam>
+    /// <param name="message">
+    /// Mensaje producido por la operación.
+    /// </param>
+    /// <returns>
+    /// Un <typeparamref name="TServiceResult"/> que representa una
+    /// operación exitosa con un mensaje de salida.
+    /// </returns>
+    public static TServiceResult SucceedWith<TServiceResult>(string? message) where TServiceResult : ServiceResult, new()
+    {
+        return new TServiceResult()
+        {
+            Success = true,
+            Reason = null,
+            Message = message ?? St.OperationCompletedSuccessfully
+        };
+    }
+
+    /// <summary>
+    /// Obtiene un valor que indica si la operación ha sido exitosa.
+    /// </summary>
     public bool Success { get; private set; }
 
     /// <summary>
-    /// Gets a message describing the result of the operation.
+    /// Obtiene un mensaje que describe el resultado de la operación.
     /// </summary>
     public string Message { get; private set; }
 
     /// <summary>
-    /// Gets the reason why an operation failed, or null if the
-    /// operation was successful.
+    /// Obtiene la razón por la cual una operación ha fallado, o
+    /// <see langword="null"/> si la operación se completó 
+    /// exitosamente.
     /// </summary>
     public FailureReason? Reason { get; private set; } = null;
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// indicating that the operation was successful.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, indicando que la operación se ha
+    /// completado satisfactoriamente.
     /// </summary>
-    public ServiceResult() : this(true, null)
+    public ServiceResult()
     {
+        Success = true;
+        Message = St.OperationCompletedSuccessfully;
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// indicating that an operation was successful, and includes a custom
-    /// status message to display.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, indicando un mensaje de estado 
+    /// personalizado a mostrar.
     /// </summary>
-    /// <param name="message">A descriptive message for the result.</param>
-    public ServiceResult(string? message) : this(true, message)
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
+    public ServiceResult(string? message)
     {
+        Success = true;
+        Message = message ?? St.OperationCompletedSuccessfully;
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// including a custom status message to display.
-    /// </summary>
-    /// <param name="success">
-    /// Indicates whether the operation was completed successfully.
-    /// </param>
-    /// <param name="message">A descriptive message for the result.</param>
-    public ServiceResult(bool success, string? message)
-    {
-        Success = success;
-        Message = message ?? (success ? St.OperationCompletedSuccessfully : St.FailureUnknown);
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// specifying the reason why the operation failed.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, especificando el motivo por el 
+    /// cual la operación ha fallado.
     /// </summary>
     /// <param name="reason">
-    /// The reason why the operation failed.
+    /// Motivo por el cual la operación ha fallado.
     /// </param>
     public ServiceResult(in FailureReason reason)
     {
@@ -98,14 +187,15 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// specifying the reason why the operation failed, and including a
-    /// descriptive message for the result.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, especificando el motivo por el 
+    /// cual la operación ha fallado, además de un mensaje descriptivo
+    /// del resultado.
     /// </summary>
     /// <param name="reason">
-    /// The reason why the operation failed.
+    /// Motivo por el cual la operación ha fallado.
     /// </param>
-    /// <param name="message">A descriptive message for the result.</param>
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
     public ServiceResult(in FailureReason reason, string message)
     {
         Success = false;
@@ -114,13 +204,14 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/> for
-    /// a failed operation,
-    /// extracting relevant information from the specified exception.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/> para una operación fallida,
+    /// extrayendo la información relevante a partir de la excepción
+    /// especificada.
     /// </summary>
     /// <param name="ex">
-    /// The exception from which to obtain the message and error code
-    /// associated with it.
+    /// Excepción desde la cual obtener el mensaje y un código de error
+    /// asociado.
     /// </param>
     public ServiceResult(Exception ex)
     {
@@ -130,77 +221,67 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     }
 
     /// <summary>
-    /// Compares equality between this instance and another instance of the
-    /// class <see cref="ServiceResult"/>.
+    /// Convierte implícitamente un <see cref="Exception"/> en un
+    /// <see cref="ServiceResult"/>.
     /// </summary>
-    /// <param name="other">
-    /// The instance to compare with this instance.
+    /// <param name="ex">
+    /// Excepción desde la cual obtener el mensaje y un código de error
+    /// asociado.
     /// </param>
-    /// <returns>
-    /// <see langword="true"/> if both instances are considered equal or
-    /// equivalent, <see langword="false"/> otherwise.
-    /// </returns>
-    public bool Equals([AllowNull] ServiceResult other)
-    {
-        if (other is null) return false;
-
-        return Success == other.Success && other.Reason == FailureReason.Unknown
-            ? Message == other.Message
-            : Reason == other.Reason;
-    }
+    public static implicit operator ServiceResult(Exception ex) => FailWith<ServiceResult>(ex);
 
     /// <summary>
-    /// Compares equality between this instance of the class
-    /// <see cref="ServiceResult"/> and an exception object.
+    /// Convierte implícitamente un <see cref="string"/> en un
+    /// <see cref="ServiceResult"/>.
     /// </summary>
-    /// <param name="other">
-    /// The instance to compare with this instance.
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
+    public static implicit operator ServiceResult(string message) => FailWith<ServiceResult>(message);
+
+    /// <summary>
+    /// Convierte implícitamente un <see cref="FailureReason"/> en un
+    /// <see cref="ServiceResult"/>.
+    /// </summary>
+    /// <param name="reason">
+    /// Motivo por el cual la operación ha fallado.
     /// </param>
-    /// <returns>
-    /// <see langword="true"/> if both instances are considered equal or
-    /// equivalent, <see langword="false"/> otherwise.
-    /// </returns>
-    public bool Equals([AllowNull] Exception other)
-    {
-        return (int?)Reason == other?.HResult;
-    }
+    public static implicit operator ServiceResult(in FailureReason reason) => FailWith<ServiceResult>(reason);
 
     /// <summary>
-    /// Converts a simple result into a more specific type.
+    /// Convierte implícitamente un <see cref="bool"/> en un
+    /// <see cref="ServiceResult"/>.
     /// </summary>
-    /// <typeparam name="TResult">
-    /// The type of result to obtain. The specific values of the result have
-    /// their default values.
-    /// </typeparam>
-    /// <returns>
-    /// A result of the type <typeparamref name="TResult"/>.</returns>
-    public TResult CastUp<TResult>() where TResult : ServiceResult, new()
-    {
-        return new TResult()
-        {
-            Success = Success,
-            Reason = Reason,
-            Message = Message
-        };
-    }
+    /// <param name="success">
+    /// Valor que indica si la operación ha tenido éxito o no.
+    /// </param>
+    public static implicit operator ServiceResult(in bool success) => success ? Ok : FailWith<ServiceResult>(FailureReason.Unknown);
 
     /// <summary>
-    /// Converts a simple result into a more specific type.
+    /// Permite utilizar un <see cref="ServiceResult"/> en una
+    /// expresión booleana.
     /// </summary>
-    /// <typeparam name="TResult">The type of result to obtain.</typeparam>
-    /// <param name="result">The result to include.</param>
+    /// <param name="result">
+    /// Resultado desde el cual determinar el valor booleano.
+    /// </param>
+    public static implicit operator bool(ServiceResult result) => result.Success;
+
+    /// <summary>
+    /// Permite utilizar un <see cref="ServiceResult"/> en una
+    /// expresión de <see cref="string"/>.
+    /// </summary>
+    /// <param name="result">
+    /// Resultado desde el cual extraer el mensaje.
+    /// </param>
+    public static implicit operator string(ServiceResult result) => result.ToString();
+
+    /// <summary>
+    /// Convierte este objeto en su representación como una cadena.
+    /// </summary>
     /// <returns>
-    /// A result of type <see cref="ServiceResult{T}"/> of type
-    /// <typeparamref name="TResult"/>.
+    /// Una cadena que representa a este objeto.
     /// </returns>
-    public ServiceResult<TResult?> CastUp<TResult>(TResult result)
+    public override string ToString()
     {
-        return new(result)
-        {
-            Success = Success,
-            Reason = Reason,
-            Message = Message
-        };
+        return Message;
     }
 
     /// <inheritdoc/>
@@ -215,146 +296,87 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
         };
     }
 
+    /// <summary>
+    /// Compara la igualdad entre esta y otra instancia de la clase
+    /// <see cref="ServiceResult"/>.
+    /// </summary>
+    /// <param name="other">
+    /// Instancia contra la cual comparar esta instancia.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> si ambas instancias son consideradas
+    /// iguales o equivalentes, <see langword="false"/> en caso 
+    /// contrario.
+    /// </returns>
+    public bool Equals([AllowNull] ServiceResult other)
+    {
+        if (other is null) return false;
+
+        return Success == other.Success && other.Reason == FailureReason.Unknown
+            ? Message == other.Message
+            : Reason == other.Reason;
+    }
+
+    /// <summary>
+    /// Compara la igualdad entre esta intancia de la clase
+    /// <see cref="ServiceResult"/> y un objeto de tipo
+    /// <see cref="Exception"/>.
+    /// </summary>
+    /// <param name="other">
+    /// Instancia contra la cual comparar esta instancia.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> si ambas instancias son consideradas
+    /// iguales o equivalentes, <see langword="false"/> en caso 
+    /// contrario.
+    /// </returns>
+    public bool Equals([AllowNull] Exception other)
+    {
+        return (int?)Reason == other?.HResult;
+    }
+
+    /// <summary>
+    /// Convierte un resultado simple en uno de un tipo más específico.
+    /// </summary>
+    /// <typeparam name="TResult">
+    /// Tipo de resultado a obtener. Los valores específicos del
+    /// resultado tendrán su valor predeterminado.
+    /// </typeparam>
+    /// <returns>
+    /// Un resultado de tipo <typeparamref name="TResult"/>.
+    /// </returns>
+    public TResult CastUp<TResult>() where TResult : ServiceResult, new()
+    {
+        return new TResult()
+        {
+            Success = Success,
+            Reason = Reason,
+            Message = Message
+        };
+    }
+
+    /// <summary>
+    /// Convierte un resultado simple en uno de un tipo más específico.
+    /// </summary>
+    /// <typeparam name="TResult">Tipo de resultado a obtener.</typeparam>
+    /// <param name="result">Resultado a incluir.</param>
+    /// <returns>
+    /// Un resultado de tipo <see cref="ServiceResult{T}"/> de tipo
+    /// <typeparamref name="TResult"/>.
+    /// </returns>
+    public ServiceResult<TResult?> CastUp<TResult>(TResult result)
+    {
+        return new(result)
+        {
+            Success = Success,
+            Reason = Reason,
+            Message = Message
+        };
+    }
+
     /// <inheritdoc/>
     public override int GetHashCode()
     {
         return HashCode.Combine(Success, Message, Reason);
     }
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return Message;
-    }
-
-    /// <summary>
-    /// Gets a failed <typeparamref name="TServiceResult"/> from the produced
-    /// exception.
-    /// </summary>
-    /// <typeparam name="TServiceResult">
-    /// The type of <see cref="ServiceResult"/> to generate.
-    /// </typeparam>
-    /// <param name="ex">
-    /// The produced exception.
-    /// </param>
-    /// <returns>
-    /// A <typeparamref name="TServiceResult"/> that represents a failed
-    /// operation.
-    /// </returns>
-    protected static TServiceResult FailWith<TServiceResult>(Exception ex) where TServiceResult : ServiceResult, new()
-    {
-        return new TServiceResult()
-        {
-            Success = false,
-            Message = ex.Message,
-            Reason = (FailureReason)ex.HResult
-        };
-    }
-
-    /// <summary>
-    /// Gets a failed <typeparamref name="TServiceResult"/> from the reported
-    /// failure.
-    /// </summary>
-    /// <typeparam name="TServiceResult">
-    /// The type of <see cref="ServiceResult"/> to generate.
-    /// </typeparam>
-    /// <param name="reason">
-    /// The failure that occurred during the operation.
-    /// </param>
-    /// <returns>
-    /// A <typeparamref name="TServiceResult"/> that represents a failed
-    /// operation.
-    /// </returns>
-    protected static TServiceResult FailWith<TServiceResult>(in FailureReason reason) where TServiceResult : ServiceResult, new()
-    {
-        return new TServiceResult()
-        {
-            Success = false,
-            Reason = reason,
-            Message = MessageFrom(reason)
-        };
-    }
-
-    /// <summary>
-    /// Gets a failed <typeparamref name="TServiceResult"/> from the error
-    /// message.
-    /// </summary>
-    /// <typeparam name="TServiceResult">
-    /// The type of <see cref="ServiceResult"/> to generate.
-    /// </typeparam>
-    /// <param name="message">
-    /// The error message produced during the operation.
-    /// </param>
-    /// <returns>
-    /// A <typeparamref name="TServiceResult"/> that represents a failed
-    /// operation.
-    /// </returns>
-    protected static TServiceResult FailWith<TServiceResult>(string? message) where TServiceResult : ServiceResult, new()
-    {
-        return new TServiceResult()
-        {
-            Success = false,
-            Reason = FailureReason.Unknown,
-            Message = message ?? St.FailureUnknown
-        };
-    }
-
-    /// <summary>
-    /// Gets a successful <typeparamref name="TServiceResult"/> from the
-    /// message.
-    /// </summary>
-    /// <typeparam name="TServiceResult">
-    /// The type of <see cref="ServiceResult"/> to generate.
-    /// </typeparam>
-    /// <param name="message">
-    /// The message produced by the operation.
-    /// </param>
-    /// <returns>
-    /// A <typeparamref name="TServiceResult"/> that represents a successful
-    /// operation with an output message.
-    /// </returns>
-    protected static TServiceResult SucceedWith<TServiceResult>(string? message) where TServiceResult : ServiceResult, new()
-    {
-        return new TServiceResult()
-        {
-            Success = true,
-            Reason = null,
-            Message = message ?? St.OperationCompletedSuccessfully
-        };
-    }
-
-    /// <summary>
-    /// Implicitly converts an <see cref="Exception"/> to a
-    /// <see cref="ServiceResult"/>.
-    /// </summary>
-    /// <param name="ex">
-    /// The exception from which to obtain the message and associated error
-    /// code.
-    /// </param>
-    public static implicit operator ServiceResult(Exception ex) => FailWith<ServiceResult>(ex);
-
-    /// <summary>
-    /// Implicitly converts a <see cref="string"/> to a
-    /// <see cref="ServiceResult"/>.
-    /// </summary>
-    /// <param name="message">A descriptive message of the result.</param>
-    public static implicit operator ServiceResult(string message) => FailWith<ServiceResult>(message);
-
-    /// <summary>
-    /// Implicitly converts a <see cref="FailureReason"/> to a
-    /// <see cref="ServiceResult"/>.
-    /// </summary>
-    /// <param name="reason">
-    /// The reason why the operation failed.
-    /// </param>
-    public static implicit operator ServiceResult(in FailureReason reason) => FailWith<ServiceResult>(reason);
-
-    /// <summary>
-    /// Implicitly converts a <see cref="bool"/> to a
-    /// <see cref="ServiceResult"/>.
-    /// </summary>
-    /// <param name="success">
-    /// A value indicating whether the operation was successful or not.
-    /// </param>
-    public static implicit operator ServiceResult(in bool success) => success ? Ok : FailWith<ServiceResult>(FailureReason.Unknown);
 }

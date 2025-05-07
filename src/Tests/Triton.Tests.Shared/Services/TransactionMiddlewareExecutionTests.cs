@@ -5,6 +5,7 @@ using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Services.Base;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests;
@@ -29,11 +30,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
             ExpectedAction = CrudAction.Create,
             ExpectedPrologModelType = typeof(User),
             ExpectedEpilogModelType = typeof(User),
-            ExtraEpilogAssertions = m =>
-            {
-                Assert.That(m[0].OldEntity, Is.Null);
-                Assert.That(m[0].NewEntity?.IdAsString, Is.EqualTo(g));
-            }
+            ExtraEpilogAssertions = m => Assert.That(((User)m[0]).Id, Is.EqualTo(g))
         }.ExecuteTest(t => Assert.That(t.Create(new User(g, g)).Success, Is.True));
     }
 
@@ -47,8 +44,8 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
             ExpectedAction = CrudAction.Read,
             ExpectedPrologModelType = typeof(User),
             ExpectedEpilogModelType = typeof(User),
-            ExtraPrologAssertions = m => Assert.That(m[0].NewEntity?.IdAsString, Is.EqualTo(g)),
-            ExtraEpilogAssertions = m => Assert.That(m[0].NewEntity?.IdAsString, Is.EqualTo(g))
+            ExtraPrologAssertions = m => Assert.That(((User)m[0]).Id, Is.EqualTo(g)),
+            ExtraEpilogAssertions = m => Assert.That(((User)m[0]).Id, Is.EqualTo(g))
         }.ExecuteTest(
             t => _ = t.Create(u = new(g, "user")),
             t => _ = t.Read<User, string>(g));
@@ -64,8 +61,8 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
             ExpectedAction = CrudAction.Update,
             ExpectedPrologModelType = typeof(User),
             ExpectedEpilogModelType = typeof(User),
-            ExtraPrologAssertions = m => Assert.That(((User?)m[0].NewEntity)?.PublicName, Is.EqualTo("user")),
-            ExtraEpilogAssertions = m => Assert.That(((User?)m[0].NewEntity)?.PublicName, Is.EqualTo(g))
+            ExtraPrologAssertions = m => Assert.That(((User)m[0]).PublicName, Is.EqualTo("user")),
+            ExtraEpilogAssertions = m => Assert.That(((User)m[0]).PublicName, Is.EqualTo(g))
         }.ExecuteTest(
             t => _ = t.Create(u = new(g, "user")),
             t =>
@@ -84,9 +81,9 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
         {
             ExpectedAction = CrudAction.Delete,
             ExpectedPrologModelType = typeof(User),
-            ExtraPrologAssertions = m => Assert.That(((User?)m[0].NewEntity)?.Id, Is.EqualTo(g)),
+            ExtraPrologAssertions = m => Assert.That(((User)m[0]).Id, Is.EqualTo(g)),
             ExpectedEpilogModelType = typeof(User),
-            ExtraEpilogAssertions = m => Assert.That(((User?)m[0].NewEntity)?.Id, Is.EqualTo(g))
+            ExtraEpilogAssertions = m => Assert.That(((User)m[0]).Id, Is.EqualTo(g))
         }.ExecuteTest(
             t => _ = t.Create(u = new(g, "user")),
             t => t.Delete<User, string>(g));
@@ -98,7 +95,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
 
         public void ExecuteTest(Action<ICrudReadWriteTransaction>? setupCallback, Action<ICrudReadWriteTransaction> callback)
         {
-            IMiddlewareConfigurator transactionConfig = new TransactionConfiguration();
+            var transactionConfig = new TransactionConfiguration();
             TritonService service = new(transactionConfig, new T());
             if (setupCallback is not null)
             {
@@ -119,17 +116,17 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
 
         public Type? ExpectedPrologModelType { get; init; }
 
-        public Action<ChangeTrackerItem[]>? ExtraPrologAssertions { get; init; }
+        public Action<Model[]>? ExtraPrologAssertions { get; init; }
 
         public Type? ExpectedEpilogModelType { get; init; }
 
-        public Action<ChangeTrackerItem[]>? ExtraEpilogAssertions { get; init; }
+        public Action<Model[]>? ExtraEpilogAssertions { get; init; }
 
         public bool PrologRan { get; private set; }
 
         public bool EpilogRan { get; private set; }
 
-        ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+        ServiceResult? ITransactionMiddleware.PrologAction(CrudAction action, IEnumerable<Model>? entities)
         {
             if (!PrologRan)
             {
@@ -150,7 +147,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
             return null;
         }
 
-        ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+        ServiceResult? ITransactionMiddleware.EpilogAction(CrudAction action, IEnumerable<Model>? entities)
         {
             if (!EpilogRan)
             {

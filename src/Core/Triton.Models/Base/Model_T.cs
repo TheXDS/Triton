@@ -1,27 +1,28 @@
 ﻿namespace TheXDS.Triton.Models.Base;
 
 /// <summary>
-/// A base class for all Triton models that expose a key field to be used as
-/// the entity's ID.
+/// Clase base para todos los modelos de Triton que expone un campo llave a
+/// utilizar como Id de la entidad.
 /// </summary>
-/// <typeparam name="T">The type of the key field in the entity.</typeparam>
+/// <typeparam name="T">Tipo de campo llave de la entidad.</typeparam>
 public abstract class Model<T> : Model where T : IComparable<T>, IEquatable<T>
 {
     /// <inheritdoc/>
     public sealed override string IdAsString => Id?.ToString() ?? string.Empty;
 
     /// <summary>
-    /// Gets or sets the key field of this entity.
+    /// Obtiene o establece el campo llave de esta entidad.
     /// </summary>
     public T Id { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the model, without setting the value of
-    /// the key field.
+    /// Inicializa una nueva instancia del modelo, sin establecer el valor
+    /// del campo llave.
     /// </summary>
     /// <remarks>
-    /// Use this constructor only when creating new entities or intentionally
-    /// not specifying the ID of the entity.
+    /// Utilice este constructor predeterminado únicamente al crear nuevas
+    /// entidades, o cuando intencionalmente no se debe especificar el
+    /// valor del campo llave de la entidad.
     /// </remarks>
     protected Model()
     {
@@ -29,17 +30,18 @@ public abstract class Model<T> : Model where T : IComparable<T>, IEquatable<T>
     }
 
     /// <summary>
-    /// Initializes a new instance of the model, setting the value of the key
-    /// field.
+    /// Inicializa una nueva instancia del modelo, estableciendo el valor
+    /// del campo llave.
     /// </summary>
-    /// <param name="id">The value of the key field to set.</param>
+    /// <param name="id">Valor del campo llave a establecer.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="id"/> is null.
+    /// Se produce si <paramref name="id"/> es <see langword="null"/>.
     /// </exception>
     /// <remarks>
-    /// If you intentionally want to leave the ID in its default value (e.g.,
-    /// for primitive numeric, string, or Guid types), use the parameterless
-    /// constructor of <see cref="Model{T}"/>.
+    /// Si desea dejar a propósito el valor del campo llave en su valor
+    /// predeterminado (por ejemplo, para campos llave de tipos numéricos
+    /// primitivos, <see cref="string"/> o <see cref="Guid"/>), utilice el
+    /// constructor predetermiando de <see cref="Model{T}"/>.
     /// </remarks>
     protected Model(T id)
     {

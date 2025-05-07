@@ -1,12 +1,12 @@
 ﻿namespace TheXDS.Triton.Models.Base;
 
 /// <summary>
-/// A base class for all Triton data models.
+/// Clase base para todos los modelos de datos de Triton.
 /// </summary>
 public abstract class Model
 {
     /// <summary>
-    /// Gets the ID of the entity as a string.
+    /// Obtiene el Id de la entidad como una cadena.
     /// </summary>
     public abstract string IdAsString { get; }
 }

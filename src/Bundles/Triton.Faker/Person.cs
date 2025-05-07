@@ -5,61 +5,61 @@ using static TheXDS.Triton.Faker.Globals;
 namespace TheXDS.Triton.Faker;
 
 /// <summary>
-/// Represents a randomly generated person, and includes static methods 
-/// that generate new instances of this class with different kinds of 
-/// randomized data.
+/// Representa a una persona generada aleatoriamente, además de que
+/// contiene métodos estáticos que generan nuevas instancias
+/// aleatorias de esta clase.
 /// </summary>
 public class Person
 {
     private string? _userName;
 
     /// <summary>
-    /// Gets the first name of the person.
+    /// Obtiene el primer nombre de la persona.
     /// </summary>
     public string FirstName { get; }
 
     /// <summary>
-    /// Gets the surname of the person.
+    /// Obtiene el apellido de la persona.
     /// </summary>
     public string Surname { get; }
 
     /// <summary>
-    /// Gets the biological gender of the person.
+    /// Obtiene el género biológico de la persona.
     /// </summary>
     public Gender Gender { get; }
 
     /// <summary>
-    /// Gets the date of birth of the person.
+    /// Obtiene la fecha de nacimiento de la persona.
     /// </summary>
     public DateTime Birth { get; }
 
     /// <summary>
-    /// Gets a username generated for the person.
+    /// Obtiene un nombre de usuario generado para la persona.
     /// </summary>
     public string UserName => _userName ??= Internet.FakeUsername(this);
 
     /// <summary>
-    /// Gets the full name of the person, ex. "FirstName LastName".
+    /// Obtiene el nombre completo de la persona.
     /// </summary>
-    public string Name => string.Join(" ", FirstName, Surname);
+    public string Name => string.Join(' ', FirstName, Surname);
 
     /// <summary>
-    /// Gets the full name of the person in the format "LastName, FirstName".
+    /// Obtiene el nombre completo, como "Apellido, Nombre" de la persona.
     /// </summary>
     public string FullName => string.Join(", ", Surname, FirstName);
 
     /// <summary>
-    /// Calculates and gets the age of the person as of today, in years.
+    /// Calcula y obtiene la edad de la persona el día de hoy.
     /// </summary>
     public double Age => (DateTime.Today - Birth).TotalDays / 365.25;
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="Person"/>.
+    /// Inicializa una nueva instancia de la clase <see cref="Person"/>.
     /// </summary>
-    /// <param name="firstName">First name of the person.</param>
-    /// <param name="surname">Surname of the person.</param>
-    /// <param name="gender">Biological gender of the person.</param>
-    /// <param name="birth">Date of birth of the person.</param>
+    /// <param name="firstName">Primer nombre de la persona.</param>
+    /// <param name="surname">Apellido de la persona.</param>
+    /// <param name="gender">Género biológico de la persona.</param>
+    /// <param name="birth">Fecha de nacimiento de la persona.</param>
     protected Person(string firstName, string surname, Gender gender, DateTime birth)
     {
         FirstName = Capitalize(firstName);
@@ -69,75 +69,59 @@ public class Person
     }
 
     /// <summary>
-    /// Sets the username for this instance of the class <see cref="Person"/>.
+    /// Establece el nombre de usuario para esta instancia de la clase 
+    /// <see cref="Person"/>.
     /// </summary>
-    /// <param name="userName">Username to set.</param>
+    /// <param name="userName">Nombre de usuario a establecer.</param>
     protected void SetUserName(string userName)
     {
         _userName = userName;
     }
 
     /// <summary>
-    /// Generates a completely random baby.
+    /// Genera un adulto completamente aleatorio.
     /// </summary>
-    /// <returns>A completely random baby.</returns>
-    public static Person Baby()
-    {
-        return Someone(0, 2);
-    }
-
-    /// <summary>
-    /// Generates a completely random toddler.
-    /// </summary>
-    /// <returns>A completely random toddler.</returns>
-    public static Person Toddler()
-    {
-        return Someone(2, 5);
-    }
-
-    /// <summary>
-    /// Generates a completely random child.
-    /// </summary>
-    /// <returns>A completely random child.</returns>
-    public static Person Child()
-    {
-        return Someone(5, 12);
-    }
-
-    /// <summary>
-    /// Generates a completely random juvenile.
-    /// </summary>
-    /// <returns>A completely random juvenile.</returns>
-    public static Person Juvenile()
-    {
-        return Someone(12, 18);
-    }
-
-    /// <summary>
-    /// Generates a completely random adult.
-    /// </summary>
-    /// <returns>A completely random adult.</returns>
+    /// <returns>Un adulto completamente aleatorio.</returns>
     public static Person Adult()
     {
         return Someone(18, 60);
     }
 
     /// <summary>
-    /// Generates a completely random elderly person.
+    /// Genera un niño completamente aleatorio.
     /// </summary>
-    /// <returns>A completely random elderly person.</returns>
+    /// <returns>Un niño completamente aleatorio.</returns>
+    public static Person Kid()
+    {
+        return Someone(5, 18);
+    }
+
+    /// <summary>
+    /// Genera un bebé completamente aleatorio.
+    /// </summary>
+    /// <returns>Un bebé completamente aleatorio.</returns>
+    public static Person Baby()
+    {
+        return Someone(0, 5);
+    }
+
+    /// <summary>
+    /// Genera un adulto mayor completamente aleatorio.
+    /// </summary>
+    /// <returns>Un adulto mayor completamente aleatorio.</returns>
     public static Person Old()
     {
         return Someone(60, 110);
     }
 
     /// <summary>
-    /// Generates a completely random person.
+    /// Genera una persona totalmente aleatoria.
     /// </summary>
-    /// <param name="minAge">Minimum age of the person.</param>
-    /// <param name="maxAge">Maximum age of the person.</param>
+    /// <param name="minAge">Edad mínima de la persona.</param>
+    /// <param name="maxAge">Edad máxima de la persona.</param>
     /// <returns>
-    /// A completely random person whose age falls within the specified range.
+    /// Una persona totalmente aleatoria cuya edad se encuentra dentro del
+    /// rango especificado de edades.
     /// </returns>
     public static Person Someone(int minAge, int maxAge)
     {
@@ -150,28 +134,30 @@ public class Person
     }
 
     /// <summary>
-    /// Generates a completely random person.
+    /// Genera una persona totalmente aleatoria.
     /// </summary>
     /// <returns>
-    /// A completely random person.
+    /// Una persona totalmente aleatoria.
     /// </returns>
     public static Person Someone()
     {
-        return new[] { Baby, Toddler, Child, Juvenile, Adult, Old }.Pick().Invoke();
+        return new [] { Baby, Kid, Adult, Old }.Pick().Invoke();
     }
 
     /// <summary>
-    /// Generates a random date whose age in years falls within the specified range.
+    /// Genera una fecha aleatoria cuya edad en años se encuentra dentro
+    /// del rango de edad especificado.
     /// </summary>
-    /// <param name="minAge">Minimum age to generate.</param>
-    /// <param name="maxAge">Maximum age to generate.</param>
+    /// <param name="minAge">Edad mínima a generar.</param>
+    /// <param name="maxAge">Edad máxima a generar.</param>
     /// <returns>
-    /// A random date, which when applied to a person, will provide an age that falls
-    /// within the specified range of ages.
+    /// Una fecha aleatoria, la cual al ser aplicada a una persona, le
+    /// proporciona de una edad que se encuentra dentro del rango de edades
+    /// especificado.
     /// </returns>
     public static DateTime FakeBirth(int minAge, int maxAge)
     {
-        var a = Math.FusedMultiplyAdd(_rnd.NextDouble(), maxAge - minAge, minAge);
+        var a = Math.FusedMultiplyAdd(_rnd.NextDouble(), maxAge - minAge, minAge); 
         return DateTime.Today - TimeSpan.FromDays(a * 365.25);
     }
 }

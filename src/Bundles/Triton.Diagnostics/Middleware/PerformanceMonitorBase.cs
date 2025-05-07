@@ -2,49 +2,55 @@
 using TheXDS.MCART.Events;
 using TheXDS.MCART.Types.Base;
 using TheXDS.Triton.Middleware;
+using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// A base class for different types of performance counters available.
+/// Clase base para los distintos tipos de contadores de rendimiento disponibles.
 /// </summary>
 public abstract class PerformanceMonitorBase : NotifyPropertyChanged, ITransactionMiddleware
 {
     private readonly Stopwatch _stopwatch = new();
     private readonly CrudAction[] _allowedActions =
-    [
+    {
         CrudAction.Commit,
         CrudAction.Read,
-    ];
+    };
 
     /// <summary>
-    /// Occurs when a CRUD action has been committed.
+    /// Ocurre cuando se ha producido la acción Crud
+    /// <see cref="CrudAction.Commit"/>.
     /// </summary>
     public event EventHandler<ValueEventArgs<double>>? Elapsed;
 
     /// <summary>
-    /// Gets the number of save operations recorded by this instance.
+    /// Obtiene la cantidad de eventos de guardado registrados por esta
+    /// instancia.
     /// </summary>
     public abstract int EventCount { get; }
 
     /// <summary>
-    /// Gets the average time in milliseconds taken by save operations.
+    /// Obtiene el tiempo promedio en milisegundos que han tomado las
+    /// operaciones de guardado.
     /// </summary>
     public abstract double AverageMs { get; }
 
     /// <summary>
-    /// Gets the minimum time in milliseconds taken by a save operation.
+    /// Obtiene la cantidad de tiempo en milisegundos que ha tomado la
+    /// operación de guardado más corta.
     /// </summary>
     public abstract double MinMs { get; }
 
     /// <summary>
-    /// Gets the maximum time in milliseconds taken by a save operation.
+    /// Obtiene la cantidad de tiempo en milisegundos que ha tomado la
+    /// operación de guardado más larga.
     /// </summary>
     public abstract double MaxMs { get; }
 
     /// <summary>
-    /// Resets the performance counters of this instance.
+    /// Reinicia los contadores de rendimiento de esta instancia.
     /// </summary>
     public void Reset()
     {
@@ -53,25 +59,25 @@ public abstract class PerformanceMonitorBase : NotifyPropertyChanged, ITransacti
     }
 
     /// <summary>
-    /// Resets the performance counters of this instance.
+    /// Reinicia los contadores de rendimiento de esta instancia.
     /// </summary>
     protected abstract void OnReset();
 
     /// <summary>
-    /// Registers a CRUD event in the performance counter.
+    /// Registra un evento de Crud en el contador de rendimiento.
     /// </summary>
     /// <param name="milliseconds">
-    /// Milliseconds taken by the operation to complete.
+    /// Milisegundos que la operación ha tomado en completarse.
     /// </param>
     protected abstract void RegisterEvent(double milliseconds);
 
-    ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction arg1, IEnumerable<ChangeTrackerItem>? _)
+    ServiceResult? ITransactionMiddleware.PrologAction(CrudAction arg1, IEnumerable<Model>? _)
     {
         if (_allowedActions.Contains(arg1) && !_stopwatch.IsRunning) _stopwatch.Restart();
         return null;
     }
 
-    ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction arg1, IEnumerable<ChangeTrackerItem>? _)
+    ServiceResult? ITransactionMiddleware.EpilogAction(CrudAction arg1, IEnumerable<Model>? _)
     {
         if (!_allowedActions.Contains(arg1)) return null;
         _stopwatch.Stop();

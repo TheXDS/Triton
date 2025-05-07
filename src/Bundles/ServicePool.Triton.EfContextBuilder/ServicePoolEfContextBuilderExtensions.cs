@@ -6,28 +6,30 @@ using TheXDS.Triton.Models.Base;
 namespace TheXDS.ServicePool.Triton.EfContextBuilder;
 
 /// <summary>
-/// Contains extension methods that allow configuring Tritón for use with 
-/// the <see cref="ServicePool"/>.
+/// Contiene métodos de extensión que permiten configurar Tritón para
+/// utilizarse en conjunto con
+/// <see cref="ServicePool"/>.
 /// </summary>
 public static class ServicePoolEfContextBuilderExtensions
 {
     /// <summary>
-    /// Adds a dynamically generated data service to the collection of hosted
-    /// services within a <see cref="Pool"/>, automatically discovering the
-    /// models to include in the context.
+    /// Agrega un servicio de datos generado dinámicamente a la colección
+    /// de servicios hosteados dentro de un <see cref="ServicePool"/>,
+    /// descubriendo automáticamente los modelos a incluir en el contexto.
     /// </summary>
     /// <param name="configurable">
-    /// An instance of Tritón configuration to use for registering a new
-    /// dynamic context.
+    /// Instancia de configuración de Tritón a utilizar para registrar un
+    /// nuevo contexto dinámico.
     /// </param>
     /// <param name="optionsCallback">
-    /// A configuration callback to use when the dynamic context requests
-    /// configuration. Can be omitted or set to <see langword="null"/> if not
-    /// required to invalidate the method
+    /// Llamada de configuración a utilizar cuando el contexto dinámico
+    /// solicite configurarse. Puede omitirse o establecerse en
+    /// <see langword="null"/> en caso de no requerir que el contexto
+    /// dinámico invalide el método
     /// <see cref="DbContext.OnConfiguring(DbContextOptionsBuilder)"/>.
     /// </param>
     /// <returns>
-    /// The same instance of the object used for configuring Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     public static ITritonConfigurable UseDynamicContext(this ITritonConfigurable configurable, Action<DbContextOptionsBuilder>? optionsCallback = null)
     {
@@ -37,25 +39,26 @@ public static class ServicePoolEfContextBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a dynamically generated data service to the collection of hosted
-    /// services within a <see cref="Pool"/>, explicitly specifying the models
-    /// to include in the context.
+    /// Agrega un servicio de datos generado dinámicamente a la colección
+    /// de servicios hosteados dentro de un <see cref="ServicePool"/>,
+    /// especificando explícitamente los modelos a incluir en el contexto.
     /// </summary>
     /// <param name="configurable">
-    /// An instance of Tritón configuration to use for registering a new
-    /// dynamic context.
+    /// Instancia de configuración de Tritón a utilizar para registrar un
+    /// nuevo contexto dinámico.
     /// </param>
     /// <param name="models">
-    /// An array of types to include in the dynamically generated context.
+    /// Colección de modelos a incluir en el contexto generado dinámicamente.
     /// </param>
     /// <param name="optionsCallback">
-    /// A configuration callback to use when the dynamic context requests
-    /// configuration. Can be omitted or set to
-    /// <see langword="null"/> if not required to invalidate the method
+    /// Llamada de configuración a utilizar cuando el contexto dinámico
+    /// solicite configurarse. Puede omitirse o establecerse en
+    /// <see langword="null"/> en caso de no requerir que el contexto
+    /// dinámico invalide el método
     /// <see cref="DbContext.OnConfiguring(DbContextOptionsBuilder)"/>.
     /// </param>
     /// <returns>
-    /// The same instance of the object used for configuring Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     public static ITritonConfigurable UseDynamicContext(this ITritonConfigurable configurable, Type[] models, Action<DbContextOptionsBuilder>? optionsCallback = null)
     {
@@ -65,29 +68,30 @@ public static class ServicePoolEfContextBuilderExtensions
     }
 
     /// <summary>
-    /// Adds a dynamically generated data service to the collection of hosted
-    /// services within a <see cref="Pool"/>, filtering the models to include
-    /// in the context.
+    /// Agrega un servicio de datos generado dinámicamente a la colección
+    /// de servicios hosteados dentro de un <see cref="ServicePool"/>,
+    /// filtrando los modelos a incluir en el contexto.
     /// </summary>
     /// <param name="configurable">
-    /// An instance of Tritón configuration to use for registering a new 
-    /// dynamic context.
+    /// Instancia de configuración de Tritón a utilizar para registrar un
+    /// nuevo contexto dinámico.
     /// </param>
     /// <param name="modelFilter">
-    /// A function to filter which data models to include in the dynamically 
-    /// generated context.
+    /// Función de filtro a utilizar para seleccionar los modelos de datos
+    /// específicos a incluir en el contexto generado.
     /// </param>
     /// <param name="optionsCallback">
-    /// A configuration callback to use when the dynamic context requests 
-    /// configuration. Can be omitted or set to <see langword="null"/> if not 
-    /// required to invalidate the method
+    /// Llamada de configuración a utilizar cuando el contexto dinámico
+    /// solicite configurarse. Puede omitirse o establecerse en
+    /// <see langword="null"/> en caso de no requerir que el contexto
+    /// dinámico invalide el método
     /// <see cref="DbContext.OnConfiguring(DbContextOptionsBuilder)"/>.
     /// </param>
     /// <returns>
-    /// The same instance of the object used for configuring Tritón.
+    /// La misma instancia del objeto utilizado para configurar Tritón.
     /// </returns>
     public static ITritonConfigurable UseDynamicContext(this ITritonConfigurable configurable, Func<Type, bool> modelFilter, Action<DbContextOptionsBuilder>? optionsCallback = null)
     {
-        return UseDynamicContext(configurable, ReflectionHelpers.PublicTypes<Model>().Where(modelFilter).ToArray(), optionsCallback);
+        return UseDynamicContext(configurable, ReflectionHelpers.PublicTypes<Model>().Where(modelFilter).ToArray(), optionsCallback);            
     }
 }

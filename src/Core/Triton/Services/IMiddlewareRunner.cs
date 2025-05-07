@@ -1,38 +1,47 @@
-﻿namespace TheXDS.Triton.Services;
+﻿using TheXDS.Triton.Models.Base;
+
+namespace TheXDS.Triton.Services;
 
 /// <summary>
-/// Defines the contract for types that has the
-/// capability to execute Middlewares before and after initiating CRUD actions.
+/// Define una serie de miembros a implementar por un tipo que tenga la 
+/// capacidad de ejecutar Middlewares antes y despúes de iniciar acciones
+/// CRUD.
 /// </summary>
 public interface IMiddlewareRunner
 {
     /// <summary>
-    /// Executes the Middlewares associated with the epilogue of a CRUD
-    /// operation.
+    /// Ejecuta los Middlewares asociados al epílogo de una operación CRUD.
     /// </summary>
-    /// <param name="action">The CRUD action executed.</param>
+    /// <param name="action">Acción CRUD ejecutada.</param>
     /// <param name="entities">
-    /// The entities on which the operation was executed.
+    /// Entidades sobre la cual se ha ejecutado la operación.
     /// </param>
     /// <returns>
-    /// A <see cref="ServiceResult"/> if a middleware indicates that the
-    /// operation should be cancelled, or <see langword="null"/> to indicate
-    /// that the execution of the Middleware chain completed successfully.
+    /// Un <see cref="ServiceResult"/> si un middleware indica que la
+    /// operación debe detenerse, o <see langword="null"/> para indicar que
+    /// la ejecución de la cadena de Middlewares se completó
+    /// satisfactoriamente.
     /// </returns>
-    ServiceResult? RunEpilogue(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities);
+    ServiceResult? RunEpilog(in CrudAction action, IEnumerable<Model>? entities);
 
     /// <summary>
-    /// Executes the Middlewares associated with the prologue of a CRUD
-    /// operation.
+    /// Ejecuta los Middlewares asociados al prólogo de una operación CRUD.
     /// </summary>
-    /// <param name="action">The CRUD action to be executed.</param>
+    /// <param name="action">Acción CRUD ejecutada.</param>
     /// <param name="entities">
-    /// The entities on which the operation will be executed.
+    /// Entidades sobre la cual se ejecutará la operación.
     /// </param>
     /// <returns>
-    /// A <see cref="ServiceResult"/> if a middleware indicates that the
-    /// operation should be cancelled, or <see langword="null"/> to indicate
-    /// that the execution of the Middleware chain completed successfully.
+    /// Un <see cref="ServiceResult"/> si un middleware indica que la
+    /// operación debe detenerse, o <see langword="null"/> para indicar que
+    /// la ejecución de la cadena de Middlewares se completó
+    /// satisfactoriamente.
     /// </returns>
-    ServiceResult? RunPrologue(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities);
+    ServiceResult? RunProlog(in CrudAction action, IEnumerable<Model>? entities);
+
+    /// <summary>
+    /// Obtiene una referencia al objeto utilizado para generar la
+    /// configuración de esta instancia.
+    /// </summary>
+    IMiddlewareConfigurator Configurator { get; }
 }

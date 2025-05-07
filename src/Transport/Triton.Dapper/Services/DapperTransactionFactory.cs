@@ -1,4 +1,5 @@
 ﻿using TheXDS.Triton.Services;
+using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Dapper.Services;
 

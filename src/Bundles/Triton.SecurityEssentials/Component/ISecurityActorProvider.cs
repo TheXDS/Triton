@@ -3,18 +3,20 @@
 namespace TheXDS.Triton.Component;
 
 /// <summary>
-/// Provides a way to retrieve information about the security principal
-/// executing operations in the current application context.
+/// Define una serie de miembros a implementar por una clase que permita
+/// obtener información acerca del actor que ejecuta operaciones en un
+/// contexto de seguridad.
 /// </summary>
 public interface ISecurityActorProvider
 {
     /// <summary>
-    /// Gets the security actor responsible for executing operations in the
-    /// current application.
+    /// Obtiene al actor que ejecuta operaciones de seguridad en la
+    /// aplicación actual.
     /// </summary>
     /// <returns>
-    /// The <see cref="SecurityObject"/> instance representing the current
-    /// security actor, or <see langword="null"/> if not available.
+    /// Una instancia de la clase <see cref="SecurityObject"/> que
+    /// corresponde al actor que ejecuta operaciones de seguridad en la
+    /// aplicación actual.
     /// </returns>
-    SecurityObject? GetCurrentActor();
+    SecurityObject? GetActor();
 }

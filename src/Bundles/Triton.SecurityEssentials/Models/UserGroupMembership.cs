@@ -3,17 +3,17 @@
 namespace TheXDS.Triton.Models;
 
 /// <summary>
-/// Represents a user's membership in a group of users.
+/// modelo que representa la membresía de un usuario a un grupo de usuarios.
 /// </summary>
 public class UserGroupMembership : Model<Guid>
 {
     /// <summary>
-    /// Gets or sets the group that the user is a member of.
+    /// Obtiene o estabelce el grupo del cual el usuario es miembro.
     /// </summary>
     public UserGroup Group { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the security object that is a member of the group.
+    /// Obtiene o establece el objeto de seguridad que es miembro de un grupo.
     /// </summary>
-    public SecurityObject Member { get; set; } = null!;
+    public SecurityObject SecurityObject { get; set; } = null!;
 }

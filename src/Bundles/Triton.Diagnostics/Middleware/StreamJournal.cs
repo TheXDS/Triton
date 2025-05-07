@@ -1,9 +1,12 @@
 ﻿namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// Implements a <see cref="TextJournal"/> that allows writing log entries to a <see cref="Stream"/>.
+/// Implementa un <see cref="TextJournal"/> que permite escribir las
+/// entradas de bitácora en un <see cref="Stream"/>.
 /// </summary>
-/// <param name="getStream">Function used to obtain a <see cref="Stream"/>.</param>
+/// <param name="getStream">
+/// Función a utilizar para obtener un <see cref="Stream"/>.
+/// </param>
 public class StreamJournal(Func<Stream> getStream) : TextJournal
 {
     private readonly Func<Stream> _getStream = getStream;
@@ -13,9 +16,9 @@ public class StreamJournal(Func<Stream> getStream) : TextJournal
     {
         using var stream = _getStream.Invoke();
         using var writer = new StreamWriter(stream);
-        foreach (var line in lines)
+        foreach (var j in lines)
         {
-            writer.WriteLine(line);
+            writer.WriteLine(j);
         }
     }
 }

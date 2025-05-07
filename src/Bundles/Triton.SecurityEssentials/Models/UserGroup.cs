@@ -1,26 +1,29 @@
 ﻿namespace TheXDS.Triton.Models;
 
 /// <summary>
-/// Represents a group of users that share certain faculties, properties, and security permissions.
+/// Modelo que representa a un grupo de usuarios que comparten ciertas
+/// facultades, propiedades y permisos de seguridad.
 /// </summary>
-/// <param name="displayName">Display name for this entity.</param>
+/// <param name="displayName">Nombre a mostrar para esta entidad.</param>
 /// <param name="granted">
-/// Flags that describe the granted permissions.
+/// Banderas que describen los permisos otorgados.
 /// </param>
 /// <param name="revoked">
-/// Flags that describe the denied permissions.
+/// Banderas que describen los permisos denegados.
 /// </param>
 public class UserGroup(string displayName, PermissionFlags granted, PermissionFlags revoked) : SecurityObject(granted, revoked)
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="UserGroup"/> class with default values.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="UserGroup"/>, estableciendo todas sus propiedades a sus
+    /// valores predeterminados.
     /// </summary>
-    public UserGroup() : this(string.Empty, default, default)
+    public UserGroup() : this(null!, default, default)
     {
     }
 
     /// <summary>
-    /// Gets or sets the display name for this entity.
+    /// Obtiene o establece el nombre a mostrar para esta entidad.
     /// </summary>
     public string DisplayName { get; set; } = displayName;
 }

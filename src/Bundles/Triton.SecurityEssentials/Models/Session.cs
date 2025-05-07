@@ -3,47 +3,55 @@
 namespace TheXDS.Triton.Models;
 
 /// <summary>
-/// Represents an active user session.
+/// Modelo que representa una sessión de usuario activa.
 /// </summary>
+/// <remarks>
+/// Inicializa una nueva instancia de la clase <see cref="Session"/>.
+/// </remarks>
 /// <param name="ttlSeconds">
-/// Time to live in seconds for this session.
+/// Tiempo de vida en horas para esta sesión.
 /// </param>
-/// <param name="token">Token to associate with this session.</param>
+/// <param name="token">Token de sesión a asociar con esta sesión.</param>
 /// <param name="timestamp">
-/// Timestamp of when the session was created.
+/// Marca de tiempo de creación de la sesión.
 /// </param>
 public class Session(int ttlSeconds, string? token, DateTime timestamp) : TimestampModel<Guid>(timestamp)
 {
     /// <summary>
-    /// Gets or sets the credential for which this session object was created.
+    /// Obtiene o establece la credencial para la cual se ha creado este objeto
+    /// de sesión.
     /// </summary>
     public LoginCredential Credential { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets a value indicating the end timestamp of the session.
+    /// Obtiene o establece un valor que indica la marca de tiempo del final de
+    /// la sesión.
     /// </summary>
     /// <value>
-    /// If this value is set to <see langword="null"/>, it means the session is still active,
-    /// as long as the difference between the <see cref="TimestampModel{T}.Timestamp"/> and
-    /// the current time does not exceed the number of seconds indicated by the <see cref="TtlSeconds"/> property.
+    /// Si este valor se establece en <see langword="null"/>, se debe entender
+    /// que la sesión sigue activa, siempre y cuando la diferencia entre la
+    /// propiedad <see cref="TimestampModel{T}.Timestamp"/> y el instante
+    /// actual no supere la cantidad de segundos indicada por la propiedad
+    /// <see cref="TtlSeconds"/>.
     /// </value>
     public DateTime? EndTimestamp { get; set; }
 
     /// <summary>
-    /// Gets or sets the session token for this entity.
+    /// Obtiene o establece el tóken de sesión para esta entidad.
     /// </summary>
     public string? Token { get; set; } = token;
 
     /// <summary>
-    /// Gets or sets the time to live in seconds for this session.
+    /// Obtiene o establece el tiempo de vida en segundos para esta sessión.
     /// </summary>
     /// <value>
-    /// If this property is set to zero, it means the session will never expire.
+    /// Si esta propiedad se establece en cero, se debe entender que la sesión
+    /// no vencerá nunca.
     /// </value>
     public int TtlSeconds { get; set; } = ttlSeconds;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Session"/> class with default values.
+    /// Inicializa una nueva instancia de la clase <see cref="Session"/>.
     /// </summary>
     public Session() : this(default, null, DateTime.Now)
     {

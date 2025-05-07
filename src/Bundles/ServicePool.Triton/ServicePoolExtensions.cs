@@ -3,8 +3,9 @@
 namespace TheXDS.ServicePool.Triton;
 
 /// <summary>
-/// Contains extension methods that allow configuring Tritón to be used with
-/// <see cref="Pool"/>.
+/// Contiene métodos de extensión que permiten configurar Tritón para
+/// utilizarse en conjunto con
+/// <see cref="ServicePool"/>.
 /// </summary>
 public static class ServicePoolExtensions
 {
@@ -27,11 +28,15 @@ public static class ServicePoolExtensions
     }
 
     /// <summary>
-    /// Configures a <see cref="Pool"/> to host Tritón data services.
+    /// Configura un <see cref="ServicePool"/> para
+    /// hostear servicios de datos de Tritón.
     /// </summary>
-    /// <param name="pool">The <see cref="Pool"/> to configure.</param>
+    /// <param name="pool">
+    /// <see cref="ServicePool"/> a configurar.
+    /// </param>
     /// <returns>
-    /// An object that can be used to configure the Tritón services.
+    /// Un objeto que puede utilizarse para configiurar los servicios de
+    /// Tritón.
     /// </returns>
     public static ITritonConfigurable UseTriton(this Pool pool)
     {
@@ -40,15 +45,18 @@ public static class ServicePoolExtensions
     }
 
     /// <summary>
-    /// Configures a <see cref="Pool"/> to host Tritón data services.
+    /// Configura un <see cref="ServicePool"/> para
+    /// hostear servicios de datos de Tritón.
     /// </summary>
-    /// <param name="pool">The <see cref="Pool"/> to configure.</param>
+    /// <param name="pool">
+    /// <see cref="ServicePool"/> a configurar.
+    /// </param>
     /// <param name="configurator">
-    /// A configuration delegate for the Tritón services.
+    /// Delegado de configuración de los servicios de Tritón.
     /// </param>
     /// <returns>
-    /// The same instance as <paramref name="pool"/>, allowing Fluent syntax
-    /// usage.
+    /// La misma instancia que <paramref name="pool"/>, permitiendo el uso
+    /// de sintaxis Fluent.
     /// </returns>
     public static Pool UseTriton(this Pool pool, Action<ITritonConfigurable> configurator)
     {

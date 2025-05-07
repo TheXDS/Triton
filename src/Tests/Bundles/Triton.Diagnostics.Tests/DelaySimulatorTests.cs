@@ -5,10 +5,11 @@ using System.Diagnostics;
 using TheXDS.Triton.Diagnostics.Middleware;
 using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class DelaySimulatorTests
+public class DelaySimulatorTests : MiddlewareTestsBase
 {
     [Test]
     public void Instance_test()
@@ -29,20 +30,19 @@ public class DelaySimulatorTests
     }
 
     [Test]
-    public void Middleware_delays_execution_on_Prologue()
+    public async Task Middleware_delays_execution_on_prolog()
     {
-        IMiddlewareConfigurator r = new TransactionConfiguration();
+        var r = new TransactionConfiguration();
+        var u = new User("1", "Test");
 
         var s = Stopwatch.StartNew();
-        r.GetRunner().RunPrologue(CrudAction.Read, null);
-        r.GetRunner().RunEpilogue(CrudAction.Read, null);
+        await Run(r, CrudAction.Read, new[] { u }, 0);
         s.Stop();
         var time1 = s.ElapsedMilliseconds;
 
         r.Attach<DelaySimulator>();
         s.Restart();
-        r.GetRunner().RunPrologue(CrudAction.Read, null);
-        r.GetRunner().RunEpilogue(CrudAction.Read, null);
+        await Run(r, CrudAction.Read, new[] { u }, 0);
         s.Stop();
         var time2 = s.ElapsedMilliseconds;
 

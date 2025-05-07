@@ -1,39 +1,44 @@
 ﻿namespace TheXDS.Triton.Services;
 
 /// <summary>
-/// Represents the result of a service operation that includes a returned value.
+/// Representa el resultado de una operación de servicio que incluye un
+/// valor devuelto.
 /// </summary>
 /// <typeparam name="T">
-/// The type of the result to return.
+/// Tipo de resultado a devolver.
 /// </typeparam>
-public class ServiceResult<T> : ServiceResult
+public class ServiceResult<T> : ServiceResult, IServiceResult<T>
 {
     /// <summary>
-    /// Gets the value to be returned as part of the service operation result.
+    /// Obtiene el valor a devolver como parte del resultado de la
+    /// operación de servicio.
     /// </summary>
     public T Result { get; } = default!;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ServiceResult"/> class.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>.
     /// </summary>
     public ServiceResult() : base()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ServiceResult"/> class,
-    /// indicating a custom status message to display.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, indicando un mensaje de estado 
+    /// personalizado a mostrar.
     /// </summary>
-    /// <param name="message">A descriptive message for the result.</param>
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
     public ServiceResult(string message) : base(message)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>.
     /// </summary>
     /// <param name="result">
-    /// The relevant object returned by the function.
+    /// Objeto relevante retornado por la función.
     /// </param>
     public ServiceResult(T result) : base()
     {
@@ -41,94 +46,100 @@ public class ServiceResult<T> : ServiceResult
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// indicating a custom status message to display.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, indicando un mensaje de estado 
+    /// personalizado a mostrar.
     /// </summary>
     /// <param name="result">
-    /// The relevant object returned by the function.
+    /// Objeto relevante retornado por la función.
     /// </param>
-    /// <param name="message">A descriptive message for the result.</param>
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
     public ServiceResult(T result, string message) : base(message)
     {
         Result = result;
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// specifying the reason why the operation has failed.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, especificando el motivo por el 
+    /// cual la operación ha fallado.
     /// </summary>
     /// <param name="reason">
-    /// The reason why the operation has failed.
+    /// Motivo por el cual la operación ha fallado.
     /// </param>
     public ServiceResult(in FailureReason reason) : base(reason)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>,
-    /// specifying the reason why the operation has failed, in addition to
-    /// a descriptive message for the result.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/>, especificando el motivo por el 
+    /// cual la operación ha fallado, además de un mensaje descriptivo
+    /// del resultado.
     /// </summary>
     /// <param name="reason">
-    /// The reason why the operation has failed.
+    /// Motivo por el cual la operación ha fallado.
     /// </param>
-    /// <param name="message">A descriptive message for the result.</param>
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
     public ServiceResult(in FailureReason reason, string message) : base(reason, message)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the class <see cref="ServiceResult"/>
-    /// for an operation that failed, extracting relevant information from
-    /// the specified exception.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="ServiceResult"/> para una operación fallida,
+    /// extrayendo la información relevante a partir de la excepción
+    /// especificada.
     /// </summary>
     /// <param name="ex">
-    /// The exception from which to obtain the message and error code.
+    /// Excepción desde la cual obtener el mensaje y un código de error
+    /// asociado.
     /// </param>
     public ServiceResult(Exception ex) : base(ex)
     {
     }
 
     /// <summary>
-    /// Implicitly converts a value of type <typeparamref name="T"/> to a
-    /// <see cref="ServiceResult{T}"/>.
+    /// Convierte implícitamente un valor <typeparamref name="T"/> en
+    /// un <see cref="ServiceResult{T}"/>.
     /// </summary>
     /// <param name="result">
-    /// The result of the operation.
+    /// Resultado de la operación.
     /// </param>
     public static implicit operator T(ServiceResult<T> result) => result.Result;
 
     /// <summary>
-    /// Implicitly converts an <see cref="Exception"/> to a
+    /// Convierte implícitamente un <see cref="Exception"/> en un
     /// <see cref="ServiceResult{T}"/>.
     /// </summary>
     /// <param name="ex">
-    /// The exception from which to obtain the message and error code.
+    /// Excepción desde la cual obtener el mensaje y un código de error
+    /// asociado.
     /// </param>
-    public static implicit operator ServiceResult<T>(Exception ex) => FailWith<ServiceResult<T>>(ex);
+    public static implicit operator ServiceResult<T>(Exception ex) => new(ex);
 
     /// <summary>
-    /// Implicitly converts a <see cref="string"/> to a
+    /// Convierte implícitamente un <see cref="string"/> en un
     /// <see cref="ServiceResult{T}"/>.
     /// </summary>
-    /// <param name="message">A descriptive message for the result.</param>
-    public static implicit operator ServiceResult<T>(string message) => FailWith<ServiceResult<T>>(message);
+    /// <param name="message">Mensaje descriptivo del resultado.</param>
+    public static implicit operator ServiceResult<T>(string message) => new(message);
 
     /// <summary>
-    /// Implicitly converts a <see cref="FailureReason"/> to a
+    /// Convierte implícitamente un <see cref="FailureReason"/> en un
     /// <see cref="ServiceResult{T}"/>.
     /// </summary>
     /// <param name="reason">
-    /// The reason why the operation failed.
+    /// Motivo por el cual la operación ha fallado.
     /// </param>
-    public static implicit operator ServiceResult<T>(in FailureReason reason) => FailWith<ServiceResult<T>>(reason);
+    public static implicit operator ServiceResult<T>(in FailureReason reason) => new(reason);
 
     /// <summary>
-    /// Implicitly converts a value of type <typeparamref name="T"/> to a
+    /// Convierte implícitamente un <typeparamref name="T"/> en un
     /// <see cref="ServiceResult{T}"/>.
     /// </summary>
     /// <param name="value">
-    /// The value from which to generate a new <see cref="ServiceResult{T}"/>.
+    /// Valor a partir del cual generar un nuevo <see cref="ServiceResult{T}"/>.
     /// </param>
     public static implicit operator ServiceResult<T>(T value) => new(value);
 }

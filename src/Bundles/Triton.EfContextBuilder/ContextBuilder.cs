@@ -5,46 +5,49 @@ using TheXDS.MCART.Types;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.EfContextBuilder;
 
 /// <summary>
-/// Contains methods for dynamically managing data contexts for Entity Framework Core.
+/// Contiene métodos para gestionar la generación dinámica de contextos de
+/// datos para Entity Framework Core.
 /// </summary>
 public static class ContextBuilder
 {
     private static readonly TypeFactory Factory;
 
     /// <summary>
-    /// Initializes the <see cref="ContextBuilder"/> class.
+    /// Inicializa la clase <see cref="ContextBuilder"/>
     /// </summary>
     static ContextBuilder()
     {
-        Factory = new TypeFactory($"{ReflectionHelpers.GetEntryPoint()?.DeclaringType?.Namespace
-            ?? ReflectionHelpers.GetCallingMethod()?.DeclaringType?.Namespace
-            ?? typeof(ContextBuilder).Namespace
-            ?? nameof(ContextBuilder)}._generated", false);
+        Factory = new TypeFactory($"{ReflectionHelpers.GetEntryPoint()?.DeclaringType?.Namespace ?? ReflectionHelpers.GetCallingMethod()?.DeclaringType?.Namespace ?? typeof(ContextBuilder).Namespace ?? nameof(ContextBuilder)}._generated", false);
     }
 
     /// <summary>
-    /// Builds a new data context using the specified models.
+    /// Construye un nuevo contexto de datos utilizando los modelos
+    /// especificados.
     /// </summary>
     /// <param name="models">
-    /// Data models to incorporate as part of the data context to be generated.
+    /// Modelos de datos a incorporar como parte del contexto de datos a
+    /// generar.
     /// </param>
     /// <param name="configurationCallback">
-    /// Method to invoke externally to configure the generated data context.
+    /// Método a invocar para configurar externamente el contexto de datos
+    /// generado.
     /// </param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if any element in the collection
-    /// <paramref name="models"/> does not inherit from the base type
+    /// Se produce si algún elemento de la colección
+    /// <paramref name="models"/> no hereda del tipo base
     /// <see cref="Model"/>.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the method specified in <paramref name="configurationCallback"/> is not a static method.
+    /// Se produce si el método especificado en <paramref name="configurationCallback"/> no es un método estático.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(Type[] models, Action<DbContextOptionsBuilder>? configurationCallback)
     {
@@ -52,32 +55,33 @@ public static class ContextBuilder
     }
 
     /// <summary>
-    /// Builds a new data context using the specified models.
+    /// Construye un nuevo contexto de datos utilizando los modelos
+    /// especificados.
     /// </summary>
-    /// <param name="name">Name of the new data context.</param>
+    /// <param name="name">Nombre del nuevo contexto de datos.</param>
     /// <param name="models">
-    /// Data models to incorporate as part of the data context to be generated.
+    /// Modelos de datos a incorporar como parte del contexto de datos a
+    /// generar.
     /// </param>
     /// <param name="configurationCallback">
-    /// Method to invoke externally to configure the generated data context.
-    /// Must be a static method.
+    /// Método a invocar para configurar externamente el contexto de datos
+    /// generado. Debe ser un método estático.
     /// </param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="name"/> is an empty string or
+    /// Se produce si <paramref name="name"/> es una cadena vacía o
     /// <see langword="null"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
-    /// Thrown if any element in the collection
-    /// <paramref name="models"/> does not inherit from the base type
+    /// Se produce si algún elemento de la colección
+    /// <paramref name="models"/> no hereda del tipo base
     /// <see cref="Model"/>.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the method specified in
-    /// <paramref name="configurationCallback"/> is not a static method.
+    /// Se produce si el método especificado en <paramref name="configurationCallback"/> no es un método estático.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(string name, Type[] models, Action<DbContextOptionsBuilder>? configurationCallback)
     {
@@ -90,7 +94,7 @@ public static class ContextBuilder
         if (configurationCallback is { Method: { } callback })
         {
             if (!callback.IsStatic) throw new InvalidOperationException();
-            if (typeof(DbContext).GetMethod("OnConfiguring", BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(DbContextOptionsBuilder) }, null) is { } oc)
+            if (typeof(DbContext).GetMethod("OnConfiguring", BindingFlags.NonPublic | BindingFlags.Instance, null, new [] { typeof(DbContextOptionsBuilder) }, null) is { } oc)
             {
                 t.Builder.AddOverride(oc).Il.LoadArg1().Call(callback).Return();
             }
@@ -99,84 +103,87 @@ public static class ContextBuilder
     }
 
     /// <summary>
-    /// Builds a new data context using the specified models.
+    /// Construye un nuevo contexto de datos utilizando los modelos
+    /// especificados.
     /// </summary>
     /// <param name="models">
-    /// Data models to incorporate as part of the data context to be generated.
+    /// Modelos de datos a incorporar como parte del contexto de datos a
+    /// generar.
     /// </param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="ArgumentException">
-    /// Thrown if any element in the collection
-    /// <paramref name="models"/> does not inherit from the base type
+    /// Se produce si algún elemento de la colección
+    /// <paramref name="models"/> no hereda del tipo base
     /// <see cref="Model"/>.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(Type[] models) => Build(models, null);
 
     /// <summary>
-    /// Builds a new data context using the specified models.
+    /// Construye un nuevo contexto de datos utilizando los modelos
+    /// especificados.
     /// </summary>
-    /// <param name="name">Name of the new data context.</param>
+    /// <param name="name">Nombre del nuevo contexto de datos.</param>
     /// <param name="models">
-    /// Data models to incorporate as part of the data context to be generated.
+    /// Modelos de datos a incorporar como parte del contexto de datos a
+    /// generar.
     /// </param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="name"/> is an empty string or
+    /// Se produce si <paramref name="name"/> es una cadena vacía o
     /// <see langword="null"/>.
     /// </exception>
     /// <exception cref="ArgumentException">
-    /// Thrown if any element in the collection
-    /// <paramref name="models"/> does not inherit from the base type
+    /// Se produce si algún elemento de la colección
+    /// <paramref name="models"/> no hereda del tipo base
     /// <see cref="Model"/>.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(string name, Type[] models) => Build(name, models, null);
 
     /// <summary>
-    /// Builds a new data context, discovering all available data models in the
-    /// application.
+    /// Construye un nuevo contexto de datos, descubriendo todos los
+    /// modelos de datos disponibles en la aplicación.
     /// </summary>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     public static ITypeBuilder<DbContext> Build() => Build((Action<DbContextOptionsBuilder>?)null);
 
     /// <summary>
-    /// Builds a new data context, discovering all available data models in the
-    /// application.
+    /// Construye un nuevo contexto de datos, descubriendo todos los
+    /// modelos de datos disponibles en la aplicación.
     /// </summary>
-    /// <param name="name">Name of the new data context.</param>
+    /// <param name="name">Nombre del nuevo contexto de datos.</param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="name"/> is an empty string or
+    /// Se produce si <paramref name="name"/> es una cadena vacía o
     /// <see langword="null"/>.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(string name) => Build(name, (Action<DbContextOptionsBuilder>?)null);
 
     /// <summary>
-    /// Builds a new data context, discovering all available data models in the
-    /// application.
+    /// Construye un nuevo contexto de datos, descubriendo todos los
+    /// modelos de datos disponibles en la aplicación.
     /// </summary>
     /// <param name="configurationCallback">
-    /// The method to invoke for externally configuring the generated data
-    /// context.
+    /// Método a invocar para configurar externamente el contexto de datos
+    /// generado.
     /// </param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the specified method in 
-    /// <paramref name="configurationCallback"/> is not static.
+    /// Se produce si el método especificado en <paramref name="configurationCallback"/> no es un método estático.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(Action<DbContextOptionsBuilder>? configurationCallback)
     {
@@ -184,24 +191,24 @@ public static class ContextBuilder
     }
 
     /// <summary>
-    /// Builds a new data context, discovering all available data models in the
-    /// application.
+    /// Construye un nuevo contexto de datos, descubriendo todos los
+    /// modelos de datos disponibles en la aplicación.
     /// </summary>
-    /// <param name="name">Name of the new data context.</param>
+    /// <param name="name">Nombre del nuevo contexto de datos.</param>
     /// <param name="configurationCallback">
-    /// The method to invoke for externally configuring the generated data
-    /// context.
+    /// Método a invocar para configurar externamente el contexto de datos
+    /// generado.
     /// </param>
     /// <returns>
-    /// A <see cref="TypeBuilder{T}"/> with which a new data context can be
-    /// instantiated.
+    /// Un <see cref="TypeBuilder{T}"/> con el que se puede instanciar un
+    /// nuevo contexto de datos.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// Thrown if <paramref name="name"/> is an empty string or null.
+    /// Se produce si <paramref name="name"/> es una cadena vacía o
+    /// <see langword="null"/>.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the method specified in
-    /// <paramref name="configurationCallback"/> is not static.
+    /// Se produce si el método especificado en <paramref name="configurationCallback"/> no es un método estático.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(string name, Action<DbContextOptionsBuilder>? configurationCallback)
     {
@@ -209,16 +216,16 @@ public static class ContextBuilder
     }
 
     /// <summary>
-    /// Gets a <see cref="ITransactionFactory"/> connected to an Entity
-    /// Framework Core data context generated dynamically.
+    /// Obtiene un <see cref="ITransactionFactory"/> conectado a un
+    /// contexto de datos de Entity Framework Core generado dinámicamente.
     /// </summary>
     /// <param name="type">
-    /// The type builder used to generate an Entity Framework Core data
-    /// context.
+    /// Constructor de tipos utilizado para generar un contexto de datos de
+    /// Entity Framework Core.
     /// </param>
     /// <returns>
-    /// A <see cref="ITransactionFactory"/> connected to an Entity Framework
-    /// Core data context generated dynamically.
+    /// Un <see cref="ITransactionFactory"/> conectado a un contexto de
+    /// datos de Entity Framework Core generado dinámicamente.
     /// </returns>
     public static ITransactionFactory GetEfTransFactory(this ITypeBuilder<DbContext> type)
     {

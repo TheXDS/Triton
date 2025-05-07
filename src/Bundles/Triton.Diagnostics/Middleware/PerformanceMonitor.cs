@@ -3,31 +3,31 @@
 namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// Middleware that allows obtaining specific information about the time it
-/// takes to execute CRUD actions.
+/// Middleware que permite obtener información específica sobre el
+/// tiempo que toma ejecutar acciones Crud.
 /// </summary>
 public class PerformanceMonitor : PerformanceMonitorBase
 {
-    private int _eventCount;
-    private double _averageMs;
-    private double _minMs;
-    private double _maxMs;
+    private int _evt;
+    private double _avg;
+    private double _min;
+    private double _max;
 
     /// <inheritdoc/>
-    public override int EventCount => _eventCount;
+    public override int EventCount => _evt;
 
     /// <inheritdoc/>
-    public override double AverageMs => _averageMs;
+    public override double AverageMs => _avg;
 
     /// <inheritdoc/>
-    public override double MinMs => _minMs;
+    public override double MinMs => _min;
 
     /// <inheritdoc/>
-    public override double MaxMs => _maxMs;
+    public override double MaxMs => _max;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PerformanceMonitor"/>
-    /// class.
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="PerformanceMonitor"/>.
     /// </summary>
     public PerformanceMonitor()
     {
@@ -37,20 +37,18 @@ public class PerformanceMonitor : PerformanceMonitorBase
     /// <inheritdoc/>
     protected override void OnReset()
     {
-        _averageMs = double.NaN;
-        _eventCount = 0;
-        _minMs = double.NaN;
-        _maxMs = double.NaN;
+        _avg = double.NaN;
+        _evt = 0;
+        _min = double.NaN;
+        _max = double.NaN;
     }
 
     /// <inheritdoc/>
     protected override void RegisterEvent(double milliseconds)
     {
-        if (!_averageMs.IsValid()) _averageMs = 0.0;
-        if (milliseconds > _maxMs || !_maxMs.IsValid()) _maxMs = milliseconds;
-        if (milliseconds < _minMs || !_minMs.IsValid()) _minMs = milliseconds;
-        
-        if (_eventCount == 0) _averageMs = milliseconds;
-        else _averageMs = ((_averageMs * _eventCount) + milliseconds) / ++_eventCount;
+        if (!_avg.IsValid()) _avg = 0.0;
+        if (milliseconds > _max || !_max.IsValid()) _max = milliseconds;
+        if (milliseconds < _min || !_min.IsValid()) _min = milliseconds;
+        _avg = ((_avg * _evt) + milliseconds) / ++_evt;
     }
 }

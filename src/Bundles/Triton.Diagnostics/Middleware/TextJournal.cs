@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using TheXDS.MCART.Helpers;
-using TheXDS.MCART.Types.Extensions;
+﻿using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
 using St = TheXDS.Triton.Diagnostics.Resources.Strings;
@@ -8,42 +6,36 @@ using St = TheXDS.Triton.Diagnostics.Resources.Strings;
 namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// Abstract class that defines a text-based log writer.
+/// Clase abstracta que define un escritor de bitácora basado en entradas
+/// de texto.
 /// </summary>
 public abstract class TextJournal : IJournalMiddleware
 {
-    private static readonly string[] forbidden = ["idasstring"];
-    private static readonly string[] knownCensoredprops = 
-    [
-        "password", "key", "secret", "token", "hash",
-        "salt", "iv", "key", "cipher", "signature",
-        "digest", "hmac", "pin", "2fa", "otp"
-    ];
-
     /// <inheritdoc/>
-    public void Log(CrudAction action, IEnumerable<ChangeTrackerItem>? changeSet, JournalSettings settings)
+    public void Log(CrudAction action, IEnumerable<Model>? entities, JournalSettings settings)
     {
         string GetText() => $"{DateTime.Now:s}: {string.Format(St.XRanOperation, settings.ActorProvider?.GetCurrentActor() ?? St.NoActorProviderSubst, action)}";
-        List<string> lines = [];
-        if (changeSet is null)
+        List<string> lines = new();
+        if (entities is null)
         {
-            lines.Add($"{GetText()}.");
+            lines.Add(string.Format(St.XWithNoData, GetText()));
         }
         else
         {
-            foreach (var change in changeSet)
+            foreach (var entity in entities)
             {
-                lines.Add(string.Format(St.XWithData, GetText(), change.NewEntity!.GetType().NameOf()));
-                switch (change.ChangeType)
+                lines.Add(string.Format(St.XWithData, GetText(), entities.GetType().NameOf(), entity.IdAsString));
+                switch (action)
                 {
-                    case ChangeTrackerChangeType.Create:
-                        AddNewValues(lines, change.NewEntity!);
+                    case CrudAction.Create:
+                        AddNewValues(lines, entity);
                         break;
-                    case ChangeTrackerChangeType.Update:
-                        AddUpdatedValues(lines, change);
+                    case CrudAction.Update:
+                        AddUpdatedValues(lines, entity, settings.OldValueProvider);
                         break;
-                    case ChangeTrackerChangeType.Delete:
-                        lines.Add($"  - Id: {change.OldEntity!.IdAsString}");
+                    case CrudAction.Read:
+                    case CrudAction.Delete:
+                        lines.Add($"  - Id: {entity.IdAsString}");
                         break;
                 }
             }
@@ -52,56 +44,27 @@ public abstract class TextJournal : IJournalMiddleware
     }
 
     /// <summary>
-    /// Abstract method to implement log writing functionality.
+    /// Implementa la funcionalidad de escritura de bitácora de esta
+    /// instancia.
     /// </summary>
-    /// <param name="lines">Lines of text to write.</param>
+    /// <param name="lines">Líneas de texto a escribir.</param>
     protected abstract void WriteText(IEnumerable<string> lines);
 
-    private static void AddUpdatedValues(List<string> lines, ChangeTrackerItem changes)
+    private static void AddUpdatedValues(ICollection<string> lines, Model entity, IOldValueProvider? oldValueProvider)
     {
-        foreach (var j in GetProperties(changes.OldEntity!))
+        var c = oldValueProvider?.GetOldValues(entity);
+        if (c is null) return;
+        foreach (var j in c)
         {
-            var oldValue = GetPropValue(j, changes.OldEntity!) ?? "<null>";
-            var newValue = GetPropValue(j, changes.NewEntity!) ?? "<null>";
-            if (oldValue != newValue)
-            {
-                lines.Add($"  - {j.NameOf()}: {oldValue} -> {newValue}");
-            }
+            lines.Add($"  - {j.Key.NameOf()}: {j.Value ?? "<null>"} -> {j.Key.GetValue(entity) ?? "<null>"}");
         }
     }
 
-    private static void AddNewValues(List<string> lines, Model entity)
+    private static void AddNewValues(ICollection<string> lines, Model entity)
     {
-        foreach (var j in GetProperties(entity!))
+        foreach (var j in entity.GetType().GetProperties().Where(p => p.CanRead))
         {
-            lines.Add($"  - {j.NameOf()}: {GetPropValue(j, entity)}");
+            lines.Add($"  - {j.NameOf()}: {j.GetValue(entity)}");
         }
-    }
-
-    private static IEnumerable<PropertyInfo> GetProperties(Model entity)
-    {
-        return entity.GetType().GetProperties()
-            .Where(p => p.CanRead && !forbidden.Contains(p.Name.ToLower()));
-    }
-
-    private static string GetPropValue(PropertyInfo prop, Model entity)
-    {
-
-        return prop.GetValue(entity) switch
-        {
-            string s when knownCensoredprops.Contains(prop.Name.ToLower()) => new string('*', s.Length),
-            string s => s,
-            byte[] when knownCensoredprops.Contains(prop.Name.ToLower()) => $"<Censored security blob>",
-            byte[] b => $"byte[] ({b.LongLength.ByteUnits()})",
-            IEnumerable<Model> e => TruncatedCollection(e),
-            { } x => x.ToString() ?? string.Empty,
-            null => "<null>"
-        };
-    }
-
-    private static string TruncatedCollection(IEnumerable<Model> entities)
-    {
-        int count = 0;
-        return $"[ {string.Join(", ", entities.Take(6).Select(p => { count++; return p.IdAsString; }).Take(5))}{(count == 6 ? "..." : null)} ]";
     }
 }

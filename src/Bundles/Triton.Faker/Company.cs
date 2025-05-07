@@ -5,37 +5,35 @@ using static TheXDS.Triton.Faker.Globals;
 namespace TheXDS.Triton.Faker;
 
 /// <summary>
-/// Contains methods for generation and properties of a fictional company.
+/// Contiene métodos de generación y las propiedades de una compañía ficticia.
 /// </summary>
 public class Company
 {
-    private static readonly string[] orgType = ["Co.", "Inc.", "LLC", "Ltd.", "Corp.", "GmbH", "S.A.", "S.L.", "S.R.L."];
-
     /// <summary>
-    /// Gets the name of the company.
+    /// Obtiene un nombre para la compañía.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Gets the address of the company.
+    /// Obtiene una dirección para la compañía.
     /// </summary>
     public Address Address { get; }
 
     /// <summary>
-    /// Gets a domain name for the company.
+    /// Obtiene un nombre de dominio para la compañía.
     /// </summary>
     public string DomainName { get; }
 
     /// <summary>
-    /// Gets a URL for the company.
+    /// Obtiene una URL para la compañía.
     /// </summary>
     public string Website => $"https://www.{DomainName}/";
 
     /// <summary>
-    /// Gets an employee randomly.
+    /// Obtiene un empleado de forma aleatoria.
     /// </summary>
     /// <returns>
-    /// A new instance of the <see cref="Employee"/> class.
+    /// Una nueva instancia de la clase <see cref="Employee"/>.
     /// </returns>
     public Employee RndEmployee()
     {
@@ -43,10 +41,10 @@ public class Company
     }
 
     /// <summary>
-    /// Gets a chief employee randomly.
+    /// Obtiene un empleado en jefe de forma aleatoria.
     /// </summary>
     /// <returns>
-    /// A new instance of the <see cref="Employee"/> class.
+    /// Una nueva instancia de la clase <see cref="Employee"/>.
     /// </returns>
     public Employee RndChief()
     {
@@ -54,18 +52,18 @@ public class Company
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Company"/> class.
+    /// inicializa una nueva instancia de la clase <see cref="Company"/>.
     /// </summary>
     public Company()
     {
         var n1 = GetName();
         var n2 = _rnd.CoinFlip() ? $"{(_rnd.CoinFlip() ? "& " : null)}{Capitalize(GetName())}" : null;
 
-        Name = string.Join(" ", (new[] {
+        Name = string.Join(" ", new[] {
             Capitalize(n1),
             n2 is not null ? n2 : null,
-            orgType.Pick()
-        }).NotNull());
+            new[]{ "Co.", "Inc.", "LLC", "Ltd.", "Corp." }.Pick()
+        }.NotNull());
         Address = Address.NewAddress();
         DomainName = Internet.NewDomain(new[] { n1, n2?.Replace("& ", "and").ToLower() }.NotNull(), Address);
     }

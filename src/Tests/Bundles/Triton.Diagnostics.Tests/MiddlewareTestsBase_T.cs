@@ -5,16 +5,13 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public abstract class MiddlewareTestsBase<T> where T : ITransactionMiddleware, new()
+public abstract class MiddlewareTestsBase<T> : MiddlewareTestsBase where T : ITransactionMiddleware, new()
 {
-    protected (IMiddlewareRunner runner, T perfMon) Build()
+    protected (TransactionConfiguration testRepo, T perfMon) Build()
     {
-        return (((IMiddlewareConfigurator)new TransactionConfiguration()).Attach<T>(out var perfMon).GetRunner(), perfMon);
-    }
-
-    protected void RunCrudAction(IMiddlewareRunner runner, CrudAction action = CrudAction.Commit)
-    {
-        runner.RunPrologue(action, null);
-        runner.RunEpilogue(action, null);
+        TransactionConfiguration testRepo = new();
+        T perfMon = new();
+        testRepo.Attach(perfMon);
+        return (testRepo, perfMon);
     }
 }

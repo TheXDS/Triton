@@ -4,45 +4,49 @@ using TheXDS.Triton.Models;
 namespace TheXDS.Triton.Services;
 
 /// <summary>
-/// Represents the result of a password verification check.
+/// Representa el resultado de una comprobación de contraseña.
 /// </summary>
 /// <param name="valid">
-/// Value indicating whether the provided credentials were valid.
+/// Valor que indica si las credenciales provistas fueron válidas.
 /// </param>
 /// <param name="loginCredential">
-/// Credential that has been obtained for validation.
+/// Credencial que ha sido obtenida.
 /// </param>
 /// <remarks>
-/// While underlying data services may return <see langword="true"/> when executing
-/// data access operations, verifications should deliberately hide the reason why a user's
-/// password verification failed.
+/// Mientras los servicios subyacentes de datos pueden devolver
+/// <see langword="true"/> al ejecutar las operaciones de acceso a datos, las
+/// comprobaciones deberían ocultar deliberadamente la razón por la cual la
+/// verificación de la contraseña de un usuario ha fallado.
 /// </remarks>
 public class VerifyPasswordResult(bool valid, LoginCredential? loginCredential)
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="VerifyPasswordResult"/> class,
-    /// indicating that the verification was successful.
+    /// Inicializa una nueva isntancia de la clase
+    /// <see cref="VerifyPasswordResult"/> indicando que la verificación ha
+    /// sido exitosa.
     /// </summary>
     /// <param name="loginCredential">
-    /// Reference to the credential that has been verified successfully.
+    /// Referencia a la credencial que ha sido verificada satisfactoriamente.
     /// </param>
     public VerifyPasswordResult(LoginCredential loginCredential) : this(true, loginCredential)
     {
     }
 
     /// <summary>
-    /// Gets an invalid result without a credential.
+    /// Obtiene un resultado inválido sin credencial.
     /// </summary>
     public static VerifyPasswordResult Invalid => new(false, null);
 
     /// <summary>
-    /// Gets a value indicating whether the provided credentials were valid.
+    /// Obtiene un valor que indica si las credenciales provistas fueron
+    /// válidas.
     /// </summary>
     [MemberNotNullWhen(true, nameof(LoginCredential))]
     public bool Valid { get; } = valid;
 
     /// <summary>
-    /// Gets a reference to the credential that has been obtained for validation.
+    /// Obtiene una referencia a la credencial que ha sido obtenida para
+    /// validación.
     /// </summary>
     public LoginCredential? LoginCredential { get; } = loginCredential;
 }

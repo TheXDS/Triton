@@ -4,6 +4,7 @@ using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials.IUserServiceTests;
 

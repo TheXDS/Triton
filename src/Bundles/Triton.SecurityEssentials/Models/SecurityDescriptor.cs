@@ -1,36 +1,42 @@
 ﻿namespace TheXDS.Triton.Models;
 
 /// <summary>
-/// Model that represents a security descriptor indicating permissions granted
-/// and/or denied to a security entity within a specific context.
+/// Modelo que representa a un descriptor de seguridad que indica permisos
+/// otorgados y/o denegados a una entidad de seguridad con respecto a un
+/// determinado contexto.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="SecurityDescriptor"/>
-/// class.
-/// </remarks>
-/// <param name="contextId">
-/// Value indicating the context ID to which this security descriptor will
-/// be applied.
-/// </param>
-/// <param name="granted">
-/// Flags describing the granted permissions.
-/// </param>
-/// <param name="revoked">
-/// Flags describing the revoked permissions.
-/// </param>
-public class SecurityDescriptor(string contextId, PermissionFlags granted, PermissionFlags revoked) : SecurityBase(granted, revoked)
+public class SecurityDescriptor : SecurityBase
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="SecurityDescriptor"/>
-    /// class.
+    /// Inicializa una nueva instancia de la clase
+    ///  <see cref="SecurityDescriptor"/>.
     /// </summary>
-    public SecurityDescriptor() : this(null!, default, default)
+    public SecurityDescriptor() : this(null!,default, default)
     {
     }
 
     /// <summary>
-    /// Gets or sets the context ID to which the security flags of this entity
-    /// will be applied.
+    /// Inicializa una nueva instancia de la clase
+    ///  <see cref="SecurityDescriptor"/>.
     /// </summary>
-    public string ContextId { get; set; } = contextId;
+    /// <param name="contextId">
+    /// Valor que indica un Id del contexto al cual se aplicará este descriptor
+    /// de seguridad.
+    /// </param>
+    /// <param name="granted">
+    /// Banderas que describen los permisos otorgados.
+    /// </param>
+    /// <param name="revoked">
+    /// Banderas que describen los permisos denegados.
+    /// </param>
+    public SecurityDescriptor(string contextId, PermissionFlags granted, PermissionFlags revoked) : base(granted, revoked)
+    {
+        ContextId = contextId;
+    }
+
+    /// <summary>
+    /// Obtiene o establece el Id de contexto al cual se aplicarán las banderas
+    /// de seguridad de esta entidad.
+    /// </summary>
+    public string ContextId { get; set; }
 }

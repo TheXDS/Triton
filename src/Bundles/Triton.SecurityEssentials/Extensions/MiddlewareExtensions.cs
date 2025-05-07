@@ -4,28 +4,28 @@ using TheXDS.Triton.Services;
 namespace TheXDS.Triton.Extensions;
 
 /// <summary>
-/// Provides extensions for configuring middlewares.
+/// Incluye extensiones para la interfaz <see cref="IMiddlewareConfigurator"/>.
 /// </summary>
 public static class MiddlewareExtensions
 {
     /// <summary>
-    /// Registers an authentication provider with the service's middleware
-    /// pipeline.
+    /// Agrega soporte para proveedor de autenticación a la colección de
+    /// Middlewares del servicio.
     /// </summary>
     /// <param name="configurator">
-    /// The middleware configurator instance where the authentication provider
-    /// will be registered.
+    /// Instancia de Middlewares en la cual registrar el proveedor de
+    /// autenticación.
     /// </param>
-    /// <param name="userService">
-    /// The user service instance used for credential authentication and
-    /// permission checks.
+    /// <param name="userService">Instancia del servicio de usuarios a utilizar
+    /// al autenticar credenciales y comprobar permisos.
     /// </param>
     /// <param name="broker">
-    /// Output parameter. The registered authentication provider instance.
+    /// Parámetro de salida. Instancia del proveedor de autenticación
+    /// registrado para el servicio a configurar.
     /// </param>
     /// <returns>
-    /// The same middleware configurator instance, enabling fluent syntax
-    /// usage.
+    /// La misma instancia que <paramref name="configurator"/>, permitiendo el
+    /// uso de sintaxis Fluent.
     /// </returns>
     public static IMiddlewareConfigurator AddAuthentication(
         this IMiddlewareConfigurator configurator,

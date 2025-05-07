@@ -1,19 +1,25 @@
-﻿using TheXDS.Triton.Services;
+﻿using TheXDS.Triton.Models.Base;
+using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// Defines a set of members to be implemented by a class that allows writing
-/// log entries about changes occurred in a set of data entities.
+/// Define una serie de miembros a implementar por una clase que permita
+/// escribir entradas de bitácora sobre los cambios ocurridos en una
+/// entidad de datos.
 /// </summary>
 public interface IJournalMiddleware
 {
     /// <summary>
-    /// Writes information about the changes occurred in a set of data
-    /// entities.
+    /// Escribe información sobre los cambios ocurridos en una entidad de
+    /// datos.
     /// </summary>
-    /// <param name="action">The action performed on the entities.</param>
-    /// <param name="changeSet">The affected entities.</param>
-    /// <param name="settings">The journal settings.</param>
-    void Log(CrudAction action, IEnumerable<ChangeTrackerItem>? changeSet, JournalSettings settings);
+    /// <param name="action">
+    /// Acción que se ha ejecutado sobre la entidad.
+    /// </param>
+    /// <param name="entity">Entidad afectada.</param>
+    /// <param name="settings">
+    /// Opciones de configuración del Middleware de bitácora.
+    /// </param>
+    void Log(CrudAction action, IEnumerable<Model>? entity, JournalSettings settings);
 }

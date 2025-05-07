@@ -1,6 +1,5 @@
 ﻿#pragma warning disable CS1591
 
-using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.Diagnostics.Middleware;
 using TheXDS.Triton.Services;
@@ -14,13 +13,16 @@ public class TextFileJournalTests : JournalTestsBase
     public void Journal_writes_data(CrudAction action, bool withEntity, bool withSettings)
     {
         string p = Path.GetTempFileName();
-
-        var actorMock = new Mock<IActorProvider>();
-        actorMock.Setup(p => p.GetCurrentActor()).Returns("Test user").Verifiable(withSettings ? Times.Once : Times.Never);
-        JournalSettings s = withSettings ? new JournalSettings { ActorProvider = actorMock.Object } : new JournalSettings();
-
+        JournalSettings s = withSettings
+            ? new JournalSettings
+            {
+                ActorProvider = new TestActorProvider(),
+                OldValueProvider = new TestOldValueProvider()
+            }
+            : new JournalSettings();
+        
         TextFileJournal j = new() { Path = p };
-        j.Log(action, withEntity ? [new ChangeTrackerItem(new User("test", "Test user"), new User("test", "Test user"))] : null, s);
+        j.Log(action, withEntity ? new[] { new User("test", "Test user") } : null, s);
         FileInfo f = new(p);
         Assert.That(f.Length, Is.Not.Zero);
         f.Delete();
@@ -33,7 +35,7 @@ public class TextFileJournalTests : JournalTestsBase
         Directory.CreateDirectory(invalidPath);
         TextFileJournal j = new() { Path = invalidPath };
         Assert.That(invalidPath, Is.EqualTo(j.Path));
-        Assert.Throws<UnauthorizedAccessException>(() => j.Log(CrudAction.Commit, null, new()));
+        Assert.Throws<UnauthorizedAccessException>(()=>j.Log(CrudAction.Commit, null, new()));
         Assert.That(j.Path, Is.Null);
         j.Log(CrudAction.Commit, null, new());
         Directory.Delete(invalidPath);

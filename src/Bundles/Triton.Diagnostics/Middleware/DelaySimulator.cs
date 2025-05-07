@@ -1,35 +1,46 @@
 ﻿using TheXDS.MCART.Types;
 using TheXDS.Triton.Middleware;
-using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Models.Base;
+using TheXDS.MCART.Types.Extensions;
 
 namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// Middleware that simulates random delays in the connection with the data
-/// origin.
+/// Middleware que simula retrasos aleatorios en la conexión con el orígen de
+/// datos.
 /// </summary>
-/// <param name="min">Minimum delay to simulate in milliseconds.</param>
-/// <param name="max">Maximum delay to simulate in milliseconds.</param>
-public class DelaySimulator(int min, int max) : ITransactionMiddleware
+public class DelaySimulator : ITransactionMiddleware
 {
     private readonly Random random = new();
 
     /// <summary>
-    /// Gets or sets the range of delay to use for the simulation of delays.
+    /// Obtiene o establece el rango de retraso a utilizar para la simulación
+    /// de retrasos.
     /// </summary>
-    public Range<int> DelayRange { get; set; } = new Range<int>(min, max);
+    public Range<int> DelayRange { get; set; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DelaySimulator"/> class.
+    /// Inicializa una nueva instancia de la clase <see cref="DelaySimulator"/>.
     /// </summary>
     public DelaySimulator() : this(500, 1500)
     {
     }
 
-    ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
+    /// <summary>
+    /// Inicializa una nueva instancia de la clase
+    /// <see cref="DelaySimulator"/>.
+    /// </summary>
+    /// <param name="min">Retraso mínimo a simular en milisegundos.</param>
+    /// <param name="max">Retraso máximo a simular en milisegundos.</param>
+    public DelaySimulator(int min, int max)
     {
-        if (action == CrudAction.Read || action == CrudAction.Commit) Thread.Sleep(random.Next(DelayRange));
+        DelayRange = new Range<int>(min, max);
+    }
+
+    ServiceResult? ITransactionMiddleware.PrologAction(CrudAction action, IEnumerable<Model>? entity)
+    {
+        Thread.Sleep(random.Next(DelayRange));
         return null;
     }
 }

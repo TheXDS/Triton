@@ -1,14 +1,21 @@
 ﻿namespace TheXDS.Triton.Diagnostics.Middleware;
 
 /// <summary>
-/// A structure that contains the configuration values to be used for each
-/// journal writer.
+/// Estructura que contiene los valores de configuración a utilizar
+/// para cada escritor de bitácora.
 /// </summary>
-public readonly struct JournalSettings
+public struct JournalSettings
 {
     /// <summary>
-    /// Gets an object that can be used to identify the actor who executed the
-    /// CRUD action.
+    /// Obtiene un objeto que se puede utilizar para identificar al
+    /// actor que ha ejecutado la acción CRUD.
     /// </summary>
     public IActorProvider? ActorProvider { get; init; }
+
+    /// <summary>
+    /// Obtiene un objeto que se puede utilizar para extraer los
+    /// valores anteriores de la entidad que ha sido afectada por la
+    /// operación CRUD.
+    /// </summary>
+    public IOldValueProvider? OldValueProvider { get; init; }
 }

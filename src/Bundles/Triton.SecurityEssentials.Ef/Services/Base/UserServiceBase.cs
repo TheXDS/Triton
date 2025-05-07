@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TheXDS.Triton.SecurityEssentials.Ef.Models;
 using TheXDS.Triton.Services;
+using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.SecurityEssentials.Ef.Services.Base;
 
