@@ -83,12 +83,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Github", "Github", "{1A768325-E365-4BFD-9E23-25348A4EF7F6}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\dependabot.yml = ..\.github\dependabot.yml
+		..\.github\FUNDING.yml = ..\.github\FUNDING.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{F0E2A344-A56E-48B5-99CB-F54744F1C3DD}"
 	ProjectSection(SolutionItems) = preProject
 		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
-		docfx.yml = docfx.yml
+		..\.github\workflows\docfx.yml = ..\.github\workflows\docfx.yml
+		..\.github\FUNDING.yml = ..\.github\FUNDING.yml
 		..\.github\workflows\publish.yml = ..\.github\workflows\publish.yml
 	EndProjectSection
 EndProject
