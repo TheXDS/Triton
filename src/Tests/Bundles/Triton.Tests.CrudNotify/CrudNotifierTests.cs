@@ -1,5 +1,3 @@
-#pragma warning disable CS1591
-
 using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.CrudNotify;
@@ -7,7 +5,7 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.CrudNotify;
 
-public class CrudNotifierTests
+internal class CrudNotifierTests
 {
     [Test]
     public void Crud_transaction_triggers_notifications_Test()

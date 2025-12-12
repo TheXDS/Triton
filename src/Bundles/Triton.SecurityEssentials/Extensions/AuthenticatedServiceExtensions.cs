@@ -42,7 +42,7 @@ public static class AuthenticatedServiceExtensions
         Func<TService, Task> elevatedCallback) where TService : AuthenticatedService
     {
         var elevationResult = await service.AuthenticationBroker.ElevateAsync(username, password);
-        if (elevationResult.Success)
+        if (elevationResult.IsSuccessful)
         {
             try
             {

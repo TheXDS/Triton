@@ -1,18 +1,16 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class TransactionRunnerTests
+internal class TransactionRunnerTests
 {
     private class MiddlewareActionCheck(ServiceResult? runResult = null)
     {
         public bool DidRun { get; private set; }
         public CrudAction? CrudAction { get; private set; }
         public IEnumerable<ChangeTrackerItem>? Changes { get; private set; }
-        public ServiceResult? OnRun(CrudAction action, IEnumerable<ChangeTrackerItem>? changes)
+        public ServiceResult? OnRun(in CrudAction action, IEnumerable<ChangeTrackerItem>? changes)
         {
             DidRun = true;
             CrudAction = action;

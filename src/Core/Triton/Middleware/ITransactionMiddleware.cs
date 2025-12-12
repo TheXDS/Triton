@@ -23,7 +23,7 @@ public interface ITransactionMiddleware
     /// or a <see cref="ServiceResult"/> that describes a failure in case it
     /// occurs.
     /// </returns>
-    ServiceResult? PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => null;
+    ServiceResult? PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => null;
 
     /// <summary>
     /// Defines a series of actions to be performed after the Crud operation.
@@ -40,5 +40,5 @@ public interface ITransactionMiddleware
     /// or a <see cref="ServiceResult"/> that describes a failure in case it
     /// occurs.
     /// </returns>
-    ServiceResult? EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => null;
+    ServiceResult? EpilogueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => null;
 }

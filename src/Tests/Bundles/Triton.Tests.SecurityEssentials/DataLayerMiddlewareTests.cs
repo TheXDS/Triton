@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Component;
 using TheXDS.Triton.Middleware;
@@ -9,7 +7,7 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials;
 
-public class DataLayerMiddlewareTests
+internal class DataLayerMiddlewareTests
 {
     private class TestSecurityActorProvider : ISecurityActorProvider
     {

@@ -18,7 +18,7 @@ public class InMemoryCrudTransactionTests
         using var transaction = new InMemoryCrudTransaction([user]);
         var result = transaction.Read(typeof(User), "abc123");
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
         Assert.That(result.Result, Is.SameAs(user));
     }
 
@@ -28,8 +28,8 @@ public class InMemoryCrudTransactionTests
         var newUser = new User("CreateTest", "Test user");
         ICollection<Model> store = [];
         using var transaction = new InMemoryCrudTransaction(store);
-        Assert.That(transaction.Create(newUser).Success, Is.True);
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That(transaction.Create(newUser).IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store.Single(), Is.SameAs(newUser));
     }
 
@@ -41,9 +41,9 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [existingUser];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Create(newUser);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.EntityDuplication));
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store.Single(), Is.SameAs(existingUser));
     }
 
@@ -55,8 +55,8 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [existingUser];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Update(newUserData);
-        Assert.That(result.Success, Is.True);
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(((User)store.Single()).PublicName, Is.EqualTo("Modified user"));
     }
 
@@ -67,9 +67,9 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Update(newUserData);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NotFound));
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
 
@@ -80,9 +80,9 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Delete(newUserData);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NotFound));
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
 
@@ -92,9 +92,9 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Delete<User>("abc123");
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NotFound));
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
 
@@ -104,9 +104,9 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Delete<User, string>("abc123");
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NotFound));
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
 
@@ -116,8 +116,8 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [new User("abc123", "abc 123")];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Delete<User, string>("abc123");
-        Assert.That(result.Success, Is.True);
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
 
@@ -127,8 +127,8 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [new User("abc123", "abc 123")];
         using var transaction = new InMemoryCrudTransaction(store);
         var result = transaction.Delete<User>("abc123");
-        Assert.That(result.Success, Is.True);
-        Assert.That((await transaction.CommitAsync()).Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
 }

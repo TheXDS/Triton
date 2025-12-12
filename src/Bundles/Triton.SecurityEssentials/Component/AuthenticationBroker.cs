@@ -53,7 +53,7 @@ public class AuthenticationBroker : IAuthenticationBroker
         if (((IAuthenticationBroker)this).CanElevate())
         {
             var cred = await _userService.Authenticate(username, password);
-            if (cred.Success)
+            if (cred.IsSuccessful)
             {
                 _elevation = cred.Result!.Credential;
             }

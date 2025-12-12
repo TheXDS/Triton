@@ -186,7 +186,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NetworkFailure));
         transactionMock.Verify();
         svcMock.Verify();
@@ -208,7 +208,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.EntityDuplication));
         transactionMock.Verify();
         svcMock.Verify();
@@ -288,7 +288,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential<Pbkdf2Storage>("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.ServiceFailure));
         transactionMock.Verify();
         svcMock.Verify();

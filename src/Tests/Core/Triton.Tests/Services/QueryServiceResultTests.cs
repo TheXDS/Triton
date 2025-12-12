@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections;
 using System.Linq.Expressions;
 using TheXDS.Triton.Services;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class QueryServiceResultTests
+internal class QueryServiceResultTests
 {
     private static QueryServiceResult<User> GetEmpty() => new();
 
@@ -17,7 +15,7 @@ public class QueryServiceResultTests
     [Test]
     public void Empty_QueryResult_fails() 
     {
-        Assert.That(GetEmpty().Success, Is.False);
+        Assert.That(GetEmpty().IsSuccessful, Is.False);
     }
 
     [Test]
@@ -91,7 +89,7 @@ public class QueryServiceResultTests
     {
         var ex = new Exception("Error XYZ");
         var result = new QueryServiceResult<User>(ex);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Message, Is.EqualTo(ex.Message));
         Assert.That(result.Reason, Is.Not.Null);
         Assert.That((int)result.Reason!.Value, Is.EqualTo(ex.HResult));
@@ -101,7 +99,7 @@ public class QueryServiceResultTests
     public void QueryServiceResult_from_FailureReason()
     {
         var r = new QueryServiceResult<User>(FailureReason.ConcurrencyFailure);
-        Assert.That(r.Success, Is.False);
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That(r.Reason, Is.EqualTo(FailureReason.ConcurrencyFailure));
     }
 
@@ -110,7 +108,7 @@ public class QueryServiceResultTests
     {
         string message = $"Test {Guid.NewGuid()}";
         var r = new QueryServiceResult<User>(message);
-        Assert.That(r.Success, Is.False);
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That(r.Message, Is.EqualTo(message));
     }
 
@@ -118,7 +116,7 @@ public class QueryServiceResultTests
     public void Fail_with_reason_and_message()
     {
         var r = new QueryServiceResult<User>(FailureReason.ConcurrencyFailure, "Test");
-        Assert.That(r.Success, Is.False);
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That(r.Message, Is.EqualTo("Test"));
         Assert.That(r.Reason, Is.EqualTo(FailureReason.ConcurrencyFailure));
     }
@@ -128,7 +126,7 @@ public class QueryServiceResultTests
     {
         var ex = new Exception("Error XYZ");
         var result = (QueryServiceResult<User>)ex;
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Message, Is.EqualTo(ex.Message));
         Assert.That(result.Reason, Is.Not.Null);
         Assert.That((int)result.Reason!, Is.EqualTo(ex.HResult));
@@ -139,7 +137,7 @@ public class QueryServiceResultTests
     {
         var msg = "Error X";
         var result = (QueryServiceResult<User>)msg;
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Message, Is.EqualTo(msg));
     }
 

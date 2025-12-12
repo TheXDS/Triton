@@ -1,12 +1,10 @@
-﻿#pragma warning disable CS1591
-
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class TritonServiceTests
+internal class TritonServiceTests
 {
     [Test]
     public void Full_ctor_accepts_IMiddlewareConfigurator_and_ITransactionFactory()

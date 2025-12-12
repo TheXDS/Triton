@@ -22,7 +22,7 @@ public class GetCredentials
 
         var result = await svcMock.Object.GetCredential("test");
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.SameAs(testCred));
     }
 
@@ -37,7 +37,7 @@ public class GetCredentials
 
         var result = await svcMock.Object.GetCredential("test");
 
-        Assert.That(result?.Success, Is.False);
+        Assert.That(result?.IsSuccessful, Is.False);
         Assert.That(result?.Reason, Is.EqualTo(FailureReason.NotFound));
     }
 
@@ -52,7 +52,7 @@ public class GetCredentials
 
         var result = await svcMock.Object.GetCredential("test");
 
-        Assert.That(result?.Success, Is.False);
+        Assert.That(result?.IsSuccessful, Is.False);
         Assert.That(result?.Reason, Is.EqualTo(FailureReason.Tamper));
     }
 }

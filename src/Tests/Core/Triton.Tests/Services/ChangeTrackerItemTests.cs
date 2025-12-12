@@ -1,13 +1,11 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Exceptions;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class ChangeTrackerItemTests
+internal class ChangeTrackerItemTests
 {
     [TestCase(true, true, ChangeTrackerChangeType.NoChange)]
     [TestCase(true, false, ChangeTrackerChangeType.Create)]

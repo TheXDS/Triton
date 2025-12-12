@@ -27,7 +27,7 @@ public class ContinueSession
 
         var result = await svcMock.Object.ContinueSession("abcd");
 
-        Assert.That(result.Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
         Assert.That(result.Result, Is.SameAs(testSession));
         svcMock.Verify();
     }
@@ -50,7 +50,7 @@ public class ContinueSession
 
         var result = await svcMock.Object.ContinueSession("abcd");
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         svcMock.Verify();
     }
@@ -73,7 +73,7 @@ public class ContinueSession
 
         var result = await svcMock.Object.ContinueSession("efgh");
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         svcMock.Verify();
     }
@@ -89,7 +89,7 @@ public class ContinueSession
 
         var result = await svcMock.Object.ContinueSession("abcd");
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         svcMock.Verify();
     }
@@ -105,7 +105,7 @@ public class ContinueSession
 
         var result = await svcMock.Object.ContinueSession("abcd");
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NetworkFailure));
         svcMock.Verify();
     }

@@ -1,11 +1,9 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.EFCore.Tests;
 
-public partial class CrudOpsTests : TritonEfTestClass
+internal partial class CrudOpsTests : TritonEfTestClass
 {
     [Test]
     public void RelatedDataEagerLoadingTest()

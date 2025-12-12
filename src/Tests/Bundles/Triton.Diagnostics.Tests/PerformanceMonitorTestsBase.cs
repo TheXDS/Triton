@@ -1,5 +1,3 @@
-#pragma warning disable CS1591
-
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System.ComponentModel;
@@ -8,20 +6,20 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> where T : PerformanceMonitorBase, new()
+internal abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> where T : PerformanceMonitorBase, new()
 {
     protected const int EventsEpsilon = 200;
 
     protected virtual IEnumerable<string> ExtraTelemetryNpcProps() => [];
 
-    protected void RunCrudAction(IMiddlewareRunner runner, int sleep)
+    protected static void RunCrudAction(IMiddlewareRunner runner, int sleep)
     {
         runner.RunPrologue(CrudAction.Commit, null);
         Thread.Sleep(sleep);
         runner.RunEpilogue(CrudAction.Commit, null);
     }
 
-    protected RangeConstraint IsAround(int meanMs, int epsilon = EventsEpsilon)
+    protected static RangeConstraint IsAround(int meanMs, int epsilon = EventsEpsilon)
     {
         return Is.InRange(meanMs - epsilon, meanMs + epsilon);
     }
@@ -30,9 +28,9 @@ public abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> wh
     public void Monitor_registers_event()
     {
         (var runner, var perfMon) = Build();
-        RunCrudAction(runner, 1000);
+        PerformanceMonitorTestsBase<T>.RunCrudAction(runner, 1000);
         Assert.That(perfMon.EventCount, Is.EqualTo(1));
-        Assert.That(perfMon.AverageMs, IsAround(1000));
+        Assert.That(perfMon.AverageMs, PerformanceMonitorTestsBase<T>.IsAround(1000));
     }
 
     [Test]
@@ -95,18 +93,17 @@ public abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> wh
     public void Monitor_has_full_telemetry()
     {
         (var runner, var perfMon) = Build();
-        RunCrudAction(runner, 2000);
-        RunCrudAction(runner, 1000);
-        Assert.That(perfMon.AverageMs, IsAround(1500));
-        Assert.That(perfMon.MinMs, IsAround(1000));
-        Assert.That(perfMon.MaxMs, IsAround(2000));
+        PerformanceMonitorTestsBase<T>.RunCrudAction(runner, 2000);
+        PerformanceMonitorTestsBase<T>.RunCrudAction(runner, 1000);
+        Assert.That(perfMon.MinMs, PerformanceMonitorTestsBase<T>.IsAround(1000));
+        Assert.That(perfMon.MaxMs, PerformanceMonitorTestsBase<T>.IsAround(2000));
     }
 
     [Test]
     public void Monitor_supports_reset()
     {
         (var runner, var perfMon) = Build();
-        RunCrudAction(runner, 1000);
+        PerformanceMonitorTestsBase<T>.RunCrudAction(runner, 1000);
         perfMon.Reset();
         Assert.That(perfMon.EventCount, Is.Zero);
         Assert.That(perfMon.AverageMs, Is.NaN);

@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.Diagnostics.Middleware;
 using TheXDS.Triton.Services;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class TextFileJournalTests : JournalTestsBase
+internal class TextFileJournalTests : JournalTestsBase
 {
     [TestCaseSource(nameof(GetTestCases))]
     public void Journal_writes_data(CrudAction action, bool withEntity, bool withSettings)

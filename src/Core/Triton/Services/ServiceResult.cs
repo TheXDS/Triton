@@ -38,7 +38,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     /// Gets a value indicating whether the operation was successful.
     /// </summary>
     [MemberNotNullWhen(false, nameof(Reason))]
-    public bool Success { get; private set; }
+    public bool IsSuccessful { get; private set; }
 
     /// <summary>
     /// Gets a message describing the result of the operation.
@@ -79,7 +79,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     /// <param name="message">A descriptive message for the result.</param>
     public ServiceResult(bool success, string? message)
     {
-        Success = success;
+        IsSuccessful = success;
         Message = message ?? (success ? St.OperationCompletedSuccessfully : St.FailureUnknown);
     }
 
@@ -92,7 +92,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     /// </param>
     public ServiceResult(in FailureReason reason)
     {
-        Success = false;
+        IsSuccessful = false;
         Reason = reason;
         Message = MessageFrom(reason);
     }
@@ -108,7 +108,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     /// <param name="message">A descriptive message for the result.</param>
     public ServiceResult(in FailureReason reason, string message)
     {
-        Success = false;
+        IsSuccessful = false;
         Reason = reason;
         Message = message;
     }
@@ -124,7 +124,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     /// </param>
     public ServiceResult(Exception ex)
     {
-        Success = false;
+        IsSuccessful = false;
         Message = ex.Message;
         Reason = (FailureReason)ex.HResult;
     }
@@ -144,7 +144,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         if (other is null) return false;
 
-        return Success == other.Success && other.Reason == FailureReason.Unknown
+        return IsSuccessful == other.IsSuccessful && other.Reason == FailureReason.Unknown
             ? Message == other.Message
             : Reason == other.Reason;
     }
@@ -178,7 +178,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         return new TResult()
         {
-            Success = Success,
+            IsSuccessful = IsSuccessful,
             Reason = Reason,
             Message = Message
         };
@@ -197,7 +197,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         return new(result)
         {
-            Success = Success,
+            IsSuccessful = IsSuccessful,
             Reason = Reason,
             Message = Message
         };
@@ -210,7 +210,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
         {
             ServiceResult s => Equals(s),
             Exception ex => Equals(ex),
-            bool b => Success == b,
+            bool b => IsSuccessful == b,
             _ => false
         };
     }
@@ -218,7 +218,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     /// <inheritdoc/>
     public override int GetHashCode()
     {
-        return HashCode.Combine(Success, Message, Reason);
+        return HashCode.Combine(IsSuccessful, Message, Reason);
     }
 
     /// <inheritdoc/>
@@ -245,7 +245,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         return new TServiceResult()
         {
-            Success = false,
+            IsSuccessful = false,
             Message = ex.Message,
             Reason = (FailureReason)ex.HResult
         };
@@ -269,7 +269,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         return new TServiceResult()
         {
-            Success = false,
+            IsSuccessful = false,
             Reason = reason,
             Message = MessageFrom(reason)
         };
@@ -293,7 +293,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         return new TServiceResult()
         {
-            Success = false,
+            IsSuccessful = false,
             Reason = FailureReason.Unknown,
             Message = message ?? St.FailureUnknown
         };
@@ -317,7 +317,7 @@ public class ServiceResult : IEquatable<ServiceResult>, IEquatable<Exception>
     {
         return new TServiceResult()
         {
-            Success = true,
+            IsSuccessful = true,
             Reason = null,
             Message = message ?? St.OperationCompletedSuccessfully
         };

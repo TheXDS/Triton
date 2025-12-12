@@ -39,7 +39,7 @@ public class EndSession
         svcMock.Setup(p => p.GetWriteTransaction()).Verifiable(Times.Never);
 
         var result = await svcMock.Object.EndSession(testSession);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Idempotency));
         svcMock.Verify();
     }
@@ -57,7 +57,7 @@ public class EndSession
 
         var result = await svcMock.Object.EndSession(testSession);
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NetworkFailure));
         svcMock.Verify();
     }

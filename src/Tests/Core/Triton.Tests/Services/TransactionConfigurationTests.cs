@@ -1,23 +1,21 @@
-﻿#pragma warning disable CS1591
-
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class TransactionConfigurationTests
+internal class TransactionConfigurationTests
 {
     private class TestMiddleware(int expectedPrologOrder, int expectedEpilogOrder, Action<int> onProlog, Action<int> onEpilog) : ITransactionMiddleware
     {
-        ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+        ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
         {
             onProlog.Invoke(expectedPrologOrder);
             return null;
         }
 
-        ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+        ServiceResult? ITransactionMiddleware.EpilogueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
         {
             onEpilog.Invoke(expectedEpilogOrder);
             return null;

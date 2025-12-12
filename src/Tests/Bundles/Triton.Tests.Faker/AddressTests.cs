@@ -1,11 +1,9 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Faker;
 
 namespace TheXDS.Triton.Tests.Faker;
 
-public class AddressTests
+internal class AddressTests
 {
     [Test]
     public void GetAddress_Test()

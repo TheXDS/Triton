@@ -1,5 +1,3 @@
-#pragma warning disable CS1591
-
 using NUnit.Framework;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Middleware;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests;
 
-public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransactionFactory, new()
+internal abstract class TransactionMiddlewareExecutionTests<T> where T : ITransactionFactory, new()
 {
     [Test]
     public void Commit_operation_executes_Middleware()
@@ -16,7 +14,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
         new MiddlewareRunCheck()
         {
             ExpectedAction = CrudAction.Commit,
-        }.ExecuteTest(t => Assert.That(t.Commit().Success, Is.True));
+        }.ExecuteTest(t => Assert.That(t.Commit().IsSuccessful, Is.True));
     }
 
     [Test]
@@ -33,7 +31,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
                 Assert.That(m[0].OldEntity, Is.Null);
                 Assert.That(m[0].NewEntity?.IdAsString, Is.EqualTo(g));
             }
-        }.ExecuteTest(t => Assert.That(t.Create(new User(g, g)).Success, Is.True));
+        }.ExecuteTest(t => Assert.That(t.Create(new User(g, g)).IsSuccessful, Is.True));
     }
 
     [Test]
@@ -127,7 +125,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
 
         public bool EpilogueRan { get; private set; }
 
-        ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+        ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
         {
             if (!PrologueRan)
             {
@@ -148,7 +146,7 @@ public abstract class TransactionMiddlewareExecutionTests<T> where T : ITransact
             return null;
         }
 
-        ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+        ServiceResult? ITransactionMiddleware.EpilogueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
         {
             if (!EpilogueRan)
             {

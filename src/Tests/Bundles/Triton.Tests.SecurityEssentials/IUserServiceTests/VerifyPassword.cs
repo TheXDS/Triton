@@ -23,7 +23,7 @@ public class VerifyPassword
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult);
         var result = await svcMock.Object.VerifyPassword("test", "password".ToSecureString());
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.Not.Null);
         Assert.That(result?.Result?.Valid, Is.True);
         Assert.That(result?.Result?.LoginCredential, Is.SameAs(testCred));
@@ -38,7 +38,7 @@ public class VerifyPassword
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult);
         var result = await svcMock.Object.VerifyPassword("test", "password".ToSecureString());
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.Not.Null);
         Assert.That(result?.Result?.Valid, Is.False);
         Assert.That(result?.Result?.LoginCredential, Is.Null);
@@ -55,7 +55,7 @@ public class VerifyPassword
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult);
         var result = await svcMock.Object.VerifyPassword("test", "incorrect".ToSecureString());
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.Not.Null);
         Assert.That(result?.Result?.Valid, Is.False);
         Assert.That(result?.Result?.LoginCredential, Is.Null);
@@ -71,7 +71,7 @@ public class VerifyPassword
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult);
         var result = await svcMock.Object.VerifyPassword("test", "password".ToSecureString());
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.Not.Null);
         Assert.That(result?.Result?.Valid, Is.False);
         Assert.That(result?.Result?.LoginCredential, Is.Null);
@@ -88,7 +88,7 @@ public class VerifyPassword
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult);
         var result = await svcMock.Object.VerifyPassword("test", "password".ToSecureString());
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.Not.Null);
         Assert.That(result?.Result?.Valid, Is.False);
         Assert.That(result?.Result?.LoginCredential, Is.Null);
@@ -103,7 +103,7 @@ public class VerifyPassword
         svcMock.Setup(p => p.GetCredential("test")).ReturnsAsync(getCredResult).Verifiable(Times.Once);
         var result = await svcMock.Object.VerifyPassword("test", "password".ToSecureString());
 
-        Assert.That(result?.Success, Is.False);
+        Assert.That(result?.IsSuccessful, Is.False);
         Assert.That(result?.Reason, Is.EqualTo(FailureReason.Tamper));
         svcMock.Verify();
     }

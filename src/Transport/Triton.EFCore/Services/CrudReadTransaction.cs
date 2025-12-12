@@ -48,7 +48,7 @@ public class CrudReadTransaction<T> : CrudTransactionBase<T>, ICrudReadTransacti
         var dbSetType = typeof(DbSet<>).MakeGenericType(model);
         var funcDbSetType = typeof(Func<>).MakeGenericType(dbSetType);
         var result = TryCall(CrudAction.Read, setMethod.CreateDelegate(funcDbSetType), out object? dbSet, null)?.CastUp<QueryServiceResult<Model>>();
-        return (result?.Success ?? false) ? result : FailureReason.DbFailure;
+        return (result?.IsSuccessful ?? false) ? result : FailureReason.DbFailure;
     }
 
     /// <inheritdoc/>
@@ -105,7 +105,7 @@ public class CrudReadTransaction<T> : CrudTransactionBase<T>, ICrudReadTransacti
         try
         {
             var a = All<TModel>();
-            if (!a.Success) return a.Reason!.Value;
+            if (!a.IsSuccessful) return a.Reason!.Value;
             return await a.Where(query).ToArrayAsync();                
         }
         catch (Exception ex)

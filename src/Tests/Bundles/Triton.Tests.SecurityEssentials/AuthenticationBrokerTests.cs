@@ -58,7 +58,7 @@ public class AuthenticationBrokerTests
         Assert.That(elevatable, Is.SameAs(broker.GetCurrentActor()));
 
         var elevationResult = await broker.ElevateAsync("root", "root".ToSecureString());
-        Assert.That(elevationResult.Success, Is.True);
+        Assert.That(elevationResult.IsSuccessful, Is.True);
         CheckState(broker, elevatable, true, true);
         Assert.That(elevatable, Is.Not.SameAs(broker.GetCurrentActor()));
         Assert.That(elevationResult.Result!.Credential, Is.SameAs(broker.GetCurrentActor()));
@@ -75,7 +75,7 @@ public class AuthenticationBrokerTests
         Assert.That(elevatable, Is.SameAs(broker.GetCurrentActor()));
 
         var elevationResult = await broker.ElevateAsync("root", "root".ToSecureString());
-        Assert.That(elevationResult.Success, Is.False);
+        Assert.That(elevationResult.IsSuccessful, Is.False);
         CheckState(broker, elevatable, false, false);
         Assert.That(elevatable, Is.SameAs(broker.GetCurrentActor()));
         Assert.That(elevationResult.Reason, Is.EqualTo(FailureReason.Forbidden));

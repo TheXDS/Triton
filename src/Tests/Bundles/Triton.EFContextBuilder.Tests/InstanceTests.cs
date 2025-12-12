@@ -1,6 +1,3 @@
-#pragma warning disable CS1591
-#pragma warning disable CA1822
-
 using TheXDS.Triton.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -9,7 +6,7 @@ using TheXDS.Triton.EfContextBuilder;
 namespace TheXDS.Triton.Tests.EFContextBuilder;
 
 [TestFixture]
-public class InstanceTests
+internal class InstanceTests
 {
     public static void ConfigTest(DbContextOptionsBuilder options)
     {
@@ -23,7 +20,7 @@ public class InstanceTests
     [Test]
     public void ParametricInstancingBuilderTest()
     {
-        TestContext(ContextBuilder.Build(new[] { typeof(Comment), typeof(Post), typeof(User) }, ConfigTest).New());
+        TestContext(ContextBuilder.Build([typeof(Comment), typeof(Post), typeof(User)], ConfigTest).New());
     }
 
     [Test]
@@ -35,7 +32,7 @@ public class InstanceTests
     [Test]
     public void Instancing_contracts_test()
     {
-        Assert.Throws<ArgumentException>(() => ContextBuilder.Build(new[] { typeof(Comment), typeof(Exception) }));
+        Assert.Throws<ArgumentException>(() => ContextBuilder.Build([typeof(Comment), typeof(Exception)]));
         Assert.Throws<InvalidOperationException>(() => ContextBuilder.Build(BrokenConfigTest));
     }
 

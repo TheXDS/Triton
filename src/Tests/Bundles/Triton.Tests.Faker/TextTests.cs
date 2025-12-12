@@ -1,11 +1,9 @@
-#pragma warning disable CS1591
-
 using NUnit.Framework;
 using TheXDS.Triton.Faker;
 
 namespace TheXDS.Triton.Tests.Faker;
 
-public class TextTests
+internal class TextTests
 {
     [Test]
     public void Lorem_Test()

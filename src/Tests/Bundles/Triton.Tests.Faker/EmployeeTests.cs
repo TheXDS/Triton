@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Text.RegularExpressions;
 using TheXDS.MCART.Helpers;
 using TheXDS.MCART.Math;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Faker;
 
 namespace TheXDS.Triton.Tests.Faker;
 
-public class EmployeeTests
+internal class EmployeeTests
 {
     [Test]
     public void Get_Test()

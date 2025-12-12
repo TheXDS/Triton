@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Diagnostics;
 using TheXDS.Triton.Diagnostics.Middleware;
 using TheXDS.Triton.Middleware;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class DelaySimulatorTests
+internal class DelaySimulatorTests
 {
     [Test]
     public void Instance_test()

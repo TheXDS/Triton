@@ -1,15 +1,11 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
-using TheXDS.Triton.Diagnostics.Middleware;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Diagnostics.Extensions;
-using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class ReadOnlySimulatorTests
+internal class ReadOnlySimulatorTests
 {
     protected static ServiceResult? RunSimulatorFail(IMiddlewareConfigurator testRepo, CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
     {
@@ -27,7 +23,7 @@ public class ReadOnlySimulatorTests
     [Test]
     public void Simulator_blocks_action()
     {
-        static ServiceResult? CheckBlocked(CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity)
+        static ServiceResult? CheckBlocked(in CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity)
         {
             Assert.Fail();
             return null;
@@ -43,7 +39,7 @@ public class ReadOnlySimulatorTests
     public void Simulator_allows_Read()
     {
         bool ranEpilog = false;
-        ServiceResult? ChkEpilogue(CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity)
+        ServiceResult? ChkEpilogue(in CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity)
         {
             ranEpilog = true;
             return null;
@@ -58,10 +54,10 @@ public class ReadOnlySimulatorTests
     [TestCase(CrudAction.Delete, false)]
     [TestCase(CrudAction.Commit, false)]
     [TestCase(CrudAction.Read, true)]
-    public void Simulator_runs_Epilogues(CrudAction action, bool ranTrans)
+    public void Simulator_runs_Epilogues(in CrudAction action, bool ranTrans)
     {
         bool ranEpilog = false;
-        ServiceResult? ChkEpilogue(CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity)
+        ServiceResult? ChkEpilogue(in CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity)
         {
             ranEpilog = true;
             return null;

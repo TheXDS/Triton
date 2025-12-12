@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class ICrudWriteTransactionTests
+internal class ICrudWriteTransactionTests
 {
     [Test]
     public void Create_T_calls_non_generic_version()
@@ -17,7 +15,7 @@ public class ICrudWriteTransactionTests
         var writeMock = new Mock<ICrudWriteTransaction>() { CallBase = true };
         writeMock.Setup(x => x.Create((Model)newEntity)).Returns(ServiceResult.Ok).Verifiable(Times.Once);
         var result = writeMock.Object.Create(newEntity);
-        Assert.That(result.Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
         writeMock.Verify();
     }
 }

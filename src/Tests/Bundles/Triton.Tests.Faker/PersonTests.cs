@@ -1,13 +1,11 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.MCART.Helpers;
 using TheXDS.MCART.Math;
 using TheXDS.Triton.Faker;
 
 namespace TheXDS.Triton.Tests.Faker;
 
-public class PersonTests
+internal class PersonTests
 {
     [Test]
     public void Someone_Test()

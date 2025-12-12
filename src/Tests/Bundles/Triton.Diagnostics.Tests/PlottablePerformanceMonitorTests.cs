@@ -1,13 +1,11 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Diagnostics.Middleware;
 using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class PlottablePerformanceMonitorTests : PerformanceMonitorTestsBase<PlottablePerfMonitor>
+internal class PlottablePerformanceMonitorTests : PerformanceMonitorTestsBase<PlottablePerfMonitor>
 {
     protected override IEnumerable<string> ExtraTelemetryNpcProps() => [nameof(PlottablePerfMonitor.Events)];
 

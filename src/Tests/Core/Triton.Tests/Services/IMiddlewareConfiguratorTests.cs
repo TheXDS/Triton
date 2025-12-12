@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using System.Diagnostics.CodeAnalysis;
 using TheXDS.Triton.Middleware;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class IMiddlewareConfiguratorTests
+internal class IMiddlewareConfiguratorTests
 {
     [ExcludeFromCodeCoverage]
     private class DummyTransactionMiddleware : ITransactionMiddleware { }

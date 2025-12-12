@@ -130,5 +130,5 @@ public class QueryServiceResult<T> : ServiceResult, IQueryable<T> where T : Mode
     /// <param name="result">
     /// The object to convert.
     /// </param>
-    public static implicit operator bool(in QueryServiceResult<T> result) => result.Success;
+    public static implicit operator bool(in QueryServiceResult<T> result) => result.IsSuccessful;
 }

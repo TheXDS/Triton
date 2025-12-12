@@ -36,7 +36,7 @@ public interface IDynamicCrudReadTransaction : ICrudReadTransaction
                     throw new TamperException()).MakeGenericMethod(model);
         object o = m.Invoke(this, [])!;
         ServiceResult r = (ServiceResult)o;
-        if (r.Success)
+        if (r.IsSuccessful)
         {
             return new QueryServiceResult<Model>((IQueryable<Model>)o);
         }

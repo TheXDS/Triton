@@ -90,7 +90,7 @@ public interface IUserService : ITritonService
     {
         await using var j = GetTransaction();
         var r = await j.SearchAsync<LoginCredential>(p => p.Username == username);
-        if (!r.Success) return r;
+        if (!r.IsSuccessful) return r;
         if (r.Result!.Length != 0) return FailureReason.EntityDuplication;
         Guid id = await j.GetUniqueIdAsync<LoginCredential, Guid>(Guid.NewGuid);
         var newCred = new LoginCredential(username, await HashPasswordAsync<TAlg>(password))
@@ -127,7 +127,7 @@ public interface IUserService : ITritonService
     async Task<ServiceResult<Session?>> Authenticate(string username, SecureString password)
     {
         var r = await VerifyPassword(username, password);
-        if (!(r.Success && r.Result is { } result)) return r.CastUp<Session?>(null);
+        if (!(r.IsSuccessful && r.Result is { } result)) return r.CastUp<Session?>(null);
 
         if (result.Valid != true) return FailureReason.Forbidden;
 
@@ -157,7 +157,7 @@ public interface IUserService : ITritonService
     async Task<ServiceResult<bool?>> CheckAccess(string username, string context, PermissionFlags requested)
     {
         var r = await GetCredential(username);
-        if (!r.Success || r.Result is not { } c) return r.CastUp<bool?>(null);
+        if (!r.IsSuccessful || r.Result is not { } c) return r.CastUp<bool?>(null);
         return CheckAccess(c, context, requested);
     }
 
@@ -197,7 +197,7 @@ public interface IUserService : ITritonService
     {
         await using var j = GetReadTransaction();
         var query = j.All<Session>();
-        if (query.Success)
+        if (query.IsSuccessful)
         {
             return await Task.Run(() => query.FirstOrDefault(p => p.Token == token)) is { } session && IsSessionValid(session) ? session : FailureReason.Forbidden;
         }
@@ -242,7 +242,7 @@ public interface IUserService : ITritonService
     {
         await using var j = GetReadTransaction();
         var r = await j.SearchAsync<LoginCredential>(p => p.Username == username);
-        if (r.Success)
+        if (r.IsSuccessful)
         {
             return r.Result?.FirstOrDefault() is { } credential
                 ? new ServiceResult<LoginCredential?>(credential)
@@ -342,9 +342,9 @@ public interface IUserService : ITritonService
         var r = await GetCredential(userId);
         return r switch
         {
-            { Success: false, Reason: FailureReason.NotFound } => VerifyPasswordResult.Invalid,
-            { Success: false } failure => failure.CastUp<VerifyPasswordResult?>(null),
-            { Success: true, Result: { PasswordHash: { } passwd, Enabled: true } user } => GetResult(passwd, user),
+            { IsSuccessful: false, Reason: FailureReason.NotFound } => VerifyPasswordResult.Invalid,
+            { IsSuccessful: false } failure => failure.CastUp<VerifyPasswordResult?>(null),
+            { IsSuccessful: true, Result: { PasswordHash: { } passwd, Enabled: true } user } => GetResult(passwd, user),
             _ => VerifyPasswordResult.Invalid
         };
     }

@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using System.Diagnostics.CodeAnalysis;
 using TheXDS.Triton.Diagnostics.Extensions;
@@ -10,7 +8,7 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class JournalMiddlewareTests
+internal class JournalMiddlewareTests
 {
     [ExcludeFromCodeCoverage]
     private class TestJournal : IJournalMiddleware
@@ -69,6 +67,6 @@ public class JournalMiddlewareTests
         journalMock.Setup(p => p.Log(It.IsAny<CrudAction>(), It.IsAny<IEnumerable<ChangeTrackerItem>?>(), It.IsAny<JournalSettings>())).Throws<InvalidProgramException>();
         var r = new TransactionConfiguration().UseJournal(journalMock.Object);
         var result = r.GetRunner().RunEpilogue(default, null);
-        Assert.That(result!.Success);
+        Assert.That(result!.IsSuccessful);
     }
 }

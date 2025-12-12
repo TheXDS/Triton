@@ -1,8 +1,6 @@
-#pragma warning disable CS1591
-
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
+using System.Diagnostics.CodeAnalysis;
 using TheXDS.MCART.Exceptions;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.ServicePool.Triton.Ef;
@@ -13,7 +11,7 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.ServicePool.Triton.Tests;
 
-public class Tests
+internal class ServicePoolTests
 {
     [Test]
     public void Basic_ServicePool_registration_Test()
@@ -127,7 +125,7 @@ public class Tests
     public void UseContext_with_config_method_creates_transactions()
     {
         Pool testPool = new(PoolConfig.FlexResolve);
-        testPool.UseTriton().UseContext(typeof(ConfigurableContext), (DbContextOptionsBuilder _) => { });
+        testPool.UseTriton().UseContext(typeof(ConfigurableContext), _ => { });
         testPool.InitNow();
         var s = testPool.OfType<TritonService>().ToArray();
         Assert.That(s.Any(p => p.GetReadTransaction() is not null), Is.True);
@@ -176,7 +174,7 @@ public class Tests
     public void UseTransactionPrologs_registers_actions()
     {
         bool actionRan = false;
-        ServiceResult? TestAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
+        ServiceResult? TestAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
         {
             actionRan = true;
             return null;
@@ -193,7 +191,7 @@ public class Tests
     public void UseTransactionEpilogs_registers_actions()
     {
         bool actionRan = false;
-        ServiceResult? TestAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
+        ServiceResult? TestAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
         {
             actionRan = true;
             return null;
@@ -263,13 +261,13 @@ public class Tests
         public bool PrologueRan { get; set; }
         public bool EpilogueRan { get; set; }
 
-        ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
+        ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
         {
             PrologueRan = true;
             return null;
         }
 
-        ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
+        ServiceResult? ITransactionMiddleware.EpilogueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
         {
             EpilogueRan = true;
             return null;

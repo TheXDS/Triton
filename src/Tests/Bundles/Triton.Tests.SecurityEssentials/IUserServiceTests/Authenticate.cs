@@ -32,7 +32,7 @@ public class Authenticate
         var epsilon = TimeSpan.FromSeconds(30);
         var result = await svcMock.Object.Authenticate("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.True);
+        Assert.That(result.IsSuccessful, Is.True);
         Assert.That(result.Result, Is.InstanceOf<Session>());
         Assert.That(testCred.Sessions.Count, Is.EqualTo(1));
         Assert.That(testCred.Sessions.Single().Timestamp.IsBetween(t - epsilon, t + epsilon), Is.True);
@@ -54,7 +54,7 @@ public class Authenticate
 
         var result = await svcMock.Object.Authenticate("test", "invalid".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         Assert.That(result.Result, Is.Null);
         Assert.That(testCred.Sessions, Is.Empty);
@@ -74,7 +74,7 @@ public class Authenticate
 
         var result = await svcMock.Object.Authenticate("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         Assert.That(result.Result, Is.Null);
         Assert.That(testCred.Sessions, Is.Empty);
@@ -94,7 +94,7 @@ public class Authenticate
 
         var result = await svcMock.Object.Authenticate("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         Assert.That(result.Result, Is.Null);
         Assert.That(testCred.Sessions, Is.Empty);
@@ -112,7 +112,7 @@ public class Authenticate
 
         var result = await svcMock.Object.Authenticate("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Forbidden));
         Assert.That(result.Result, Is.Null);
         svcMock.Verify();
@@ -127,7 +127,7 @@ public class Authenticate
 
         var result = await svcMock.Object.Authenticate("test", "password".ToSecureString());
 
-        Assert.That(result?.Success, Is.False);
+        Assert.That(result?.IsSuccessful, Is.False);
         Assert.That(result?.Reason, Is.EqualTo(FailureReason.Tamper));
         svcMock.Verify();
     }

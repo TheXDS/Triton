@@ -20,4 +20,4 @@ namespace TheXDS.Triton.Middleware;
 /// can continue normally, or a <see cref="ServiceResult"/> that describes the
 /// error that occurred in the action.
 /// </returns>
-public delegate ServiceResult? MiddlewareAction(CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entities);
+public delegate ServiceResult? MiddlewareAction(in CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entities);

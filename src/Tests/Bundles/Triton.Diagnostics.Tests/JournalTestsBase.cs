@@ -1,11 +1,8 @@
-﻿#pragma warning disable CS1591
-
-using TheXDS.Triton.Diagnostics.Middleware;
-using TheXDS.Triton.Services;
+﻿using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public abstract class JournalTestsBase
+internal abstract class JournalTestsBase
 {
     protected static IEnumerable<object[]?> GetTestCases 
     { 

@@ -5,7 +5,7 @@ using TheXDS.Triton.Models.Base;
 namespace TheXDS.Triton.Services;
 
 /// <summary>
-/// Defines the contract for types that allows 
+/// Defines the contract for types that allow 
 /// performing read operations on a database.
 /// </summary>
 public interface ICrudReadTransaction : IDisposableEx, IAsyncDisposable
@@ -36,7 +36,7 @@ public interface ICrudReadTransaction : IDisposableEx, IAsyncDisposable
             {
                 id = keyGenerator.Invoke(id);
                 existingSearchResult = await ReadAsync<TModel, TKey>(id);
-                if (!existingSearchResult.Success) return existingSearchResult.Reason;
+                if (!existingSearchResult.IsSuccessful) return existingSearchResult.Reason;
             } while (existingSearchResult.Result is not null);
             return id;
         }

@@ -139,7 +139,7 @@ public class CrudTransactionBaseTests
         var result = test.Test_TryCall(CrudAction.Create, TestDelegate, out int returnValue, true);
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Success, Is.False);
+        Assert.That(result!.IsSuccessful, Is.False);
         Assert.That(returnValue, Is.EqualTo(default(int)));
         Assert.That((int)result.Reason!, Is.EqualTo(0xdead));
     }
@@ -159,7 +159,7 @@ public class CrudTransactionBaseTests
         var result = test.Test_TryCall<int>(CrudAction.Create, TestDelegate, true);
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Success, Is.True);
+        Assert.That(result!.IsSuccessful, Is.True);
         Assert.That(delegateRan, Is.True);
         Assert.That(result.Result, Is.EqualTo(1));
     }
@@ -182,7 +182,7 @@ public class CrudTransactionBaseTests
         bool delegateRan = false;
         var test = new TestClass();
 
-        ServiceResult? Stop(CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity) => FailureReason.Tamper;
+        ServiceResult? Stop(in CrudAction crudAction, IEnumerable<ChangeTrackerItem>? entity) => FailureReason.Tamper;
 
         int TestDelegate(bool arg)
         {
@@ -194,7 +194,7 @@ public class CrudTransactionBaseTests
         var result = test.Test_TryCall<int>(CrudAction.Create, TestDelegate, true);
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Success, Is.False);
+        Assert.That(result!.IsSuccessful, Is.False);
         Assert.That(delegateRan, Is.False);
         Assert.That(result.Result, Is.EqualTo(default(int)));
         Assert.That(result.Reason, Is.EqualTo(FailureReason.Tamper));

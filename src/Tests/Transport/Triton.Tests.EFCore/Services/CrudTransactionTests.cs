@@ -27,13 +27,13 @@ public class CrudTransactionTests
         await using (var t = GetTestTransaction())
         {
             var r = t.Create(new User("user0123", "User 0-1-2-3"));
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         await using (var t = GetTestTransaction())
         {
             var r = t.Read<User, string>("user0123", out var u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             Assert.That(u, Is.Not.Null);
         }
     }
@@ -43,7 +43,7 @@ public class CrudTransactionTests
     {
         using var t = GetTestTransaction();
         var r = t.Read<User, string>("user1");
-        Assert.That(r.Success, Is.True);
+        Assert.That(r.IsSuccessful, Is.True);
         Assert.That(r.Result, Is.Not.Null);
     }
 
@@ -52,7 +52,7 @@ public class CrudTransactionTests
     {
         await using var t = GetTestTransaction();
         var r = t.Read<User, string>("user1");
-        Assert.That(r.Success, Is.True);
+        Assert.That(r.IsSuccessful, Is.True);
         Assert.That(r.Result, Is.Not.Null);
     }
 
@@ -61,7 +61,7 @@ public class CrudTransactionTests
     {
         using var t = GetTestTransaction();
         var r = t.Read<User, string>("user1", out var u);
-        Assert.That(r.Success, Is.True);
+        Assert.That(r.IsSuccessful, Is.True);
         Assert.That(u, Is.Not.Null);
     }
 
@@ -70,7 +70,7 @@ public class CrudTransactionTests
     {
         await using var t = GetTestTransaction();
         var r = t.Read<User, string>("user1", out var u);
-        Assert.That(r.Success, Is.True);
+        Assert.That(r.IsSuccessful, Is.True);
         Assert.That(u, Is.Not.Null);
     }
 
@@ -80,13 +80,13 @@ public class CrudTransactionTests
         using (var t = GetTestTransaction())
         {
             var r = t.Create(new User("user123", "User 1-2-3"));
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         using (var t = GetTestTransaction())
         {
             var r = t.Read<User, string>("user123", out var u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             Assert.That(u, Is.Not.Null);
         }
     }
@@ -97,13 +97,13 @@ public class CrudTransactionTests
         await using (var t = GetTestTransaction())
         {
             var r = t.Create(new User("user123", "User 1-2-3"));
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         await using (var t = GetTestTransaction())
         {
             var r = t.Read<User, string>("user123", out var u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             Assert.That(u, Is.Not.Null);
         }
     }
@@ -119,7 +119,7 @@ public class CrudTransactionTests
         using (var t = GetTestTransaction())
         {
             var r = t.Delete<User, string>("user456");
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         using (var t = GetTestTransaction())
@@ -142,7 +142,7 @@ public class CrudTransactionTests
         await using (var t = GetTestTransaction())
         {
             var r = t.Delete<User, string>("user456");
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             await t.CommitAsync();
         }
 
@@ -166,7 +166,7 @@ public class CrudTransactionTests
         {
             var u = t.Read<User, string>("user456").Result!;
             var r = t.Delete(u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         using (var t = GetTestTransaction())
@@ -190,7 +190,7 @@ public class CrudTransactionTests
         {
             var u = t.Read<User, string>("user456").Result!;
             var r = t.Delete(u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             await t.CommitAsync();
         }
 
@@ -208,7 +208,7 @@ public class CrudTransactionTests
         using (var t = GetTestTransaction())
         {
             var r = t.Create(new User("user123", "User 1-2"));
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         using (var t = GetTestTransaction())
@@ -216,13 +216,13 @@ public class CrudTransactionTests
             t.Read<User, string>("user123", out var u);
             u!.PublicName = "User 1-2-3";
             var r = t.Update(u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         using (var t = GetTestTransaction())
         {
             var r = t.Read<User, string>("user123", out var u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             Assert.That(u, Is.Not.Null);
             Assert.That(u!.PublicName, Is.EqualTo("User 1-2-3"));
         }
@@ -234,22 +234,22 @@ public class CrudTransactionTests
         await using (var t = GetTestTransaction())
         {
             var r = t.Create(new User("user789", "User 1-2"));
-            Assert.That(r.Success, Is.True);
-            Assert.That((await t.CommitAsync()).Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
+            Assert.That((await t.CommitAsync()).IsSuccessful, Is.True);
         }
 
         await using (var t = GetTestTransaction())
         {
             var u = (await t.ReadAsync<User, string>("user789")).Result;
             u!.PublicName = "User 1-2-3";
-            Assert.That(t.Update(u).Success, Is.True);
-            Assert.That((await t.CommitAsync()).Success, Is.True);
+            Assert.That(t.Update(u).IsSuccessful, Is.True);
+            Assert.That((await t.CommitAsync()).IsSuccessful, Is.True);
         }
 
         await using (var t = GetTestTransaction())
         {
             var r = t.Read<User, string>("user789", out var u);
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             Assert.That(u, Is.Not.Null);
             Assert.That(u!.PublicName, Is.EqualTo("User 1-2-3"));
         }
@@ -261,13 +261,13 @@ public class CrudTransactionTests
         await using (var t = GetTestTransaction())
         {
             var r = t.Create(new User("user987", "User 9-8-7"));
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
         }
 
         await using (var t = GetTestTransaction())
         {
             var r = await t.ReadAsync<User, string>("user987");
-            Assert.That(r.Success, Is.True);
+            Assert.That(r.IsSuccessful, Is.True);
             Assert.That(r.Result, Is.Not.Null);
         }
     }

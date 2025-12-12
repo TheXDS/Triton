@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using TheXDS.MCART.Types.Extensions;
@@ -8,7 +6,7 @@ using TheXDS.Triton.Models.Base;
 
 namespace TheXDS.Triton.Tests.Models;
 
-public class BasicModelTests
+internal class BasicModelTests
 {
     private class ConcurrentTestModel : ConcurrentModel<int>;
 
