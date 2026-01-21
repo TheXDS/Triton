@@ -7,7 +7,7 @@ jobs:
   test-publish:
     runs-on: windows-latest
     env:
-      Solution_Name: src/Triton.slnx
+      Solution_Name: Triton.slnx
       Configuration: Release
     steps:
     - name: Checkout
