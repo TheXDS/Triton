@@ -18,21 +18,10 @@ namespace TheXDS.Triton.EFCore.Services.Base;
 /// </typeparam>
 public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbContext
 {
-    protected static ChangeTrackerChangeType Map(CrudAction action)
-    {
-        return action switch
-        {
-            CrudAction.Create => ChangeTrackerChangeType.Create,
-            CrudAction.Update => ChangeTrackerChangeType.Update,
-            CrudAction.Delete => ChangeTrackerChangeType.Delete,
-            _ => ChangeTrackerChangeType.NoChange
-        };
-    }
-
     /// <summary>
     /// Obtiene la configuración disponible para esta transacción.
     /// </summary>
-    protected readonly IMiddlewareRunner _configuration;
+    protected readonly IMiddlewareRunner _runner;
 
     /// <summary>
     /// Obtiene la instancia activa del contexto de datos a utilizar
@@ -44,7 +33,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Inicializa una nueva instancia de la clase
     /// <see cref="CrudTransactionBase{T}"/>.
     /// </summary>
-    /// <param name="configuration">
+    /// <param name="runner">
     /// Configuración a utilizar para la transacción.
     /// </param>
     /// <param name="options">
@@ -52,7 +41,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Establezca este parámetro en <see langword="null"/> para utilizar el
     /// constructor público sin parámetros.
     /// </param>
-    protected CrudTransactionBase(IMiddlewareRunner configuration, DbContextOptions? options = null) : this(configuration, CreateContext(options))
+    protected CrudTransactionBase(IMiddlewareRunner runner, DbContextOptions? options = null) : this(runner, CreateContext(options))
     {
     }
 
@@ -76,7 +65,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Argumentos a pasar a la operación.
     /// </param>
     /// <returns>
-    /// El resultado generado por la operación, o un 
+    /// El resultado generado por la operación, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// misma.
     /// </returns>
@@ -85,7 +74,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
         result = default!;
         try
         {
-            if (_configuration.RunPrologue(action, args?.Cast<ChangeTrackerItem>()) is { } r) return r;
+            if (_runner.RunPrologue(action, args?.Cast<ChangeTrackerItem>()) is { } r) return r;
             if (op.Method.ReturnType == typeof(void))
             {
                 op.DynamicInvoke(args);
@@ -98,15 +87,15 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
             {
                 throw new InvalidCastException();
             }
-            return _configuration.RunEpilogue(action, new[] { GetFromResult(action, result) }.NotNull());
+            return _runner.RunEpilogue(action, new[] { GetFromResult(action, result) }.NotNull());
         }
         catch (InvalidCastException)
-        { 
+        {
             throw;
         }
         catch (TargetInvocationException tiex)
         {
-            return ResultFromException(tiex.InnerException!);
+            return tiex.InnerException is ArgumentException ? (ServiceResult)BadQuery : ResultFromException(tiex.InnerException ?? tiex);
         }
         catch (Exception ex)
         {
@@ -131,7 +120,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Argumentos a pasar a la operación.
     /// </param>
     /// <returns>
-    /// El resultado generado por la operación, o un 
+    /// El resultado generado por la operación, o un
     /// <see cref="ServiceResult{T}"/> que representa un error en la
     /// misma.
     /// </returns>
@@ -159,7 +148,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Argumentos a pasar a la operación.
     /// </param>
     /// <returns>
-    /// El resultado generado por la operación, o un 
+    /// El resultado generado por la operación, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// misma.
     /// </returns>
@@ -182,7 +171,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Argumentos a pasar a la operación.
     /// </param>
     /// <returns>
-    /// El resultado generado por la operación, o un 
+    /// El resultado generado por la operación, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// misma.
     /// </returns>
@@ -190,9 +179,9 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     {
         try
         {
-            if (_configuration.RunPrologue(action, entities.Select(p => GetFromResult(action, p)).NotNull()) is { } r) return r;
+            if (_runner.RunPrologue(action, entities.Select(p => GetFromResult(action, p)).NotNull()) is { } r) return r;
             operation.Invoke([.. entities.Cast<object>()]);
-            return _configuration.RunEpilogue(action, entities.Select(p => GetFromResult(action, p)).NotNull()) ?? ServiceResult.Ok;
+            return _runner.RunEpilogue(action, entities.Select(p => GetFromResult(action, p)).NotNull()) ?? ServiceResult.Ok;
         }
         catch (InvalidCastException)
         {
@@ -224,11 +213,11 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// </param>
     /// <param name="entity">
     /// Entidad que se ha pasado como argumento a la tarea. Si la tarea
-    /// no recibe un <see cref="Model"/> como argumento, este valor 
+    /// no recibe un <see cref="Model"/> como argumento, este valor
     /// debe establecerse en <see langword="null"/>.
     /// </param>
     /// <returns>
-    /// El resultado generado por la tarea, o un 
+    /// El resultado generado por la tarea, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// operación.
     /// </returns>
@@ -236,9 +225,9 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     {
         try
         {
-            if (_configuration.RunPrologue(action, new[] { GetFromResult(action, entity) }.NotNull()) is { } r) return r.CastUp<ServiceResult<TModel?>>();
+            if (_runner.RunPrologue(action, new[] { GetFromResult(action, entity) }.NotNull()) is { } r) return r.CastUp<ServiceResult<TModel?>>();
             var result = await op;
-            return _configuration.RunEpilogue(action, new[] { GetFromResult(action, result as Model ?? entity) }.NotNull())?.CastUp<ServiceResult<TModel?>>()
+            return _runner.RunEpilogue(action, new[] { GetFromResult(action, result as Model ?? entity) }.NotNull())?.CastUp<ServiceResult<TModel?>>()
                 ?? new ServiceResult<TModel?>(result ?? entity);
         }
         catch (InvalidCastException)
@@ -259,9 +248,9 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     {
         try
         {
-            if (_configuration.RunPrologue(action, new[] { GetFromResult(action, entity) }.NotNull()) is { } r) return r.CastUp<ServiceResult<Model?>>();
+            if (_runner.RunPrologue(action, new[] { GetFromResult(action, entity) }.NotNull()) is { } r) return r.CastUp<ServiceResult<Model?>>();
             var result = await op;
-            return _configuration.RunEpilogue(action, new[] { GetFromResult(action, result as Model ?? entity) }.NotNull())?.CastUp<ServiceResult<Model?>>()
+            return _runner.RunEpilogue(action, new[] { GetFromResult(action, result as Model ?? entity) }.NotNull())?.CastUp<ServiceResult<Model?>>()
                 ?? new ServiceResult<Model?>(result as Model ?? entity);
         }
         catch (InvalidCastException)
@@ -294,11 +283,11 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// </param>
     /// <param name="entity">
     /// Entidad que se ha pasado como argumento a la tarea. Si la tarea
-    /// no recibe un <see cref="Model"/> como argumento, este valor 
+    /// no recibe un <see cref="Model"/> como argumento, este valor
     /// debe establecerse en <see langword="null"/>.
     /// </param>
     /// <returns>
-    /// El resultado generado por la tarea, o un 
+    /// El resultado generado por la tarea, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// operación.
     /// </returns>
@@ -306,9 +295,9 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     {
         try
         {
-            if (_configuration.RunPrologue(action, new[] { GetFromResult(action, entity) }.NotNull()) is { } r) return r.CastUp<ServiceResult<TModel?>>();
+            if (_runner.RunPrologue(action, new[] { GetFromResult(action, entity) }.NotNull()) is { } r) return r.CastUp<ServiceResult<TModel?>>();
             await op;
-            return _configuration.RunEpilogue(action, new[] { GetFromResult(action, entity) }.NotNull())?.CastUp<ServiceResult<TModel?>>() ?? new ServiceResult<TModel?>(entity);
+            return _runner.RunEpilogue(action, new[] { GetFromResult(action, entity) }.NotNull())?.CastUp<ServiceResult<TModel?>>() ?? new ServiceResult<TModel?>(entity);
         }
         catch (InvalidCastException)
         {
@@ -339,7 +328,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Tarea a ejecutar.
     /// </param>
     /// <returns>
-    /// El resultado generado por la tarea, o un 
+    /// El resultado generado por la tarea, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// operación.
     /// </returns>
@@ -363,7 +352,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Tarea a ejecutar.
     /// </param>
     /// <returns>
-    /// El resultado generado por la tarea, o un 
+    /// El resultado generado por la tarea, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// operación.
     /// </returns>
@@ -387,7 +376,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Tarea a ejecutar.
     /// </param>
     /// <returns>
-    /// El resultado generado por la tarea, o un 
+    /// El resultado generado por la tarea, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// operación.
     /// </returns>
@@ -412,11 +401,11 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// </param>
     /// <param name="entity">
     /// Entidad que se ha pasado como argumento a la tarea. Si la tarea
-    /// no recibe un <see cref="Model"/> como argumento, este valor 
+    /// no recibe un <see cref="Model"/> como argumento, este valor
     /// debe establecerse en <see langword="null"/>.
     /// </param>
     /// <returns>
-    /// El resultado generado por la tarea, o un 
+    /// El resultado generado por la tarea, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// operación.
     /// </returns>
@@ -441,7 +430,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// Entidad sobre la cual se ejecutará la acción.
     /// </param>
     /// <returns>
-    /// El resultado generado por la operación, o un 
+    /// El resultado generado por la operación, o un
     /// <see cref="ServiceResult"/> que representa un error en la
     /// misma.
     /// </returns>
@@ -457,7 +446,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     /// </summary>
     /// <param name="ex">Excepción que se ha producido.</param>
     /// <returns>
-    /// Un resultado que representa y describe una falla en la 
+    /// Un resultado que representa y describe una falla en la
     /// operación solicitada.
     /// </returns>
     protected static ServiceResult ResultFromException(Exception ex)
@@ -473,7 +462,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
             _ => ex,
         };
     }
- 
+
     /// <summary>
     /// Mapea el valor <see cref="EntityState"/> a su valor equivalente
     /// de tipo <see cref="CrudAction"/>.
@@ -489,9 +478,9 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
     {
         return state switch
         {
-            EntityState.Deleted => CrudAction.Delete,
-            EntityState.Modified => CrudAction.Update,
-            EntityState.Added => CrudAction.Create,
+            EntityState.Deleted => CrudAction.Write,
+            EntityState.Modified => CrudAction.Write,
+            EntityState.Added => CrudAction.Write,
             _ => CrudAction.Read
         };
     }
@@ -524,7 +513,7 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
 
     private static ChangeTrackerItem? GetFromResult(CrudAction action, object? result)
     {
-        return new ChangeTrackerItem(Map(action), result switch
+        return new ChangeTrackerItem(ChangeTrackerChangeType.NoChange, result switch
         {
             Model m => m,
             EntityEntry e => e.Entity as Model,
@@ -533,9 +522,9 @@ public abstract class CrudTransactionBase<T> : AsyncDisposable where T : DbConte
         });
     }
 
-    private protected CrudTransactionBase(IMiddlewareRunner configuration, T contextInstance)
+    private protected CrudTransactionBase(IMiddlewareRunner runner, T contextInstance)
     {
-        _configuration = configuration;
+        _runner = runner;
         _context = contextInstance;
     }
 }

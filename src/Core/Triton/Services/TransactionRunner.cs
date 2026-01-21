@@ -11,10 +11,20 @@ namespace TheXDS.Triton.Services;
 /// <param name="epilogues">
 /// A collection of pre-ordered epilogues to execute.
 /// </param>
-public sealed class TransactionRunner(IEnumerable<MiddlewareAction> prologues, IEnumerable<MiddlewareAction> epilogues) : IMiddlewareRunner
+public sealed class TransactionRunner(Func<IEnumerable<MiddlewareAction>> prologues, Func<IEnumerable<MiddlewareAction>> epilogues) : IMiddlewareRunner
 {
-    private readonly IEnumerable<MiddlewareAction> _prologues = prologues;
-    private readonly IEnumerable<MiddlewareAction> _epilogues = epilogues;
+    private readonly Func<IEnumerable<MiddlewareAction>> _prologues = prologues;
+    private readonly Func<IEnumerable<MiddlewareAction>> _epilogues = epilogues;
+
+    /// <summary>
+    /// Initializes a new instance of the TransactionRunner class with the specified prologue and epilogue middleware
+    /// actions.
+    /// </summary>
+    /// <param name="prologues">A collection of middleware actions to execute before the main transaction logic. Cannot be null.</param>
+    /// <param name="epilogues">A collection of middleware actions to execute after the main transaction logic. Cannot be null.</param>
+    public TransactionRunner(IEnumerable<MiddlewareAction> prologues, IEnumerable<MiddlewareAction> epilogues) : this(() => prologues, () => epilogues)
+    {
+    }
 
     /// <summary>
     /// Performs additional checks before executing a CRUD action, returning
@@ -30,10 +40,10 @@ public sealed class TransactionRunner(IEnumerable<MiddlewareAction> prologues, I
     /// A ServiceResult with the result of the prologue that has failed or
     /// <see langword="null"/> if the operation can proceed.
     /// </returns>
-    public ServiceResult? RunPrologue(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => Run(_prologues, action, entities);
+    public ServiceResult? RunPrologue(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => Run(_prologues.Invoke(), action, entities);
 
     /// <summary>
-    /// Performs additional checks after executing a CRUD action, returning 
+    /// Performs additional checks after executing a CRUD action, returning
     /// <see langword="null"/> if the operation can proceed.
     /// </summary>
     /// <param name="action">
@@ -43,10 +53,10 @@ public sealed class TransactionRunner(IEnumerable<MiddlewareAction> prologues, I
     /// The entities on which the action has been executed.
     /// </param>
     /// <returns>
-    /// A ServiceResult with the result of the epilogue that has failed or 
+    /// A ServiceResult with the result of the epilogue that has failed or
     /// <see langword="null"/> if the operation can proceed.
     /// </returns>
-    public ServiceResult? RunEpilogue(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => Run(_epilogues, action, entities);
+    public ServiceResult? RunEpilogue(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities) => Run(_epilogues.Invoke(), action, entities);
 
     private static ServiceResult? Run(IEnumerable<MiddlewareAction> collection, in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
     {

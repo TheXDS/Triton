@@ -116,7 +116,7 @@ public static class MiddlewareConfiguratorExtensions
     /// </returns>
     public static IMiddlewareConfigurator UseJournal<T>(this IMiddlewareConfigurator config, T journalSingleton, JournalSettings configuration) where T : IJournalMiddleware
     {
-        return config.AddLateEpilogue((a, m) =>
+        return config.AddLateEpilogue((in CrudAction a, IEnumerable<ChangeTrackerItem>? m) =>
         {
             try
             {

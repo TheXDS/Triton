@@ -27,7 +27,7 @@ public class DelaySimulator(int min, int max) : ITransactionMiddleware
     {
     }
 
-    ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
+    ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entity)
     {
         if (action == CrudAction.Read || action == CrudAction.Commit) Thread.Sleep(random.Next(DelayRange));
         return null;

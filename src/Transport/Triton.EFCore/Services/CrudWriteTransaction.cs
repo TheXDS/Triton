@@ -73,7 +73,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     /// <inheritdoc/>
     public ServiceResult Create<TModel>(params TModel[] entities) where TModel : Model
     {
-        return TryCall(CrudAction.Create, _context.AddRange, entities);
+        return TryCall(CrudAction.Write, _context.AddRange, entities);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     /// </returns>
     public ServiceResult Delete<TModel>(params TModel[] entities) where TModel : Model
     {
-        return TryCall(CrudAction.Delete, _context.RemoveRange, entities);
+        return TryCall(CrudAction.Write, _context.RemoveRange, entities);
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     /// <inheritdoc/>
     public ServiceResult Update<TModel>(params TModel[] entities) where TModel : Model
     {
-        return TryCall(CrudAction.Update, _context.UpdateRange, entities);
+        return TryCall(CrudAction.Write, _context.UpdateRange, entities);
     }
 
     /// <inheritdoc/>
@@ -136,7 +136,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
 
         foreach (TModel entity in entities.NotNull())
         {
-            if (Perform(CrudAction.Delete, _context.Remove, entity) is { } error) return error;
+            if (Perform(CrudAction.Write, _context.Remove, entity) is { } error) return error;
         }
         return ServiceResult.Ok;
     }
@@ -149,7 +149,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
 
         foreach (TModel entity in entities.NotNull())
         {
-            if (Perform(CrudAction.Delete, _context.Remove, entity) is { } error) return error;
+            if (Perform(CrudAction.Write, _context.Remove, entity) is { } error) return error;
         }
         return ServiceResult.Ok;
     }
@@ -163,18 +163,18 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     /// <inheritdoc/>
     public ServiceResult Create(params Model[] entities)
     {
-        return TryCall(CrudAction.Create, _context.AddRange, entities);
+        return TryCall(CrudAction.Write, _context.AddRange, entities);
     }
 
     /// <inheritdoc/>
     public ServiceResult Update(params Model[] entities)
     {
-        return TryCall(CrudAction.Update, _context.UpdateRange, entities);
+        return TryCall(CrudAction.Write, _context.UpdateRange, entities);
     }
 
     /// <inheritdoc/>
     public ServiceResult Delete(params Model[] entities)
     {
-        return TryCall(CrudAction.Delete, _context.RemoveRange, entities);
+        return TryCall(CrudAction.Write, _context.RemoveRange, entities);
     }
 }

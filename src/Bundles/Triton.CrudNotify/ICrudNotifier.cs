@@ -20,5 +20,5 @@ public interface ICrudNotifier
     /// <returns>
     /// The result of a service operation.
     /// </returns>
-    ServiceResult? NotifyPeers(CrudAction action, IEnumerable<ChangeTrackerItem>? entity);
+    ServiceResult? NotifyPeers(in CrudAction action, IEnumerable<ChangeTrackerItem>? entity);
 }

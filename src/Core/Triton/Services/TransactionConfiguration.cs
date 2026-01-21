@@ -106,6 +106,6 @@ public sealed class TransactionConfiguration : IMiddlewareConfigurator
 
     IMiddlewareRunner IMiddlewareConfigurator.GetRunner()
     {
-        return new TransactionRunner([.._earlyPrologs, .._midPrologs, .._latePrologs], [.._earlyEpilogs, .._midEpilogs, .._lateEpilogs]);
+        return new TransactionRunner(() => [.._earlyPrologs, .._midPrologs, .._latePrologs], () => [.._earlyEpilogs, .._midEpilogs, .._lateEpilogs]);
     }
 }

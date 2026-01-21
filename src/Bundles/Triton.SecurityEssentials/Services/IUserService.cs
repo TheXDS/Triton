@@ -92,7 +92,11 @@ public interface IUserService : ITritonService
         var r = await j.SearchAsync<LoginCredential>(p => p.Username == username);
         if (!r.IsSuccessful) return r;
         if (r.Result!.Length != 0) return FailureReason.EntityDuplication;
-        Guid id = await j.GetUniqueIdAsync<LoginCredential, Guid>(Guid.NewGuid);
+        Guid id;
+        do
+        {
+            id = Guid.NewGuid();
+        } while ((await j.ReadAsync<LoginCredential, Guid>(id)).Result is not null);
         var newCred = new LoginCredential(username, await HashPasswordAsync<TAlg>(password))
         {
             Id = id,
@@ -323,7 +327,7 @@ public interface IUserService : ITritonService
     /// <param name="userId">Nombre de inicio de sesión.</param>
     /// <param name="password">Contraseña.</param>
     /// <returns>
-    /// Una tarea que, al finalizar, retornará una tupla de valores que indica si la 
+    /// Una tarea que, al finalizar, retornará una tupla de valores que indica si la
     /// </returns>
     /// <remarks>
     /// Si desea autenticar a un usuario, utilice el método

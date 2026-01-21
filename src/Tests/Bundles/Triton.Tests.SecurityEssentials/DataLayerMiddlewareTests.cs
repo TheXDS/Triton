@@ -22,20 +22,20 @@ internal class DataLayerMiddlewareTests
     public void GetModelContextString_generic_Test()
     {
         var a = typeof(CrudAction).FullName;
-        var b = CrudAction.Create.ToString();
+        var b = CrudAction.Write.ToString();
         var c = typeof(LoginCredential).CSharpName();
 
-        Assert.That(DataLayerSecurityMiddleware.GetModelContextString<LoginCredential>(CrudAction.Create), Is.EqualTo($"{a}.{b};{c}"));
+        Assert.That(DataLayerSecurityMiddleware.GetModelContextString<LoginCredential>(CrudAction.Write), Is.EqualTo($"{a}.{b};{c}"));
     }
 
     [Test]
     public void GetModelContextString_Test()
     {
         var a = typeof(CrudAction).FullName;
-        var b = CrudAction.Create.ToString();
+        var b = CrudAction.Write.ToString();
         var c = typeof(LoginCredential).CSharpName();
 
-        Assert.That(DataLayerSecurityMiddleware.GetModelContextString(CrudAction.Create, typeof(LoginCredential[])), Is.EqualTo($"{a}.{b};{c}"));
+        Assert.That(DataLayerSecurityMiddleware.GetModelContextString(CrudAction.Write, typeof(LoginCredential)), Is.EqualTo($"{a}.{b};{c}"));
     }
 
     [Test]
@@ -55,15 +55,14 @@ internal class DataLayerMiddlewareTests
         var disabled = await GetCredential("disabled", svc);
 
         prov.SecurityObject = null;
-        Assert.That(middleware.PrologueAction(CrudAction.Create, [new(ChangeTrackerChangeType.Create, new LoginCredential())])!.Reason, Is.EqualTo(FailureReason.Tamper));
-        Assert.That(middleware.PrologueAction(CrudAction.Commit, null)!.Reason, Is.EqualTo(FailureReason.Tamper));
+        Assert.That(middleware.PrologueAction(CrudAction.Write, [new(ChangeTrackerChangeType.Create, new LoginCredential())])!.Reason, Is.EqualTo(FailureReason.Tamper));
 
         prov.SecurityObject =  root;
         Assert.That(middleware.PrologueAction(CrudAction.Commit, null), Is.Null);
-        Assert.That(middleware.PrologueAction(CrudAction.Create, [new(ChangeTrackerChangeType.Create, new LoginCredential())]), Is.Null);
+        Assert.That(middleware.PrologueAction(CrudAction.Write, [new(ChangeTrackerChangeType.Create, new LoginCredential())]), Is.Null);
 
         prov.SecurityObject = disabled;
         Assert.That(middleware.PrologueAction(CrudAction.Commit, null), Is.Null);
-        Assert.That(middleware.PrologueAction(CrudAction.Create, [new(ChangeTrackerChangeType.Create, new LoginCredential())])!.Reason, Is.EqualTo(FailureReason.Forbidden));
+        Assert.That(middleware.PrologueAction(CrudAction.Write, [new(ChangeTrackerChangeType.Create, new LoginCredential())])!.Reason, Is.EqualTo(FailureReason.Forbidden));
     }
 }

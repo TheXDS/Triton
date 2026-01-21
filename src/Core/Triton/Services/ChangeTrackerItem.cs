@@ -36,7 +36,7 @@ public class ChangeTrackerItem
                 NewEntity = entity;
                 break;
             case ChangeTrackerChangeType.Delete:
-                OldEntity = entity;// ?? throw new ArgumentNullException(nameof(entity));
+                OldEntity = entity ?? throw new ArgumentNullException(nameof(entity));
                 break;
             case ChangeTrackerChangeType.NoChange:
                 OldEntity = entity;

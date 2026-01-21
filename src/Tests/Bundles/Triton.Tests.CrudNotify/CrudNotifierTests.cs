@@ -11,10 +11,10 @@ internal class CrudNotifierTests
     public void Crud_transaction_triggers_notifications_Test()
     {
         var notifierMock = new Mock<ICrudNotifier>();
-        notifierMock.Setup(p => p.NotifyPeers(CrudAction.Create, It.IsAny<IEnumerable<ChangeTrackerItem>?>())).Returns((ServiceResult?)null).Verifiable(Times.Once);
+        notifierMock.Setup(p => p.NotifyPeers(CrudAction.Write, It.IsAny<IEnumerable<ChangeTrackerItem>?>())).Returns((ServiceResult?)null).Verifiable(Times.Once);
         IMiddlewareConfigurator configurator = new TransactionConfiguration();
         configurator.AddNotifyService(notifierMock.Object);
-        Assert.That(configurator.GetRunner().RunEpilogue(CrudAction.Create, null), Is.Null);
+        Assert.That(configurator.GetRunner().RunEpilogue(CrudAction.Write, null), Is.Null);
         notifierMock.Verify();
     }
 }

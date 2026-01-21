@@ -3,35 +3,26 @@
 /// <summary>
 /// Enumerates existing CRUD operations.
 /// </summary>
- [Flags]
 public enum CrudAction : byte
 {
     /// <summary>
-    /// Write information to the database.
+    /// Commit all queued write operations to the database.
     /// </summary>
-    Commit = 0,
-    /// <summary>
-    /// Create an entity.
-    /// </summary>
-    Create = 1,
+    Commit,
     /// <summary>
     /// Read an entity.
     /// </summary>
-    Read = 2,
+    Read,
     /// <summary>
-    /// Update an entity.
+    /// Queues a write operation. Includes create, update and delete operations.
     /// </summary>
-    Update = 4,
-    /// <summary>
-    /// Delete an entity.
-    /// </summary>
-    Delete = 8,
+    Write,
     /// <summary>
     /// Discard pending changes to write in the database.
     /// </summary>
-    Discard = 16,
+    Discard,
     /// <summary>
     /// Enumerate entities directly according to a filter function.
     /// </summary>
-    Query = 32,
+    Query,
 }

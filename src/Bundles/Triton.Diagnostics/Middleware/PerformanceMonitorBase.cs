@@ -65,13 +65,13 @@ public abstract class PerformanceMonitorBase : NotifyPropertyChanged, ITransacti
     /// </param>
     protected abstract void RegisterEvent(double milliseconds);
 
-    ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction arg1, IEnumerable<ChangeTrackerItem>? _)
+    ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction arg1, IEnumerable<ChangeTrackerItem>? _)
     {
         if (_allowedActions.Contains(arg1) && !_stopwatch.IsRunning) _stopwatch.Restart();
         return null;
     }
 
-    ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction arg1, IEnumerable<ChangeTrackerItem>? _)
+    ServiceResult? ITransactionMiddleware.EpilogueAction(in CrudAction arg1, IEnumerable<ChangeTrackerItem>? _)
     {
         if (!_allowedActions.Contains(arg1)) return null;
         _stopwatch.Stop();

@@ -6,7 +6,7 @@ using TheXDS.Triton.EfContextBuilder;
 namespace TheXDS.Triton.Tests.EFContextBuilder;
 
 [TestFixture]
-internal class InstanceTests
+public class InstanceTests
 {
     public static void ConfigTest(DbContextOptionsBuilder options)
     {
@@ -14,7 +14,7 @@ internal class InstanceTests
     }
 
     public void BrokenConfigTest(DbContextOptionsBuilder options)
-    {            
+    {
     }
 
     [Test]

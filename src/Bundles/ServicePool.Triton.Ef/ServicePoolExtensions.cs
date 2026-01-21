@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TheXDS.ServicePool.Triton.Ef;
 using TheXDS.Triton.EFCore.Services;
 using TheXDS.Triton.Services;
 
-namespace TheXDS.ServicePool.Triton;
+namespace TheXDS.ServicePool.Triton.Ef;
 
 /// <summary>
 /// Contains extension methods that allow configuring Tritón to be used with 

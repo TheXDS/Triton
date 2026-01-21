@@ -49,8 +49,8 @@ public class PerformanceMonitor : PerformanceMonitorBase
         if (!_averageMs.IsValid()) _averageMs = 0.0;
         if (milliseconds > _maxMs || !_maxMs.IsValid()) _maxMs = milliseconds;
         if (milliseconds < _minMs || !_minMs.IsValid()) _minMs = milliseconds;
-        
-        if (_eventCount == 0) _averageMs = milliseconds;
-        else _averageMs = ((_averageMs * _eventCount) + milliseconds) / ++_eventCount;
+
+        if (_eventCount++ == 0) _averageMs = milliseconds;
+        else _averageMs = ((_averageMs * _eventCount) + milliseconds) / _eventCount;
     }
 }

@@ -29,9 +29,9 @@ internal class ReadOnlySimulatorTests
             return null;
         }
         var t = new TransactionConfiguration().UseSimulation(false).AddEpilogue(CheckBlocked);
-        RunSimulatorFail(t, CrudAction.Create, [new ChangeTrackerItem(null, new User("x", "test"))]);
-        RunSimulatorFail(t, CrudAction.Update, [new ChangeTrackerItem(new User("x", "test"), new User("x", "test"))]);
-        RunSimulatorFail(t, CrudAction.Delete, [new ChangeTrackerItem(new User("x", "test"), null)]);
+        RunSimulatorFail(t, CrudAction.Write, [new ChangeTrackerItem(null, new User("x", "test"))]);
+        RunSimulatorFail(t, CrudAction.Write, [new ChangeTrackerItem(new User("x", "test"), new User("x", "test"))]);
+        RunSimulatorFail(t, CrudAction.Write, [new ChangeTrackerItem(new User("x", "test"), null)]);
         RunSimulatorFail(t, CrudAction.Commit, [new ChangeTrackerItem(null, null)]);
     }
 
@@ -49,9 +49,7 @@ internal class ReadOnlySimulatorTests
         Assert.That(ranEpilog);
     }
 
-    [TestCase(CrudAction.Create, false)]
-    [TestCase(CrudAction.Update, false)]
-    [TestCase(CrudAction.Delete, false)]
+    [TestCase(CrudAction.Write, false)]
     [TestCase(CrudAction.Commit, false)]
     [TestCase(CrudAction.Read, true)]
     public void Simulator_runs_Epilogues(in CrudAction action, bool ranTrans)

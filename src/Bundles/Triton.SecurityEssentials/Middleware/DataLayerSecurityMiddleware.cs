@@ -21,16 +21,21 @@ public class DataLayerSecurityMiddleware(ISecurityActorProvider securityActorPro
     private readonly IUserService _userService = userService;
     private readonly ISecurityActorProvider _securityActorProvider = securityActorProvider;
 
-    ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+    ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
     {
         if (entities is null) return null;
         if (_securityActorProvider.GetCurrentActor() is not { } actor) return FailureReason.Tamper;
 
         var entityTypes = entities.Select(p => p.Model);
 
-        return entityTypes.All(entityType => _userService.CheckAccess(actor, GetModelContextString(action, entityType), MapCrudActionToFlags(action)).Result == true)
-            ? null
-            : FailureReason.Forbidden;
+        foreach (var entityType in entityTypes)
+        {
+            if (_userService.CheckAccess(actor, GetModelContextString(action, entityType), MapCrudActionToFlags(action)).Result != true)
+            {
+                return FailureReason.Forbidden;
+            }
+        }
+        return null;
     }
 
     /// <summary>
@@ -44,9 +49,9 @@ public class DataLayerSecurityMiddleware(ISecurityActorProvider securityActorPro
     /// <returns>
     /// A string representing the operation on the model in a security context.
     /// </returns>
-    public static string GetModelContextString(CrudAction action, Type model)
+    public static string GetModelContextString(in CrudAction action, Type model)
     {
-        if (!model.Implements<Model>()) throw Errors.UnexpectedType(model, typeof(Model));
+        if (!(model.Implements<Model>() || model.Implements<IEnumerable<Model>>())) throw Errors.UnexpectedType(model, typeof(Model));
         return $"{typeof(CrudAction).FullName}.{action};{model.CSharpName()}";
     }
 
@@ -61,7 +66,7 @@ public class DataLayerSecurityMiddleware(ISecurityActorProvider securityActorPro
     /// <returns>
     /// A string representing the operation on the model in a security context.
     /// </returns>
-    public static string GetModelContextString<TModel>(CrudAction action) where TModel : Model
+    public static string GetModelContextString<TModel>(in CrudAction action) where TModel : Model
     {
         return GetModelContextString(action, typeof(TModel));
     }
@@ -70,10 +75,8 @@ public class DataLayerSecurityMiddleware(ISecurityActorProvider securityActorPro
     {
         return action switch
         {
-            CrudAction.Create => PermissionFlags.Create,
+            CrudAction.Write => PermissionFlags.Create,
             CrudAction.Read => PermissionFlags.Read,
-            CrudAction.Update => PermissionFlags.Update,
-            CrudAction.Delete => PermissionFlags.Delete,
             CrudAction.Commit => PermissionFlags.None,
             _ => PermissionFlags.All
         };

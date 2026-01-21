@@ -53,7 +53,7 @@ internal abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> 
     public void Monitor_skips_create()
     {
         (var runner, var perfMon) = Build();
-        RunCrudAction(runner, CrudAction.Create);
+        RunCrudAction(runner, CrudAction.Write);
         Assert.That(perfMon.EventCount, Is.Zero);
     }
 
@@ -61,7 +61,7 @@ internal abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> 
     public void Monitor_skips_update()
     {
         (var runner, var perfMon) = Build();
-        RunCrudAction(runner, CrudAction.Update);
+        RunCrudAction(runner, CrudAction.Write);
         Assert.That(perfMon.EventCount, Is.Zero);
     }
 
@@ -69,7 +69,7 @@ internal abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> 
     public void Monitor_skips_delete()
     {
         (var runner, var perfMon) = Build();
-        RunCrudAction(runner, CrudAction.Delete);
+        RunCrudAction(runner, CrudAction.Write);
         Assert.That(perfMon.EventCount, Is.Zero);
     }
 

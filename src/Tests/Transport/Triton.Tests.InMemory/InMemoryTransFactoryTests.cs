@@ -8,7 +8,7 @@ using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.InMemory;
 
-public class InMemoryTransFactoryTests : TransactionMiddlewareExecutionTests<InMemoryTransFactory>
+internal class InMemoryTransFactoryTests : TransactionMiddlewareExecutionTests<InMemoryTransFactory>
 {
     [Test]
     public void Wipe_clears_store()

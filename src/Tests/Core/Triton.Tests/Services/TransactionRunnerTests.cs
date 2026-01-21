@@ -25,9 +25,9 @@ internal class TransactionRunnerTests
         var check = new MiddlewareActionCheck();
         ChangeTrackerItem[] changes = [];
         var runner = new TransactionRunner([check.OnRun], []);
-        Assert.That(runner.RunPrologue(CrudAction.Update, changes), Is.Null);
+        Assert.That(runner.RunPrologue(CrudAction.Write, changes), Is.Null);
         Assert.That(check.DidRun, Is.True);
-        Assert.That(check.CrudAction, Is.EqualTo(CrudAction.Update));
+        Assert.That(check.CrudAction, Is.EqualTo(CrudAction.Write));
         Assert.That(check.Changes, Is.SameAs(changes));
     }
 
@@ -37,9 +37,9 @@ internal class TransactionRunnerTests
         var check = new MiddlewareActionCheck();
         ChangeTrackerItem[] changes = [];
         var runner = new TransactionRunner([], [check.OnRun]);
-        Assert.That(runner.RunEpilogue(CrudAction.Update, changes), Is.Null);
+        Assert.That(runner.RunEpilogue(CrudAction.Write, changes), Is.Null);
         Assert.That(check.DidRun, Is.True);
-        Assert.That(check.CrudAction, Is.EqualTo(CrudAction.Update));
+        Assert.That(check.CrudAction, Is.EqualTo(CrudAction.Write));
         Assert.That(check.Changes, Is.SameAs(changes));
     }
 
@@ -50,9 +50,9 @@ internal class TransactionRunnerTests
         var check2 = new MiddlewareActionCheck();
         ChangeTrackerItem[] changes = [];
         var runner = new TransactionRunner([check1.OnRun, check2.OnRun], []);
-        Assert.That(runner.RunPrologue(CrudAction.Update, changes), Is.EqualTo(ServiceResult.Ok));
+        Assert.That(runner.RunPrologue(CrudAction.Write, changes), Is.EqualTo(ServiceResult.Ok));
         Assert.That(check1.DidRun, Is.True);
-        Assert.That(check1.CrudAction, Is.EqualTo(CrudAction.Update));
+        Assert.That(check1.CrudAction, Is.EqualTo(CrudAction.Write));
         Assert.That(check1.Changes, Is.SameAs(changes));
         Assert.That(check2.DidRun, Is.False);
         Assert.That(check2.CrudAction, Is.Null);
@@ -66,9 +66,9 @@ internal class TransactionRunnerTests
         var check2 = new MiddlewareActionCheck();
         ChangeTrackerItem[] changes = [];
         var runner = new TransactionRunner([], [check1.OnRun, check2.OnRun]);
-        Assert.That(runner.RunEpilogue(CrudAction.Update, changes), Is.EqualTo(ServiceResult.Ok));
+        Assert.That(runner.RunEpilogue(CrudAction.Write, changes), Is.EqualTo(ServiceResult.Ok));
         Assert.That(check1.DidRun, Is.True);
-        Assert.That(check1.CrudAction, Is.EqualTo(CrudAction.Update));
+        Assert.That(check1.CrudAction, Is.EqualTo(CrudAction.Write));
         Assert.That(check1.Changes, Is.SameAs(changes));
         Assert.That(check2.DidRun, Is.False);
         Assert.That(check2.CrudAction, Is.Null);

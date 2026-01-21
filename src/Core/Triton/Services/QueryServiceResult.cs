@@ -11,24 +11,22 @@ namespace TheXDS.Triton.Services;
 /// <typeparam name="T">
 /// The type of entities to return.
 /// </typeparam>
-public class QueryServiceResult<T> : ServiceResult, IQueryable<T> where T : Model
+public class QueryServiceResult<T> : ServiceResult<IQueryable<T>>, IQueryable<T> where T : Model
 {
-    private readonly IQueryable<T>? _result;
+    /// <inheritdoc/>
+    public Type ElementType => Result?.ElementType ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
-    public Type ElementType => _result?.ElementType ?? throw new InvalidOperationException();
+    public Expression Expression => Result?.Expression ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
-    public Expression Expression => _result?.Expression ?? throw new InvalidOperationException();
+    public IQueryProvider Provider => Result?.Provider ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
-    public IQueryProvider Provider => _result?.Provider ?? throw new InvalidOperationException();
+    public IEnumerator<T> GetEnumerator() => Result?.GetEnumerator() ?? throw new InvalidOperationException();
 
     /// <inheritdoc/>
-    public IEnumerator<T> GetEnumerator() => _result?.GetEnumerator() ?? throw new InvalidOperationException();
-
-    /// <inheritdoc/>
-    IEnumerator IEnumerable.GetEnumerator() => _result?.GetEnumerator() ?? throw new InvalidOperationException();
+    IEnumerator IEnumerable.GetEnumerator() => Result?.GetEnumerator() ?? throw new InvalidOperationException();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="QueryServiceResult{T}"/>
@@ -46,9 +44,8 @@ public class QueryServiceResult<T> : ServiceResult, IQueryable<T> where T : Mode
     /// <param name="query">
     /// <see cref="IQueryable{T}"/> with the data query result.
     /// </param>
-    public QueryServiceResult(IQueryable<T> query)
+    public QueryServiceResult(IQueryable<T> query) : base(query)
     {
-        _result = query;
     }
 
     /// <summary>

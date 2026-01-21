@@ -30,7 +30,7 @@ public class ReadOnlySimulator
         config.AddLatePrologue(SkipActualCall);
     }
 
-    private ServiceResult? SkipActualCall(CrudAction arg1, IEnumerable<ChangeTrackerItem>? arg2)
+    private ServiceResult? SkipActualCall(in CrudAction arg1, IEnumerable<ChangeTrackerItem>? arg2)
     {
         if (arg1 == CrudAction.Read) return null;
         return (_runEpilogs ? (_config ?? throw new TamperException()).GetRunner().RunEpilogue(arg1, arg2) : null) ?? ServiceResult.Ok;

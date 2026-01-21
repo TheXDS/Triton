@@ -28,22 +28,20 @@ public class ChangeTrackerObserverMiddleware : ITransactionMiddleware
     /// </summary>
     public ReadOnlyObservableCollection<ChangeTrackerItem> Changes { get; }
 
-    ServiceResult? ITransactionMiddleware.PrologueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+    ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
     {
         if (entities is not null && entities.Any())
         {
             switch (action)
             {
-                case CrudAction.Create:
-                case CrudAction.Update:
-                case CrudAction.Delete:
+                case CrudAction.Write:
                     _items.AddRange(entities); break;
             }
         }
         return null;
     }
 
-    ServiceResult? ITransactionMiddleware.EpilogueAction(CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
+    ServiceResult? ITransactionMiddleware.EpilogueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
     {
         if (action == CrudAction.Commit) _items.Clear();
         return null;

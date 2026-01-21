@@ -44,7 +44,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential<Pbkdf2Storage>("test", "password".ToSecureString(), PermissionFlags.Special, PermissionFlags.Special, true, true, testGroups);
 
-        Assert.That(result, Is.EqualTo(ServiceResult.Ok));        
+        Assert.That(result, Is.EqualTo(ServiceResult.Ok));
         Assert.Multiple(() =>
         {
             Assert.That(newCredential, Is.Not.Null);
@@ -69,7 +69,7 @@ public class AddNewLoginCredential
         transactionMock.Verify();
         svcMock.Verify();
     }
-    
+
     [Test]
     public async Task AddNewLoginCredential_with_default_params_adds_new_credential()
     {
