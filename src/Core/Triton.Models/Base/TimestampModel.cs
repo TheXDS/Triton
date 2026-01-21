@@ -6,12 +6,12 @@ namespace TheXDS.Triton.Models.Base;
 /// <typeparam name="T">
 /// The type of key field to use for this model.
 /// </typeparam>
-public abstract class TimestampModel<T> : Model<T> where T : IComparable<T>, IEquatable<T>
+public abstract class TimestampModel<T> : Model<T>, ITimestampModel where T : IComparable<T>, IEquatable<T>
 {
     /// <summary>
-    /// Gets or sets a timestamp associated with this entity.
+    /// Gets or sets a creation timestamp associated with this entity.
     /// </summary>
-    public DateTime Timestamp { get; set; }
+    public DateTime? Timestamp { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the class
