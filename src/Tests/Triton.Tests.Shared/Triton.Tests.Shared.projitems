@@ -12,7 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Comment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Post.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\User.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)services\TransactionMiddlewareExecutionTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\TransactionMiddlewareExecutionTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringResourceTestClass.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StringResourceTestClass_T.cs" />
   </ItemGroup>
