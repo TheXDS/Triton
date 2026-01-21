@@ -9,8 +9,8 @@
   </Folder>
   <Folder Name="/Build/CI/Github/workflows/">
     <File Path="../.github/workflows/build.yml" />
+    <File Path="../.github/workflows/docfx.yml" />
     <File Path="../.github/workflows/publish.yml" />
-    <File Path="docfx.yml" />
   </Folder>
   <Folder Name="/Build/Targets/">
     <File Path="Targets/BuildPaths.props" />

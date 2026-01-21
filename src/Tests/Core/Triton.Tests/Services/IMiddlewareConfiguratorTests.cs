@@ -77,7 +77,6 @@ internal class IMiddlewareConfiguratorTests
         configuratorMock.Verify();
     }
 
-
     [Test]
     public void AttachAt_T_with_out_T_ActionPosition_ActionPosition_creates_new_middleware_instance()
     {

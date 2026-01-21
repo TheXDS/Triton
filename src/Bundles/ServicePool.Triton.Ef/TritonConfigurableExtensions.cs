@@ -372,7 +372,7 @@ public static class TritonConfigurableExtensions
             throw Errors.TypeMustImplDbContext(nameof(contextType));
         }
         var options = (optionsSource ?? DbContextOptionsSource.None).GetOptions();
-        if (options is null && !contextType.IsInstantiable([]) || options is not null && !contextType.IsInstantiable([typeof(DbContextOptions)]))
+        if ((options is null && !contextType.IsInstantiable([])) || (options is not null && !contextType.IsInstantiable([typeof(DbContextOptions)])))
         {
             throw new ClassNotInstantiableException();
         }
