@@ -90,7 +90,7 @@ public static class ContextBuilder
         }
         if (configurationCallback is { Method: { } callback })
         {
-            if (!callback.IsStatic || (!callback.DeclaringType?.IsPublic ?? true)) throw new InvalidOperationException($"The method '{callback.Name}' must be a public static method defined in a public class.");
+            if (!callback.IsStatic || (!callback.DeclaringType?.IsPublic ?? true)) throw new InvalidOperationException($"The context configuration method '{callback.Name}' must be a public static method defined in a public class.");
             if (typeof(DbContext).GetMethod("OnConfiguring", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(DbContextOptionsBuilder)], null) is { } oc)
             {
                 t.Builder.AddOverride(oc).Il.LoadArg1().Call(callback).Return();
@@ -176,7 +176,7 @@ public static class ContextBuilder
     /// instantiated.
     /// </returns>
     /// <exception cref="InvalidOperationException">
-    /// Thrown if the specified method in 
+    /// Thrown if the specified method in
     /// <paramref name="configurationCallback"/> is not static.
     /// </exception>
     public static ITypeBuilder<DbContext> Build(Action<DbContextOptionsBuilder>? configurationCallback)

@@ -1,3 +1,6 @@
+#pragma warning disable CS1591
+#pragma warning disable CA1822
+
 using TheXDS.Triton.Tests.Models;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;

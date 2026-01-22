@@ -1,17 +1,10 @@
-﻿using Moq;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheXDS.MCART.Types.Extensions;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Diagnostics.Middleware;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public class TextJournalTests
+internal class TextJournalTests
 {
     private class TestTextJournal : TextJournal
     {

@@ -19,7 +19,7 @@ internal class TimestampModelTests
     [Test]
     public void Ctor_Test()
     {
-        Assert.That(new TestClass().Timestamp, Is.EqualTo(default(DateTime)));
+        Assert.That(new TestClass().Timestamp, Is.Null);
 
         var n = DateTime.Now;
         Assert.That(new TestClass(n).Timestamp, Is.EqualTo(n));
