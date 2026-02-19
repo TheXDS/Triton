@@ -166,7 +166,6 @@ public class InMemoryCrudTransactionTests
         Assert.That(store, Is.EquivalentTo([user2]));
     }
 
-
     [Test]
     public void Delete_with_non_generic_model_fails_if_not_found()
     {
@@ -179,6 +178,7 @@ public class InMemoryCrudTransactionTests
         Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NotFound));
     }
+
     [Test]
     public async Task Delete_with_generic_model_deletes_entities()
     {
@@ -192,7 +192,6 @@ public class InMemoryCrudTransactionTests
         Assert.That(result.IsSuccessful, Is.True);
         Assert.That(store, Is.EquivalentTo((Model[])[user, post]));
     }
-
 
     [Test]
     public void Delete_with_generic_model_fails_if_not_found()
