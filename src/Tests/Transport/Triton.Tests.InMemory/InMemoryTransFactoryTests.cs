@@ -1,7 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
-using System.Transactions;
+﻿using NUnit.Framework;
 using TheXDS.Triton.InMemory.Services;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.Models;
