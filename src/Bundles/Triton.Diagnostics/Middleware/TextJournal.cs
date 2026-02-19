@@ -13,7 +13,7 @@ namespace TheXDS.Triton.Diagnostics.Middleware;
 public abstract class TextJournal : IJournalMiddleware
 {
     private static readonly string[] forbidden = ["idasstring"];
-    private static readonly string[] knownCensoredprops = 
+    private static readonly string[] knownCensoredprops =
     [
         "password", "key", "secret", "token", "hash",
         "salt", "iv", "key", "cipher", "signature",

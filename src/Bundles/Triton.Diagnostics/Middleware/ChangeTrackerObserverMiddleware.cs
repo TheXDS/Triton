@@ -30,20 +30,22 @@ public class ChangeTrackerObserverMiddleware : ITransactionMiddleware
 
     ServiceResult? ITransactionMiddleware.PrologueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
     {
-        if (entities is not null && entities.Any())
+        switch (action)
         {
-            switch (action)
-            {
-                case CrudAction.Write:
-                    _items.AddRange(entities); break;
-            }
+            case CrudAction.Write when entities is not null && entities.Any():
+                _items.AddRange(entities); break;
         }
         return null;
     }
 
     ServiceResult? ITransactionMiddleware.EpilogueAction(in CrudAction action, IEnumerable<ChangeTrackerItem>? entities)
     {
-        if (action == CrudAction.Commit) _items.Clear();
+        switch (action)
+        {
+            case CrudAction.Commit:
+            case CrudAction.Discard:
+                _items.Clear(); break;
+        }
         return null;
     }
 }
