@@ -43,6 +43,72 @@ public class InMemoryCrudTransactionTests
     }
 
     [Test]
+    public void Read_T1_outT2_reads_entities()
+    {
+        User user = new() { Id = "abc123" };
+        using var transaction = new InMemoryCrudTransaction([user]);
+        var result = transaction.Read<User, string>("abc123", out var readUser);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That(readUser, Is.SameAs(user));
+    }
+
+    [Test]
+    public void Read_TModel_TKey_reads_entities()
+    {
+        User user = new() { Id = "abc123" };
+        using var transaction = new InMemoryCrudTransaction([user]);
+        var result = transaction.Read<User, string>("abc123");
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That(result.Result, Is.SameAs(user));
+    }
+
+    [Test]
+    public void Read_TModel_object_reads_entities()
+    {
+        User user = new() { Id = "abc123" };
+        using var transaction = new InMemoryCrudTransaction([user]);
+        var result = transaction.Read<User>("abc123");
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That(result.Result, Is.SameAs(user));
+    }
+
+    [Test]
+    public async Task ReadAsync_reads_entities()
+    {
+        User user = new() { Id = "abc123" };
+        using var transaction = new InMemoryCrudTransaction([user]);
+        var result = await transaction.ReadAsync(typeof(User), "abc123");
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That(result.Result, Is.SameAs(user));
+    }
+
+    [Test]
+    public async Task ReadAsync_TModel_TKey_reads_entities()
+    {
+        User user = new() { Id = "abc123" };
+        using var transaction = new InMemoryCrudTransaction([user]);
+        var result = await transaction.ReadAsync<User, string>("abc123");
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That(result.Result, Is.SameAs(user));
+    }
+
+    [Test]
+    public async Task ReadAsync_TModel_object_reads_entities()
+    {
+        User user = new() { Id = "abc123" };
+        using var transaction = new InMemoryCrudTransaction([user]);
+        var result = await transaction.ReadAsync<User>("abc123");
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That(result.Result, Is.SameAs(user));
+    }
+
+    [Test]
     public async Task Create_creates_new_entities()
     {
         var newUser = new User("CreateTest", "Test user");
