@@ -4,8 +4,6 @@ using NUnit.Framework;
 using TheXDS.Triton.InMemory.Services;
 using TheXDS.Triton.Tests.Models;
 using TheXDS.Triton.Models.Base;
-using Moq;
-using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Services;
 namespace TheXDS.Triton.Tests.InMemory;
 
@@ -134,7 +132,7 @@ public class InMemoryCrudTransactionTests
     }
 
     [Test]
-    public async Task Update_updates_entities()
+    public async Task Update_TModel_updates_entities()
     {
         var existingUser = new User("abc123", "Existing user");
         var newUserData = new User("abc123", "Modified user");
@@ -147,7 +145,7 @@ public class InMemoryCrudTransactionTests
     }
 
     [Test]
-    public async Task Update_fails_on_not_found()
+    public async Task Update_TModel_fails_on_not_found()
     {
         var newUserData = new User("abc123", "Modified user");
         ICollection<Model> store = [];
@@ -158,7 +156,31 @@ public class InMemoryCrudTransactionTests
         Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
         Assert.That(store, Is.Empty);
     }
+    [Test]
+    public async Task Update_non_generic_updates_entities()
+    {
+        var existingUser = new User("abc123", "Existing user");
+        var newUserData = new User("abc123", "Modified user");
+        ICollection<Model> store = [existingUser];
+        using var transaction = new InMemoryCrudTransaction(store);
+        var result = transaction.Update((Model)newUserData);
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
+        Assert.That(((User)store.Single()).PublicName, Is.EqualTo("Modified user"));
+    }
 
+    [Test]
+    public async Task Update_non_generic_fails_on_not_found()
+    {
+        var newUserData = new User("abc123", "Modified user");
+        ICollection<Model> store = [];
+        using var transaction = new InMemoryCrudTransaction(store);
+        var result = transaction.Update((Model)newUserData);
+        Assert.That(result.IsSuccessful, Is.False);
+        Assert.That(result.Reason, Is.EqualTo(FailureReason.NotFound));
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
+        Assert.That(store, Is.Empty);
+    }
     [Test]
     public async Task Delete_with_entity_fails_on_not_found()
     {
