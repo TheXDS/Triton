@@ -4,4 +4,7 @@
 		<IsAotCompatible>true</IsAotCompatible>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />
+	</ItemGroup>
 </Project>

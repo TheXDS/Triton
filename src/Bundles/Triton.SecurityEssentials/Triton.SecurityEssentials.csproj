@@ -4,9 +4,12 @@
 		<RootNamespace>TheXDS.Triton</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="TheXDS.MCART.Security" Version="0.18.1" />
+	  <PackageReference Include="TheXDS.MCART.Security" Version="1.0.0-alpha.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Core\Triton\Triton.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />
 	</ItemGroup>
 </Project>
