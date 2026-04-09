@@ -18,7 +18,7 @@ public abstract class AuthenticatedService(IUserService userService, IMiddleware
     /// </summary>
     /// <param name="userService">Service to use for authenticating operations that require elevation.</param>
     /// <param name="factory">Transaction factory to use.</param>
-    public AuthenticatedService(IUserService userService, ITransactionFactory factory) 
+    public AuthenticatedService(IUserService userService, ITransactionFactory factory)
         : this(userService, new TransactionConfiguration(), factory)
     {
     }

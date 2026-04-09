@@ -3,9 +3,9 @@ using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials;
 
-internal class TestUserService : TritonService, IUserService
+internal class TestUserService(ITransactionFactory factory) : TritonService(factory), IUserService
 {
-    public TestUserService() : base(new InMemoryTransFactory())
+    public TestUserService() : this(new InMemoryTransFactory())
     {
     }
 }

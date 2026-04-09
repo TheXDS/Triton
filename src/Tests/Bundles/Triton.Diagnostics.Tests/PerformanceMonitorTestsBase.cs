@@ -43,8 +43,8 @@ internal abstract class PerformanceMonitorTestsBase<T> : MiddlewareTestsBase<T> 
         PerformanceMonitorTestsBase<T>.RunCrudAction(runner, 1500);
         Assert.That(perfMon.EventCount, Is.EqualTo(2));
         Assert.That(perfMon.AverageMs, PerformanceMonitorTestsBase<T>.IsAround(1000));
-
     }
+
     [Test]
     public void Monitor_includes_commits()
     {
