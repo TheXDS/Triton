@@ -86,7 +86,6 @@ public abstract class TextJournal : IJournalMiddleware
 
     private static string GetPropValue(PropertyInfo prop, Model entity)
     {
-
         return prop.GetValue(entity) switch
         {
             string s when knownCensoredprops.Contains(prop.Name.ToLower()) => new string('*', s.Length),
