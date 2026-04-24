@@ -3,9 +3,9 @@
 		{
 			"src": {
 				"files": [
-					"Bundles/**.csproj",
 					"Core/**.csproj",
-					"Transport/**.csproj"					
+					"Transport/**.csproj",					
+					"Bundles/**.csproj"
 				],
 				"src": "../src"
 			},
