@@ -1,4 +1,4 @@
-name: "Publish Tritón"
+name: "Publish TritÃ³n"
 on:
   release:
     types:
