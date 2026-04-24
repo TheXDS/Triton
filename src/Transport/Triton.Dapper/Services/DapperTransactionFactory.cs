@@ -3,11 +3,11 @@
 namespace TheXDS.Triton.Dapper.Services;
 
 /// <summary>
-/// Implementa un <see cref="ITransactionFactory"/> que crea y administra
-/// operaciones de datos utilizando la librería Dapper.
+/// Implements an <see cref="ITransactionFactory"/> that creates and manages
+/// data operations using the Dapper library.
 /// </summary>
 /// <param name="factory">
-/// Fábrica de conexiones a bases de datos a utilzar.
+/// Database connection factory to use.
 /// </param>
 public class DapperTransactionFactory(IDbConnectionFactory factory) : ITransactionFactory
 {
@@ -15,24 +15,23 @@ public class DapperTransactionFactory(IDbConnectionFactory factory) : ITransacti
     private readonly IDictionary<Type, DapperModelDescriptor> _modelOverrides = new Dictionary<Type, DapperModelDescriptor>();
 
     /// <summary>
-    /// Define un delegado que permite configurar un diccionario de sustitución
-    /// de metadatos para uno o más modelos.
+    /// Defines a delegate that allows configuring a metadata override dictionary
+    /// for one or more models.
     /// </summary>
     /// <param name="overridesDictionary">
-    /// Diccionario de sustituciones de metadatos para cada modelo.
+    /// Metadata override dictionary for each model.
     /// </param>
     public delegate void ModelOverrideConfigurator(IDictionary<Type, DapperModelDescriptor> overridesDictionary);
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="DapperTransactionFactory"/>.
+    /// Initializes a new instance of the
+    /// <see cref="DapperTransactionFactory"/> class.
     /// </summary>
     /// <param name="factory">
-    /// Fábrica de conexiones a bases de datos a utilzar.
+    /// Database connection factory to use.
     /// </param>
     /// <param name="modelOverrideConfigurator">
-    /// Delegado de configuración de las sustituciones de metadatos de los
-    /// modelos.
+    /// Delegate for configuring metadata overrides for models.
     /// </param>
     public DapperTransactionFactory(IDbConnectionFactory factory, ModelOverrideConfigurator? modelOverrideConfigurator)
         : this(factory)
@@ -41,7 +40,7 @@ public class DapperTransactionFactory(IDbConnectionFactory factory) : ITransacti
     }
 
     /// <summary>
-    /// Obtiene un diccionario de sustituciones aplicar al procesar modelos de datos.
+    /// Gets a dictionary of overrides to apply when processing data models.
     /// </summary>
     public IDictionary<Type, DapperModelDescriptor> ModelOverrides => _modelOverrides;
 

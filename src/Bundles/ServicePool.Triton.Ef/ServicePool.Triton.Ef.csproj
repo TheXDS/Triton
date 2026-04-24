@@ -20,10 +20,6 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Update="Resources\Strings\Errors.en-US.resx">
-	    <LastGenOutput>Errors.en-us.Designer.cs</LastGenOutput>
-	    <Generator>ResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
 	  <EmbeddedResource Update="Resources\Strings\Errors.resx">
 	    <LastGenOutput>Errors.Designer.cs</LastGenOutput>
 	    <Generator>ResXFileCodeGenerator</Generator>

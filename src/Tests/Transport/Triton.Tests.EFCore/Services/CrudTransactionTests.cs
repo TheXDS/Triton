@@ -1,7 +1,9 @@
 ﻿#pragma warning disable 1591
 
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using TheXDS.Triton.EFCore.Services;
+using TheXDS.Triton.Models.Base;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.EFCore.Models;
 using TheXDS.Triton.Tests.Models;
@@ -19,6 +21,40 @@ public class CrudTransactionTests
 
         Assert.That(t.Context, Is.Not.Null);
         Assert.That(t.Context, Is.InstanceOf<BlogContext>());
+    }
+
+    [Test]
+    public void All_T_gets_DbSet()
+    {
+        using var t = GetTestTransaction();
+        var result = t.All<User>();
+        Assert.That(result, Is.InstanceOf<QueryServiceResult<User>>());
+        Assert.That(result.Result, Is.InstanceOf<DbSet<User>>());
+    }
+
+    [Test]
+    public void All_T_reads_from_DbSet()
+    {
+        using var t = GetTestTransaction();
+        var result = t.All<User>().FirstOrDefault(p => p.Id == "user1");
+        Assert.That(result, Is.InstanceOf<User>());
+    }
+
+    [Test]
+    public void All_gets_DbSet()
+    {
+        using var t = GetTestTransaction();
+        var result = t.All(typeof(User));
+        Assert.That(result, Is.InstanceOf<QueryServiceResult<Model>>());
+        Assert.That(result.Result, Is.AssignableTo<DbSet<User>>());
+    }
+
+    [Test]
+    public void All_reads_from_DbSet()
+    {
+        using var t = GetTestTransaction();
+        var result = t.All(typeof(User)).ToList().FirstOrDefault(p => p.IdAsString == "user1");
+        Assert.That(result, Is.InstanceOf<User>());
     }
 
     [Test]

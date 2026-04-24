@@ -5,7 +5,7 @@ using TheXDS.Triton.Services;
 namespace TheXDS.ServicePool.Triton;
 
 /// <summary>
-/// Defines the contract for types that expose a set of 
+/// Defines the contract for types that expose a set of
 /// configuration functions for Tritón when used with a
 /// <see cref="ServicePool.Pool"/>.
 /// </summary>

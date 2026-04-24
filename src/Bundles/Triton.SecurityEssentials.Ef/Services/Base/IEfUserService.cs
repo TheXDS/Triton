@@ -6,14 +6,14 @@ using TheXDS.Triton.Services;
 namespace TheXDS.Triton.SecurityEssentials.Ef.Services.Base;
 
 /// <summary>
-/// Define una serie de miembros a implementar por un tipo que exponga
-/// acceso a un contexto de datos que almacena información de autenticación
-/// y permisos de usuarios.
+/// Defines a set of members to be implemented by a type that exposes
+/// access to a data context that stores authentication and user
+/// permission information.
 /// </summary>
 /// <typeparam name="T">
-/// Tipo de <see cref="DbContext"/> que contiene los
-/// <see cref="DbSet{TEntity}"/> necesarios para implementar autenticación
-/// y permisos de usuarios.
+/// Type of <see cref="DbContext"/> that contains the
+/// <see cref="DbSet{TEntity}"/> needed to implement user authentication
+/// and permissions.
 /// </typeparam>
 public interface IEfUserService<T> : IUserService, ITritonService<T> where T : DbContext, IUserDbContext, new()
 {

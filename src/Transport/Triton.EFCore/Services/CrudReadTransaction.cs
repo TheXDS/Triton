@@ -6,25 +6,25 @@ using TheXDS.Triton.Services;
 namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Clase que describe una transacción que permite realizar operaciones
-/// de lectura sobre un contexto de datos.
+/// A class that describes a transaction that allows read operations
+/// on a data context.
 /// </summary>
 /// <typeparam name="T">
-/// Tipo de contexto de datos a utilizar dentro de la transacción.
+/// Type of data context to use within the transaction.
 /// </typeparam>
 public class CrudReadTransaction<T> : CrudTransactionBase<T>, ICrudReadTransaction where T : DbContext
 {
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="CrudReadTransaction{T}"/>.
+    /// Initializes a new instance of the
+    /// <see cref="CrudReadTransaction{T}"/> class.
     /// </summary>
     /// <param name="configuration">
-    /// Configuración a utilizar para la transacción.
+    /// Configuration to use for the transaction.
     /// </param>
     /// <param name="options">
-    /// Opciones a utilizar para llamar al contructor del contexto de datos.
-    /// Establezca este parámetro en <see langword="null"/> para utilizar el
-    /// constructor público sin parámetros.
+    /// Options to use when calling the data context constructor.
+    /// Set this parameter to <see langword="null"/> to use the
+    /// parameterless public constructor.
     /// </param>
     public CrudReadTransaction(IMiddlewareRunner configuration, DbContextOptions? options = null) : base(configuration, options)
     {
@@ -47,8 +47,8 @@ public class CrudReadTransaction<T> : CrudTransactionBase<T>, ICrudReadTransacti
         var setMethod = (typeof(T).GetMethod(nameof(DbContext.Set), 1, []) ?? throw new TamperException()).MakeGenericMethod(model);
         var dbSetType = typeof(DbSet<>).MakeGenericType(model);
         var funcDbSetType = typeof(Func<>).MakeGenericType(dbSetType);
-        var result = TryCall(CrudAction.Read, setMethod.CreateDelegate(funcDbSetType), out object? dbSet, null)?.CastUp<QueryServiceResult<Model>>();
-        return (result?.IsSuccessful ?? false) ? result : FailureReason.DbFailure;
+        var result = TryCall(CrudAction.Read, setMethod, _context, out IQueryable<Model> dbSet, null);
+        return (result?.IsSuccessful ?? true) ? new QueryServiceResult<Model>(dbSet) : FailureReason.DbFailure;
     }
 
     /// <inheritdoc/>
@@ -106,7 +106,7 @@ public class CrudReadTransaction<T> : CrudTransactionBase<T>, ICrudReadTransacti
         {
             var a = All<TModel>();
             if (!a.IsSuccessful) return a.Reason!.Value;
-            return await a.Where(query).ToArrayAsync();                
+            return await a.Where(query).ToArrayAsync();
         }
         catch (Exception ex)
         {

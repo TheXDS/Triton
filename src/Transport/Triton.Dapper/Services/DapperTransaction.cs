@@ -1,10 +1,6 @@
 ﻿using Dapper;
 using System.Data;
-using System.Data.Common;
 using System.Linq.Expressions;
-using System.Reflection;
-using TheXDS.MCART.Helpers;
-using TheXDS.MCART.Resources;
 using TheXDS.MCART.Types.Base;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models.Base;
@@ -14,8 +10,7 @@ using static Dapper.SqlMapper;
 namespace TheXDS.Triton.Dapper.Services;
 
 /// <summary>
-/// Obtiene una transacción que permite operaciones de lectura y de escritura
-/// sobre una base de datos.
+/// Gets a transaction that allows read and write operations on a database.
 /// </summary>
 public class DapperTransaction : AsyncDisposable, ICrudReadWriteTransaction
 {

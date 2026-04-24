@@ -4,26 +4,26 @@ using TheXDS.Triton.Models;
 namespace TheXDS.Triton.SecurityEssentials.Ef.Models;
 
 /// <summary>
-/// Clase base para un contexto de datos que incluye distintos
-/// <see cref="DbSet{TEntity}"/> que almacenan información de autenticación y
-/// permisos de usuarios.
+/// Base class for a data context that includes different
+/// <see cref="DbSet{TEntity}"/> objects that store authentication and
+/// user permission information.
 /// </summary>
 public abstract class UserDbContextBase : DbContext, IUserDbContext
 {
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="UserDbContextBase"/>.
+    /// Initializes a new instance of the
+    /// <see cref="UserDbContextBase"/> class.
     /// </summary>
     protected UserDbContextBase()
     {
     }
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="UserDbContextBase"/>, permitiendo especificar las opciones
-    /// del contexto de datos.
+    /// Initializes a new instance of the
+    /// <see cref="UserDbContextBase"/> class, allowing specification of
+    /// data context options.
     /// </summary>
-    /// <param name="options">Opciones del contexto de datos.</param>
+    /// <param name="options">Data context options.</param>
     protected UserDbContextBase(DbContextOptions options) : base(options)
     {
     }

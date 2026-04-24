@@ -45,7 +45,7 @@ public interface IDynamicCrudReadTransaction : ICrudReadTransaction
             return new QueryServiceResult<Model>(r.Reason ?? FailureReason.Unknown, r.Message);
         }
     }
-    
+
     async Task<ServiceResult<TModel[]?>> ICrudReadTransaction.SearchAsync<TModel>(Expression<Func<TModel, bool>> predicate) where TModel : class
     {
         return (await All<TModel>().Where(predicate).ToListAsync()).ToArray();

@@ -57,34 +57,32 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Permite crear nuevas credenciales de inicio de sesión, ejecutando
-    /// algunos pasos esenciales sobre la misma.
+    /// Creates new login credentials by executing essential steps on them.
     /// </summary>
     /// <typeparam name="TAlg">
-    /// Tipo de algoritmo de almacenamiento de contraseñas a utilizar.
+    /// Type of password storage algorithm to use.
     /// </typeparam>
     /// <param name="username">
-    /// Nombre de inicio de sesión a utilizar para identificar a la nueva
-    /// credencial.
+    /// Login name to use for identifying the new credential.
     /// </param>
     /// <param name="password">
-    /// Contraseña a registrar en la nueva credencial.
+    /// Password to register with the new credential.
     /// </param>
-    /// <param name="granted">Banderas de permisos otorgados.</param>
-    /// <param name="revoked">Banderas de permisos denegados.</param>
+    /// <param name="granted">Permission flags granted.</param>
+    /// <param name="revoked">Permission flags revoked.</param>
     /// <param name="enabled">
-    /// Indica si la nueva credencial estará habilitada.
+    /// Indicates whether the new credential will be enabled.
     /// </param>
     /// <param name="passwordChangeScheduled">
-    /// Indica si la nueva credencial está programada para cambiar la
-    /// contraseña al iniciar sesión.
+    /// Indicates whether the new credential is scheduled to change its
+    /// password upon login.
     /// </param>
     /// <param name="groups">
-    /// Indica los grupos a los cuales la credencial pertenece.
+    /// Indicates the groups to which the credential belongs.
     /// </param>
     /// <returns>
-    /// Una tarea que, al finalizar, contiene el resultado reportado de la
-    /// operación ejecutada por el servicio subyacente.
+    /// A task that, when completed, contains the result reported by the
+    /// underlying service.
     /// </returns>
     async Task<ServiceResult> AddNewLoginCredential<TAlg>(string username, SecureString password, PermissionFlags granted = PermissionFlags.None, PermissionFlags revoked = PermissionFlags.None, bool enabled = true, bool passwordChangeScheduled = false, params UserGroup[] groups) where TAlg : IPasswordStorage, new()
     {
@@ -114,18 +112,16 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Ejecuta una operación de autenticación con las credenciales
-    /// provistas.
+    /// Executes an authentication operation with the provided credentials.
     /// </summary>
-    /// <param name="username">Nombre de inicio de sesión.</param>
-    /// <param name="password">Contraseña.</param>
+    /// <param name="username">Login name.</param>
+    /// <param name="password">Password.</param>
     /// <returns>
-    /// Una tarea que, al finalizar, contiene el resultado reportado de la
-    /// operación ejecutada por el servicio subyacente, incluyendo como
-    /// valor de resultado la nueva sesión del usuario que se ha sido
-    /// autenticado. Si no ha sido posible autenticar las credenciales
-    /// provistas, sea esto porque el usuario no existe o porque la
-    /// contraseña es inválida, el valor de resultado será
+    /// A task that, when completed, contains the result reported by the
+    /// underlying service operation, including as the result value the new
+    /// session of the user that has been authenticated. If it was not possible
+    /// to authenticate the provided credentials, either because the user does
+    /// not exist or because the password is invalid, the result value will be
     /// <see langword="null"/>.
     /// </returns>
     async Task<ServiceResult<Session?>> Authenticate(string username, SecureString password)
@@ -146,17 +142,16 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Comprueba el acceso de un usuario a un contexto de seguridad
-    /// específico.
+    /// Checks a user's access to a specific security context.
     /// </summary>
-    /// <param name="username">Nombre de usuario a comprobar.</param>
-    /// <param name="context">Contexto de seguridad a comprobar.</param>
-    /// <param name="requested">Banderas de acceso solicitadas.</param>
+    /// <param name="username">Username to check.</param>
+    /// <param name="context">Security context to check.</param>
+    /// <param name="requested">Requested access flags.</param>
     /// <returns>
-    /// <see langword="true"/> si el usuario posee acceso al recurso,
-    /// <see langword="false"/> en caso que el acceso ha sido denegado
-    /// explícitamente, o <see langword="null"/> si no existe un objeto ni
-    /// bandera de seguridad definida para el contexto.
+    /// <see langword="true"/> if the user has access to the resource,
+    /// <see langword="false"/> if access has been explicitly denied,
+    /// or <see langword="null"/> if no security object or flag is defined
+    /// for the context.
     /// </returns>
     async Task<ServiceResult<bool?>> CheckAccess(string username, string context, PermissionFlags requested)
     {
@@ -166,17 +161,16 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Comprueba el acceso de un usuario a un contexto de seguridad
-    /// específico.
+    /// Checks a user's access to a specific security context.
     /// </summary>
-    /// <param name="credential">Credencial a comprobar.</param>
-    /// <param name="context">Contexto de seguridad a comprobar.</param>
-    /// <param name="requested">Banderas de acceso solicitadas.</param>
+    /// <param name="credential">Credential to check.</param>
+    /// <param name="context">Security context to check.</param>
+    /// <param name="requested">Requested access flags.</param>
     /// <returns>
-    /// <see langword="true"/> si el usuario posee acceso al recurso,
-    /// <see langword="false"/> en caso que el acceso ha sido denegado
-    /// explícitamente, o <see langword="null"/> si no existe un objeto ni
-    /// bandera de seguridad definida para el contexto.
+    /// <see langword="true"/> if the user has access to the resource,
+    /// <see langword="false"/> if access has been explicitly denied,
+    /// or <see langword="null"/> if no security object or flag is defined
+    /// for the context.
     /// </returns>
     ServiceResult<bool?> CheckAccess(SecurityObject credential, string context, PermissionFlags requested)
     {
@@ -188,14 +182,14 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Obtiene una sesión previamente activa utilizando el token de la misma.
+    /// Gets an active session using its token.
     /// </summary>
-    /// <param name="token">Token de sesión a ser continuada.</param>
+    /// <param name="token">Session token to continue.</param>
     /// <returns>
-    /// Una tarea que contiene el resultado de la operación asíncrona. El
-    /// resultado podrá incluir una referencia a la sesión que será continuada,
-    /// o <see langword="null"/> en caso que la sesión no exista, sea inválida
-    /// o que ocurra una falla en el servicio de datos subyacente.
+    /// A task that contains the result of the asynchronous operation. The
+    /// result may include a reference to the session to be continued, or
+    /// <see langword="null"/> if the session does not exist, is invalid,
+    /// or if a failure occurs in the underlying data service.
     /// </returns>
     async Task<ServiceResult<Session?>> ContinueSession(string token)
     {
@@ -212,12 +206,12 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Finaliza una sesión abierta.
+    /// Ends an open session.
     /// </summary>
-    /// <param name="session">Sesión a finalizar.</param>
+    /// <param name="session">Session to end.</param>
     /// <returns>
-    /// Una tarea que, al finalizar, contiene el resultado reportado de la
-    /// operación ejecutada por el servicio subyacente.
+    /// A task that, when completed, contains the result reported by the
+    /// underlying service.
     /// </returns>
     async Task<ServiceResult> EndSession(Session session)
     {
@@ -229,18 +223,16 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Obtiene una credencial de inicio de sesión registrada con el nombre
-    /// de inicio de sesión especificado.
+    /// Gets a registered login credential with the specified login name.
     /// </summary>
     /// <param name="username">
-    /// Nombre de inicio de sesión registrado.
+    /// Registered login name.
     /// </param>
     /// <returns>
-    /// Una tarea que, al finalizar, contiene el resultado reportado de la
-    /// operación ejecutada por el servicio subyacente, incluyendo como
-    /// valor de resultado a la entidad obtenida en la operación de
-    /// lectura. Si no existe una entidad con el nombre de inicio de sesión
-    /// especificado, el valor de resultado será <see langword="null"/>.
+    /// A task that, when completed, contains the result reported by the
+    /// underlying service operation, including as the result value the
+    /// entity obtained in the read operation. If no entity exists with the
+    /// specified login name, the result value will be <see langword="null"/>.
     /// </returns>
     async Task<ServiceResult<LoginCredential?>> GetCredential(string username)
     {
@@ -256,15 +248,14 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Calcula el hash utilizado para almacenar la información de
-    /// comprobación de la contraseña.
+    /// Calculates the hash used to store password verification information.
     /// </summary>
     /// <param name="password">
-    /// Contraseña para la cual generar el Hash seguro.
+    /// Password for which to generate a secure hash.
     /// </param>
     /// <returns>
-    /// Un arreglo de bytes con el Hash que ha sido calculado a partir de
-    /// la contraseña provista.
+    /// An array of bytes with the hash that was calculated from the provided
+    /// password.
     /// </returns>
     byte[] HashPassword(SecureString password)
     {
@@ -272,16 +263,15 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Calcula el hash utilizado para almacenar la información de
-    /// comprobación de la contraseña.
+    /// Calculates the hash used to store password verification information.
     /// </summary>
-    /// <typeparam name="TAlg">Tipo de algoritmo a utilizar.</typeparam>
+    /// <typeparam name="TAlg">Type of algorithm to use.</typeparam>
     /// <param name="password">
-    /// Contraseña para la cual generar el Hash seguro.
+    /// Password for which to generate a secure hash.
     /// </param>
     /// <returns>
-    /// Un arreglo de bytes con el Hash que ha sido calculado a partir de
-    /// la contraseña provista.
+    /// An array of bytes with the hash that was calculated from the provided
+    /// password.
     /// </returns>
     byte[] HashPassword<TAlg>(SecureString password) where TAlg : IPasswordStorage, new()
     {
@@ -289,15 +279,14 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Calcula de forma asíncrona el hash utilizado para almacenar la
-    /// información de comprobación de la contraseña.
+    /// Calculates hash asynchronously for storing password verification info.
     /// </summary>
     /// <param name="password">
-    /// Contraseña para la cual generar el Hash seguro.
+    /// Password for which to generate a secure hash.
     /// </param>
     /// <returns>
-    /// Una tarea que, al finalizar, devolverá un arreglo de bytes con el
-    /// Hash que ha sido calculado a partir de la contraseña provista.
+    /// A task that, when completed, will return an array of bytes with the
+    /// hash calculated from the provided password.
     /// </returns>
     Task<byte[]> HashPasswordAsync(SecureString password)
     {
@@ -305,16 +294,15 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Calcula de forma asíncrona el hash utilizado para almacenar la
-    /// información de comprobación de la contraseña.
+    /// Calculates hash asynchronously for storing password verification info.
     /// </summary>
-    /// <typeparam name="TAlg">Tipo de algoritmo a utilizar.</typeparam>
+    /// <typeparam name="TAlg">Type of algorithm to use.</typeparam>
     /// <param name="password">
-    /// Contraseña para la cual generar el Hash seguro.
+    /// Password for which to generate a secure hash.
     /// </param>
     /// <returns>
-    /// Una tarea que, al finalizar, devolverá un arreglo de bytes con el
-    /// Hash que ha sido calculado a partir de la contraseña provista.
+    /// A task that, when completed, will return an array of bytes with the
+    /// hash calculated from the provided password.
     /// </returns>
     Task<byte[]> HashPasswordAsync<TAlg>(SecureString password) where TAlg : IPasswordStorage, new()
     {
@@ -322,19 +310,19 @@ public interface IUserService : ITritonService
     }
 
     /// <summary>
-    /// Verifica que las credenciales provistas sean válidas.
+    /// Verifies that the provided credentials are valid.
     /// </summary>
-    /// <param name="userId">Nombre de inicio de sesión.</param>
-    /// <param name="password">Contraseña.</param>
+    /// <param name="userId">Login name.</param>
+    /// <param name="password">Password.</param>
     /// <returns>
-    /// Una tarea que, al finalizar, retornará una tupla de valores que indica si la
+    /// A task that, when completed, will return a tuple of values that indicates
+    /// whether the verification was successful.
     /// </returns>
     /// <remarks>
-    /// Si desea autenticar a un usuario, utilice el método
-    /// <see cref="Authenticate(string, SecureString)"/>, ya que éste
-    /// creará y persistirá un objeto que represente a la sesión actual.
+    /// If you want to authenticate a user, use the <see cref="Authenticate(string, SecureString)"/>
+    /// method, as it will create and persist an object representing the current session.
     /// </remarks>
-    /// <seealso cref="Authenticate(string, SecureString)"/>.
+    /// <seealso cref="Authenticate(string, SecureString)"/>
     async Task<ServiceResult<VerifyPasswordResult?>> VerifyPassword(string userId, SecureString password)
     {
         VerifyPasswordResult GetResult(byte[] expected, LoginCredential? user)

@@ -1,12 +1,10 @@
 ﻿namespace TheXDS.Triton.Dapper.Services;
 
 /// <summary>
-/// Contiene información sobre las invalidaciones de metadatos a aplicar a un
-/// modelo de datos en concreto.
+/// Contains information about metadata overrides to apply to a specific data model.
 /// </summary>
-/// <param name="TableName">Nombre de tabla a utilizar al construir las
-/// sentencias SQL requeridas.</param>
+/// <param name="TableName">Table name to use when building the required SQL statements.</param>
 /// <param name="Properties">
-/// Diccionario de invalidaciones para las propiedades del modelo de datos.
+/// Dictionary of overrides for the data model properties.
 /// </param>
 public record struct DapperModelDescriptor(string TableName, IDictionary<string, string>? Properties);

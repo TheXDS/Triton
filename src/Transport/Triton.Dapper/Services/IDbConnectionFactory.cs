@@ -3,13 +3,13 @@
 namespace TheXDS.Triton.Dapper.Services;
 
 /// <summary>
-/// Define una serie de miembros a implementar por un tipo que permita generar y abrir conexiones a bases de datos.
+/// Defines a set of members to be implemented by a type that allows creating and opening database connections.
 /// </summary>
 public interface IDbConnectionFactory
 {
     /// <summary>
-    /// Abre una nueva conexión a una base de datos.
+    /// Opens a new connection to a database.
     /// </summary>
-    /// <returns>Una conexión abierta a una base de datos.</returns>
+    /// <returns>An open database connection.</returns>
     IDbConnection OpenConnection();
 }

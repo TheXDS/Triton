@@ -3,22 +3,21 @@
 namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Fábrica de transacciones que permite conectarse a un contexto de datos
-/// de Entity Framework Core.
+/// A transaction factory that connects to an Entity Framework Core data context.
 /// </summary>
 /// <typeparam name="T">
-/// Tipo de contexto de datos al cual conectarse.
+/// Type of data context to connect to.
 /// </typeparam>
 public class EfCoreTransFactory<T> : ITransactionFactory where T : DbContext
 {
     private readonly IDbContextOptionsSource options;
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="EfCoreTransFactory{T}"/>.
+    /// Initializes a new instance of the
+    /// <see cref="EfCoreTransFactory{T}"/> class.
     /// </summary>
     /// <param name="options">
-    /// Opciones de contexto a utilizar para crear instancias de
+    /// Context options to use when creating instances of
     /// <see cref="DbContext"/>.
     /// </param>
     public EfCoreTransFactory(IDbContextOptionsSource options)
@@ -27,15 +26,13 @@ public class EfCoreTransFactory<T> : ITransactionFactory where T : DbContext
     }
 
     /// <summary>
-    /// Obtiene una transacción que permite leer información desde el
-    /// contexto de datos.
+    /// Gets a transaction that allows reading data from the data context.
     /// </summary>
     /// <param name="runner">
-    /// Confiuración de transacción a utilizar.
+    /// Transaction configuration to use.
     /// </param>
     /// <returns>
-    /// Una transacción que permite leer información desde el contexto de
-    /// datos.
+    /// A transaction that allows reading data from the data context.
     /// </returns>
     public ICrudReadTransaction GetReadTransaction(IMiddlewareRunner runner)
     {
@@ -43,15 +40,13 @@ public class EfCoreTransFactory<T> : ITransactionFactory where T : DbContext
     }
 
     /// <summary>
-    /// Obtiene una transacción que permite escribir información desde el
-    /// contexto de datos.
+    /// Gets a transaction that allows writing data to the data context.
     /// </summary>
     /// <param name="runner">
-    /// Confiuración de transacción a utilizar.
+    /// Transaction configuration to use.
     /// </param>
     /// <returns>
-    /// Una transacción que permite escribir información desde el contexto
-    /// de datos.
+    /// A transaction that allows writing data to the data context.
     /// </returns>
     public ICrudWriteTransaction GetWriteTransaction(IMiddlewareRunner runner)
     {
@@ -59,15 +54,13 @@ public class EfCoreTransFactory<T> : ITransactionFactory where T : DbContext
     }
 
     /// <summary>
-    /// Obtiene una transacción que permite leer y escribir información
-    /// desde el contexto de datos.
+    /// Gets a transaction that allows reading and writing data from the data context.
     /// </summary>
     /// <param name="runner">
-    /// Confiuración de transacción a utilizar.
+    /// Transaction configuration to use.
     /// </param>
     /// <returns>
-    /// Una transacción que permite leer y escribir información desde el 
-    /// contexto de datos.
+    /// A transaction that allows reading and writing data from the data context.
     /// </returns>
     public ICrudReadWriteTransaction GetTransaction(IMiddlewareRunner runner)
     {

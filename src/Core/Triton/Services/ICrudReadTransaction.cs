@@ -5,65 +5,11 @@ using TheXDS.Triton.Models.Base;
 namespace TheXDS.Triton.Services;
 
 /// <summary>
-/// Defines the contract for types that allow 
+/// Defines the contract for types that allow
 /// performing read operations on a database.
 /// </summary>
 public interface ICrudReadTransaction : IDisposableEx, IAsyncDisposable
 {
-    ///// <summary>
-    ///// Generates a new Id that is guaranteed to be unique for the specified
-    ///// model.
-    ///// </summary>
-    ///// <typeparam name="TModel">
-    ///// Model for which to generate the new Id.
-    ///// </typeparam>
-    ///// <typeparam name="TKey">Type of the Id to generate.</typeparam>
-    ///// <param name="keyGenerator">
-    ///// Callback to use to generate a new key. The function will include a
-    ///// reference to the last Id that was generated.
-    ///// </param>
-    ///// <returns>
-    ///// The result reported by the underlying service, including as a value
-    ///// the obtained unique Id that can be used to create a new entity.
-    ///// </returns>
-    //public async Task<ServiceResult<TKey>> GetUniqueIdAsync<TModel, TKey>(Func<TKey, TKey> keyGenerator) where TModel : Model<TKey>, new() where TKey : notnull, IComparable<TKey>, IEquatable<TKey>
-    //{
-    //    TKey id = default!;
-    //    ServiceResult<TModel?> existingSearchResult;
-    //    try
-    //    {
-    //        do
-    //        {
-    //            id = keyGenerator.Invoke(id);
-    //            existingSearchResult = await ReadAsync<TModel, TKey>(id);
-    //            if (!existingSearchResult.IsSuccessful) return existingSearchResult.Reason;
-    //        } while (existingSearchResult.Result is not null);
-    //        return id;
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        return e;
-    //    }
-    //}
-
-    ///// <summary>
-    ///// Generates a new Id that is guaranteed to be unique for the specified
-    ///// model.
-    ///// </summary>
-    ///// <typeparam name="TModel">
-    ///// Model for which to generate the new Id.
-    ///// </typeparam>
-    ///// <typeparam name="TKey">Type of the Id to generate.</typeparam>
-    ///// <param name="keyGenerator">
-    ///// Callback to use to generate a new key. The function will include a
-    ///// reference to the last Id that was generated.
-    ///// </param>
-    ///// <returns></returns>
-    //public Task<ServiceResult<TKey>> GetUniqueIdAsync<TModel, TKey>(Func<TKey> keyGenerator) where TModel : Model<TKey>, new() where TKey : notnull, IComparable<TKey>, IEquatable<TKey>
-    //{
-    //    return GetUniqueIdAsync<TModel, TKey>(_ => keyGenerator.Invoke());
-    //}
-
     /// <summary>
     /// Retrieves an entity whose key field matches the specified value.
     /// </summary>

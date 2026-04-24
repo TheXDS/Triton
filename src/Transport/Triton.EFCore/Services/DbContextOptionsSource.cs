@@ -1,16 +1,15 @@
 ﻿namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Implementa un <see cref="IDbContextOptionsSource"/> para configuraciones
-/// que no requieren saber con precisión el tipo del contexto a configurar.
+/// Implements an <see cref="IDbContextOptionsSource"/> for configurations
+/// that do not require precisely knowing the type of context to configure.
 /// </summary>
 public class DbContextOptionsSource : DbContextOptionsSourceBase<DbContextOptionsBuilder, DbContextOptions>
 {
     /// <summary>
-    /// Obtiene una instancia de tipo <see cref="IDbContextOptionsSource"/> que
-    /// representa un origen sin configuración, es decir, se utilizará un
-    /// constructor sin parámetros para inicializar los objetos de tipo
-    /// <see cref="DbContext"/>.
+    /// Gets a <see cref="IDbContextOptionsSource"/> instance that represents
+    /// an unconfigured source, i.e., a parameterless constructor will be used
+    /// to initialize <see cref="DbContext"/> objects.
     /// </summary>
     public static IDbContextOptionsSource None => new DbContextOptionsSource();
 
@@ -18,11 +17,11 @@ public class DbContextOptionsSource : DbContextOptionsSourceBase<DbContextOption
     { }
 
     /// <summary>
-    /// Inicializa una nueva instacia de la clase
-    /// <see cref="DbContextOptionsSource"/>.
+    /// Initializes a new instance of the
+    /// <see cref="DbContextOptionsSource"/> class.
     /// </summary>
     /// <param name="options">
-    /// Instancia estática de opciones a utilizar para instanciar un
+    /// Static options instance to use when instantiating a
     /// <see cref="DbContext"/>.
     /// </param>
     public DbContextOptionsSource(DbContextOptions options) : base(options)
@@ -30,12 +29,12 @@ public class DbContextOptionsSource : DbContextOptionsSourceBase<DbContextOption
     }
 
     /// <summary>
-    /// Inicializa una nueva instacia de la clase
-    /// <see cref="DbContextOptionsSource"/>.
+    /// Initializes a new instance of the
+    /// <see cref="DbContextOptionsSource"/> class.
     /// </summary>
     /// <param name="builder">
-    /// Método a llamar para configurar las opciones a utilizar para instanciar
-    /// objetos de tipo <see cref="DbContext"/>.
+    /// Method to invoke for configuring options to use when instantiating
+    /// <see cref="DbContext"/> objects.
     /// </param>
     public DbContextOptionsSource(Action<DbContextOptionsBuilder> builder) : base(builder)
     {

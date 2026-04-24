@@ -8,8 +8,4 @@
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />
-	</ItemGroup>
-
 </Project>
