@@ -1,16 +1,16 @@
-﻿namespace TheXDS.Triton.Services;
+﻿namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Clase base que define un objeto que obtiene la configuración a utilizar
-/// para instanciar un <see cref="DbContext"/> que acepte recibir un parámetro
-/// de tipo <see cref="DbContextOptions"/>.
+/// Base class that defines an object that retrieves configuration to use
+/// when instantiating a <see cref="DbContext"/> that accepts a
+/// <see cref="DbContextOptions"/> parameter.
 /// </summary>
 /// <typeparam name="TBuilder">
-/// Tipo de objeto a utilizar para construir la configuración para instanciar
-/// un <see cref="DbContext"/>.
+/// Type of object to use for building configuration to instantiate a
+/// <see cref="DbContext"/>.
 /// </typeparam>
 /// <typeparam name="TOptions">
-/// Tipo de objeto que contiene la configuración a utilizar para instanciar un
+/// Type of object that contains configuration to use when instantiating a
 /// <see cref="DbContext"/>.
 /// </typeparam>
 public abstract class DbContextOptionsSourceBase<TBuilder, TOptions> : IDbContextOptionsSource where TBuilder : DbContextOptionsBuilder, new() where TOptions : DbContextOptions
@@ -19,15 +19,15 @@ public abstract class DbContextOptionsSourceBase<TBuilder, TOptions> : IDbContex
     private readonly TOptions? options;
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="DbContextOptionsSourceBase{TBuilder, TOptions}"/>
+    /// Initializes a new instance of the
+    /// <see cref="DbContextOptionsSourceBase{TBuilder, TOptions}"/> class.
     /// </summary>
     /// <param name="builderCallback">
-    /// Método a llamar para configurar un
+    /// Method to invoke to configure a
     /// <see cref="DbContextOptionsBuilder"/>.
     /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Se produce si <see cref="builderCallback"/> es <see langword="null"/>.
+    /// Thrown when <see cref="builderCallback"/> is <see langword="null"/>.
     /// </exception>
     protected DbContextOptionsSourceBase(Action<TBuilder> builderCallback)
     {
@@ -35,15 +35,15 @@ public abstract class DbContextOptionsSourceBase<TBuilder, TOptions> : IDbContex
     }
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="DbContextOptionsSourceBase{TBuilder, TOptions}"/>
+    /// Initializes a new instance of the
+    /// <see cref="DbContextOptionsSourceBase{TBuilder, TOptions}"/> class.
     /// </summary>
     /// <param name="options">
-    /// Objeto de opciones estáticas a devolver cuando se deba instanciar un
-    /// <see cref="DbContext"/>.
+    /// Static options object to return when a
+    /// <see cref="DbContext"/> needs to be instantiated.
     /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Se produce si <see cref="options"/> es <see langword="null"/>.
+    /// Thrown when <see cref="options"/> is <see langword="null"/>.
     /// </exception>
     protected DbContextOptionsSourceBase(TOptions options)
     {
@@ -51,10 +51,9 @@ public abstract class DbContextOptionsSourceBase<TBuilder, TOptions> : IDbContex
     }
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase 
-    /// <see cref="DbContextOptionsSourceBase{TBuilder, TOptions}"/>,
-    /// explícitamente omitiendo especificar tanto un método de configuración
-    /// como la configuración estática.
+    /// Initializes a new instance of the
+    /// <see cref="DbContextOptionsSourceBase{TBuilder, TOptions}"/> class,
+    /// explicitly omitting both a configuration method and static configuration.
     /// </summary>
     protected DbContextOptionsSourceBase()
     {

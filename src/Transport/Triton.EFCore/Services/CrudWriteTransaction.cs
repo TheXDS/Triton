@@ -1,28 +1,29 @@
 ﻿using TheXDS.MCART.Types.Extensions;
+using TheXDS.Triton.EFCore.Services.Base;
+using TheXDS.Triton.Services;
 using static TheXDS.Triton.Services.FailureReason;
 
-namespace TheXDS.Triton.Services;
+namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Clase que describe una transacción que permite realizar operaciones
-/// de escritura sobre un contexto de datos.
+/// A class that describes a transaction that allows write operations
+/// on a data context.
 /// </summary>
 /// <typeparam name="T">
-/// Tipo de contexto de datos a utilizar dentro de la transacción.
+/// Type of data context to use within the transaction.
 /// </typeparam>
 public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransaction where T : DbContext
 {
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
+    /// Initializes a new instance of the class
     /// <see cref="CrudWriteTransaction{T}"/>.
     /// </summary>
     /// <param name="configuration">
-    /// Configuración a utilizar para la transacción.
+    /// Configuration to use for the transaction.
     /// </param>
     /// <param name="options">
-    /// Opciones a utilizar para llamar al contructor del contexto de datos.
-    /// Establezca este parámetro en <see langword="null"/> para utilizar el
-    /// constructor público sin parámetros.
+    /// Options to use when calling the data context constructor.
+    /// Set this parameter to <see langword="null"/> to use the parameterless public constructor.
     /// </param>
     public CrudWriteTransaction(IMiddlewareRunner configuration, DbContextOptions? options = null) : base(configuration, options)
     {
@@ -33,7 +34,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     }
 
     /// <summary>
-    /// Ejecuta tareas de limpieza antes de eliminar esta transacción.
+    /// Executes cleanup tasks before disposing of this transaction.
     /// </summary>
     protected override void OnDispose()
     {
@@ -45,11 +46,10 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     }
 
     /// <summary>
-    /// Guarda todos los cambios pendientes de la transacción actual.
+    /// Saves all pending changes of the current transaction.
     /// </summary>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Commit()
     {
@@ -57,11 +57,10 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     }
 
     /// <summary>
-    /// Guarda todos los cambios realizados de forma asíncrona.
+    /// Saves all changes made asynchronously.
     /// </summary>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public Task<ServiceResult> CommitAsync()
     {
@@ -71,43 +70,40 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     /// <inheritdoc/>
     public ServiceResult Create<TModel>(params TModel[] entities) where TModel : Model
     {
-        return TryCall(CrudAction.Create, _context.AddRange, entities);
+        return TryCall(CrudAction.Write, _context.AddRange, entities);
     }
 
     /// <summary>
-    /// Elimina a una entidad de la base de datos.
+    /// Deletes an entity from the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a eliminar.
+    /// Type of the entity model to delete.
     /// </typeparam>
     /// <param name="entities">
-    /// Entidad que deberá ser eliminada de la base de datos.
+    /// Entity that should be deleted from the database.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Delete<TModel>(params TModel[] entities) where TModel : Model
     {
-        return TryCall(CrudAction.Delete, _context.RemoveRange, entities);
+        return TryCall(CrudAction.Write, _context.RemoveRange, entities);
     }
 
     /// <summary>
-    /// Elimina a una entidad de la base de datos.
+    /// Deletes an entity from the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a eliminar.
+    /// Type of the entity model to delete.
     /// </typeparam>
     /// <typeparam name="TKey">
-    /// Tipo del campo llave que identifica a la entidad.
+    /// Type of the key field that identifies the entity.
     /// </typeparam>
     /// <param name="key">
-    /// Llave de la entidad que deberá ser eliminada de la base de
-    /// datos.
+    /// Key of the entity that should be deleted from the database.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Delete<TModel, TKey>(TKey key)
         where TModel : Model<TKey>
@@ -121,17 +117,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     /// <inheritdoc/>
     public ServiceResult Update<TModel>(params TModel[] entities) where TModel : Model
     {
-        return TryCall(CrudAction.Update, _context.UpdateRange, entities);
-    }
-
-    /// <inheritdoc/>
-    public ServiceResult CreateOrUpdate<TModel>(params TModel[] entities) where TModel : Model
-    {
-        return TryCall(CrudAction.Update | CrudAction.Create, e => {
-            var groups = e.Cast<TModel>().GroupBy(p => _context.Set<TModel>().Contains(p) ? CrudAction.Update : CrudAction.Create).ToDictionary(p => p.Key);
-            if (groups[CrudAction.Update].Any()) _context.UpdateRange(groups.Cast<object>().ToArray());
-            if (groups[CrudAction.Create].Any()) _context.AddRange(groups.Cast<object>().ToArray());
-        }, entities);
+        return TryCall(CrudAction.Write, _context.UpdateRange, entities);
     }
 
     /// <inheritdoc/>
@@ -144,7 +130,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
 
         foreach (TModel entity in entities.NotNull())
         {
-            if (Perform(CrudAction.Delete, _context.Remove, entity) is { } error) return error;
+            if (Perform(CrudAction.Write, _context.Remove, entity) is { } error) return error;
         }
         return ServiceResult.Ok;
     }
@@ -157,7 +143,7 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
 
         foreach (TModel entity in entities.NotNull())
         {
-            if (Perform(CrudAction.Delete, _context.Remove, entity) is { } error) return error;
+            if (Perform(CrudAction.Write, _context.Remove, entity) is { } error) return error;
         }
         return ServiceResult.Ok;
     }
@@ -166,5 +152,23 @@ public class CrudWriteTransaction<T> : CrudTransactionBase<T>, ICrudWriteTransac
     public ServiceResult Discard()
     {
         return TryCall(CrudAction.Discard, _context.ChangeTracker.Clear, null) ?? ServiceResult.Ok;
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Create(params Model[] entities)
+    {
+        return TryCall(CrudAction.Write, _context.AddRange, entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Update(params Model[] entities)
+    {
+        return TryCall(CrudAction.Write, _context.UpdateRange, entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Delete(params Model[] entities)
+    {
+        return TryCall(CrudAction.Write, _context.RemoveRange, entities);
     }
 }

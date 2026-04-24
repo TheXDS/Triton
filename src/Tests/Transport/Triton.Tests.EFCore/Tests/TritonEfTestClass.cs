@@ -1,10 +1,8 @@
 ﻿using TheXDS.Triton.Tests.EFCore.Services;
 
-#pragma warning disable CS1591
+namespace TheXDS.Triton.Tests.EFCore.Tests;
 
-namespace TheXDS.Triton.Tests;
-
-public abstract class TritonEfTestClass
+internal abstract class TritonEfTestClass
 {
     protected static readonly BlogService _srv = new();
 }

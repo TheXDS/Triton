@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System.Linq.Expressions;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials.IUserServiceTests;
 
@@ -23,7 +22,7 @@ public class GetCredentials
 
         var result = await svcMock.Object.GetCredential("test");
 
-        Assert.That(result?.Success, Is.True);
+        Assert.That(result?.IsSuccessful, Is.True);
         Assert.That(result?.Result, Is.SameAs(testCred));
     }
 
@@ -38,7 +37,7 @@ public class GetCredentials
 
         var result = await svcMock.Object.GetCredential("test");
 
-        Assert.That(result?.Success, Is.False);
+        Assert.That(result?.IsSuccessful, Is.False);
         Assert.That(result?.Reason, Is.EqualTo(FailureReason.NotFound));
     }
 
@@ -53,7 +52,7 @@ public class GetCredentials
 
         var result = await svcMock.Object.GetCredential("test");
 
-        Assert.That(result?.Success, Is.False);
+        Assert.That(result?.IsSuccessful, Is.False);
         Assert.That(result?.Reason, Is.EqualTo(FailureReason.Tamper));
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(SolutionDir)Targets\CompileOptions.targets"/>
-  <Import Project="$(SolutionDir)Targets\GlobalDirectives.targets"/>
+  <Import Project="$(Root)BuildTargets\CompileOptions.targets"/>
+  <Import Project="$(Root)BuildTargets\GlobalDirectives.targets"/>
 </Project>

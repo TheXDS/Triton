@@ -8,7 +8,6 @@ using TheXDS.MCART.Security;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models;
 using TheXDS.Triton.Services;
-using TheXDS.Triton.Services.Base;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials.IUserServiceTests;
 
@@ -45,7 +44,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential<Pbkdf2Storage>("test", "password".ToSecureString(), PermissionFlags.Special, PermissionFlags.Special, true, true, testGroups);
 
-        Assert.That(result, Is.EqualTo(ServiceResult.Ok));        
+        Assert.That(result, Is.EqualTo(ServiceResult.Ok));
         Assert.Multiple(() =>
         {
             Assert.That(newCredential, Is.Not.Null);
@@ -58,11 +57,11 @@ public class AddNewLoginCredential
             Assert.That(newCredential?.Enabled, Is.True);
             Assert.That(newCredential?.Membership.Count, Is.EqualTo(3));
             Assert.That(newCredential?.Membership.ToArray()[0].Group, Is.SameAs(testGroups[0]));
-            Assert.That(newCredential?.Membership.ToArray()[0].SecurityObject, Is.SameAs(newCredential));
+            Assert.That(newCredential?.Membership.ToArray()[0].Member, Is.SameAs(newCredential));
             Assert.That(newCredential?.Membership.ToArray()[1].Group, Is.SameAs(testGroups[1]));
-            Assert.That(newCredential?.Membership.ToArray()[1].SecurityObject, Is.SameAs(newCredential));
+            Assert.That(newCredential?.Membership.ToArray()[1].Member, Is.SameAs(newCredential));
             Assert.That(newCredential?.Membership.ToArray()[2].Group, Is.SameAs(testGroups[2]));
-            Assert.That(newCredential?.Membership.ToArray()[2].SecurityObject, Is.SameAs(newCredential));
+            Assert.That(newCredential?.Membership.ToArray()[2].Member, Is.SameAs(newCredential));
             Assert.That(newCredential?.Sessions, Is.Empty);
             Assert.That(newCredential?.RegisteredMfa, Is.Empty);
             Assert.That(newCredential?.Descriptors, Is.Empty);
@@ -70,7 +69,7 @@ public class AddNewLoginCredential
         transactionMock.Verify();
         svcMock.Verify();
     }
-    
+
     [Test]
     public async Task AddNewLoginCredential_with_default_params_adds_new_credential()
     {
@@ -187,7 +186,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.NetworkFailure));
         transactionMock.Verify();
         svcMock.Verify();
@@ -209,7 +208,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.EntityDuplication));
         transactionMock.Verify();
         svcMock.Verify();
@@ -289,7 +288,7 @@ public class AddNewLoginCredential
 
         var result = await svcMock.Object.AddNewLoginCredential<Pbkdf2Storage>("test", "password".ToSecureString());
 
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Reason, Is.EqualTo(FailureReason.ServiceFailure));
         transactionMock.Verify();
         svcMock.Verify();

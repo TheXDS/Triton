@@ -1,12 +1,10 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Text.RegularExpressions;
 using TheXDS.Triton.Faker;
 
 namespace TheXDS.Triton.Tests.Faker;
 
-public partial class InternetTests
+internal partial class InternetTests
 {
     [Test]
     public void FakeUsername_Test()

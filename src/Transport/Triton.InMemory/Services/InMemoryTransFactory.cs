@@ -3,23 +3,23 @@
 namespace TheXDS.Triton.InMemory.Services;
 
 /// <summary>
-/// Fábrica de transacciones que genera transacciones sin persistencia (en
-/// memoria).
+/// Transaction factory that creates transactions that read and write data to a
+/// collection without persistance (in memory).
 /// </summary>
 public class InMemoryTransFactory : CollectionTransFactory
 {
-    private static readonly List<Model> _store = new();
+    private static readonly List<Model> _store = [];
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase
-    /// <see cref="InMemoryTransFactory"/>.
+    /// Initializes a new instance of the <see cref="InMemoryTransFactory"/>
+    /// class.
     /// </summary>
     public InMemoryTransFactory() : base(_store)
     {
     }
 
     /// <summary>
-    /// Limpia la base de datos en memoria.
+    /// Clears the entire data store.
     /// </summary>
     public static void Wipe()
     {

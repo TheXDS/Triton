@@ -1,18 +1,16 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class ServiceResultTests
+internal class ServiceResultTests
 {
     [Test]
     public void ServiceResult_from_exception_test()
     {
         var ex = new Exception("Error XYZ");
         var result = new ServiceResult(ex);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(ex.Message, Is.EqualTo(result.Message));
         Assert.That(result.Reason, Is.Not.Null);
         Assert.That(ex.HResult, Is.EqualTo((int)result.Reason!));
@@ -23,7 +21,7 @@ public class ServiceResultTests
     {
         var ex = new Exception("Error XYZ");
         var result = (ServiceResult)ex;
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(ex.Message, Is.EqualTo(result.Message));
         Assert.That(result.Reason, Is.Not.Null);
         Assert.That(ex.HResult, Is.EqualTo((int)result.Reason!));
@@ -34,7 +32,7 @@ public class ServiceResultTests
     {
         var msg = "Error X";
         var result = (ServiceResult)msg;
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(msg, Is.EqualTo(result.Message));
     }
 
@@ -42,28 +40,20 @@ public class ServiceResultTests
     public void ServiceResult_from_bool_implicit_conversion_test()
     {
         var result = (ServiceResult)false;
-        Assert.That((bool)result, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
 
         result = (ServiceResult)true;
-        Assert.That((bool)result);
+        Assert.That(result.IsSuccessful, Is.True);
     }
 
     [Test]
     public void ServiceResult_to_bool_implicit_conversion_test()
     {
         var result = (ServiceResult)false;
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
 
         result = (ServiceResult)true;
-        Assert.That(result.Success);
-    }
-
-    [Test]
-    public void ServiceResult_to_string_implicit_conversion_test()
-    {
-        var msg = "Error X";
-        var result = (ServiceResult)msg;
-        Assert.That(msg, Is.EqualTo((string)result));
+        Assert.That(result.IsSuccessful);
     }
 
     [Test]
@@ -109,15 +99,15 @@ public class ServiceResultTests
     public void Success_result_with_message_test()
     {
         var r = new ServiceResult("test");
-        Assert.That(r.Success);
+        Assert.That(r.IsSuccessful);
         Assert.That("test", Is.EqualTo(r.Message));
     }
 
     [Test]
     public void Custom_reason_message_test()
     {
-        var r = ServiceResult.FailWith<ServiceResult>((FailureReason)0x08070605);
-        Assert.That(r.Success, Is.False);
+        var r = (ServiceResult)(FailureReason)0x08070605;
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That("0x08070605", Is.EqualTo(r.Message));
         Assert.That(0x08070605, Is.EqualTo((int)r.Reason!));
     }
@@ -126,8 +116,8 @@ public class ServiceResultTests
     public void Fail_from_Exception_test()
     {
         var ex = new IOException("Test");
-        var r = ServiceResult.FailWith<ServiceResult>(ex);
-        Assert.That(r.Success, Is.False);
+        var r = (ServiceResult)ex;
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That("Test", Is.EqualTo(r.Message));
         Assert.That(ex.HResult, Is.EqualTo((int)r.Reason!));
     }
@@ -135,8 +125,8 @@ public class ServiceResultTests
     [Test]
     public void Fail_with_message_test()
     {
-        var r = ServiceResult.FailWith<ServiceResult>("Test");
-        Assert.That(r.Success, Is.False);
+        var r = (ServiceResult)"Test";
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That("Test", Is.EqualTo(r.Message));
         Assert.That(FailureReason.Unknown, Is.EqualTo(r.Reason));
     }
@@ -145,7 +135,7 @@ public class ServiceResultTests
     public void Fail_with_reason_and_message_test()
     {
         var r = new ServiceResult(FailureReason.ConcurrencyFailure, "Test");
-        Assert.That(r.Success, Is.False);
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That("Test", Is.EqualTo(r.Message));
         Assert.That(FailureReason.ConcurrencyFailure, Is.EqualTo(r.Reason));
     }

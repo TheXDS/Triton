@@ -1,17 +1,18 @@
-﻿#pragma warning disable CS1591
-
-using TheXDS.Triton.Middleware;
+﻿using TheXDS.Triton.Middleware;
 using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.Diagnostics;
 
-public abstract class MiddlewareTestsBase<T> : MiddlewareTestsBase where T : ITransactionMiddleware, new()
+internal abstract class MiddlewareTestsBase<T> where T : ITransactionMiddleware, new()
 {
-    protected (TransactionConfiguration testRepo, T perfMon) Build()
+    protected static (IMiddlewareRunner runner, T perfMon) Build()
     {
-        TransactionConfiguration testRepo = new();
-        T perfMon = new();
-        testRepo.Attach(perfMon);
-        return (testRepo, perfMon);
+        return (((IMiddlewareConfigurator)new TransactionConfiguration()).Attach<T>(out var perfMon).GetRunner(), perfMon);
+    }
+
+    protected static void RunCrudAction(IMiddlewareRunner runner, CrudAction action = CrudAction.Commit)
+    {
+        runner.RunPrologue(action, null);
+        runner.RunEpilogue(action, null);
     }
 }

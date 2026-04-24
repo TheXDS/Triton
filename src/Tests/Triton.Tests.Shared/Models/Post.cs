@@ -36,7 +36,7 @@ public class Post : Model<long>
     /// <summary>
     /// Colección de comentarios sobre el <see cref="Post"/>.
     /// </summary>
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<Comment> Comments { get; set; } = [];
 
     /// <summary>
     /// Inicializa una nueva instancia del modelo <see cref="Post"/>,

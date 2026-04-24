@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,20 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="JournalError" xml:space="preserve">
-    <value>The operation has completed successfully, but the journal writer found an error.
-{0}: {1}</value>
+  <data name="XWithNoData" xml:space="preserve">
+    <value>{0} without obtaining data.</value>
   </data>
-  <data name="NoActorProviderSubst" xml:space="preserve">
-    <value>The user</value>
+  <data name="XWithData" xml:space="preserve">
+    <value>{0} on model {1}</value>
   </data>
   <data name="XRanOperation" xml:space="preserve">
     <value>{0} has run a '{1}' operation</value>
   </data>
-  <data name="XWithData" xml:space="preserve">
-    <value>{0} on model {1} {2}</value>
+  <data name="NoActorProviderSubst" xml:space="preserve">
+    <value>The user</value>
   </data>
-  <data name="XWithNoData" xml:space="preserve">
-    <value>{0} without obtaining data.</value>
+  <data name="JournalError" xml:space="preserve">
+    <value>The operation has completed successfully, but the journal writer found an error.
+{0}: {1}</value>
   </data>
 </root>

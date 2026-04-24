@@ -1,11 +1,13 @@
-﻿namespace TheXDS.Triton.Services;
+﻿using TheXDS.Triton.Services;
+
+namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Define una serie de miembros a implementar por un tipo que exponga acceso a
-/// un contexto de datos de Entity Framework.
+/// Defines a set of members to be implemented by a type that exposes access to
+/// an Entity Framework data context.
 /// </summary>
 /// <typeparam name="T">
-/// Tipo de <see cref="DbContext"/> al cual este servicio ofrece acceso.
+/// Type of <see cref="DbContext"/> that this service provides access to.
 /// </typeparam>
 public interface ITritonService<out T> : ITritonService where T : DbContext
 {

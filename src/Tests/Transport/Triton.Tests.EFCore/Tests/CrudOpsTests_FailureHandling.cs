@@ -1,12 +1,10 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.EFCore.Tests;
 
-public partial class CrudOpsTests
+internal partial class CrudOpsTests
 {
     static IEnumerable<TestCaseData> SimpleReadFailures()
     {
@@ -20,7 +18,7 @@ public partial class CrudOpsTests
     {
         using var t = _srv.GetTransaction();
         var post = t.Read<Post>(id);
-        Assert.That(post.Success, Is.False);
+        Assert.That(post.IsSuccessful, Is.False);
         Assert.That(post.Result, Is.Null);
         Assert.That(post.Reason.HasValue, Is.True);
         return post.Reason!.Value;

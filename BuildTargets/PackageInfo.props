@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
+		<Company>TheXDS! non-Corp.</Company>
+		<Product>Tritón Framework</Product>
+		<AssemblyTitle>$(Description)</AssemblyTitle>
+		<Authors>César Andrés Morgan</Authors>
+		<Copyright>Copyright © $([System.DateTime]::Today.Year) $(Authors)</Copyright>
+		<PackageIcon>TritonLogo.png</PackageIcon>
+		<PackageTags>triton entity mcart database dynamic</PackageTags>
+		<RepositoryUrl>https://github.com/TheXDS/Triton/</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Description>Tritón Framework is a rapid software development tool with data connections through Entity Framework or other data providers.</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(VersionSuffix)'==''">
+		<ActualPkgVersion>$(VersionPrefix)</ActualPkgVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(VersionSuffix)'!=''">
+		<ActualPkgVersion>$(VersionPrefix)-$(VersionSuffix)</ActualPkgVersion>
+		<PackageReleaseNotes>This is a pre-release version of $(Product). It is recommended that this package is not used on a production environment, and its use should be limited to testing and API demonstrations, due to the impossibility of assuring the quality and reliability of the code. For more information, please read the documentation included with $(Product).</PackageReleaseNotes>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="$(Root)Art\TritonLogo.png" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+</Project>

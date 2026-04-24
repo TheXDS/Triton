@@ -17,13 +17,13 @@ public class InstanceTests
     }
 
     public void BrokenConfigTest(DbContextOptionsBuilder options)
-    {            
+    {
     }
 
     [Test]
     public void ParametricInstancingBuilderTest()
     {
-        TestContext(ContextBuilder.Build(new[] { typeof(Comment), typeof(Post), typeof(User) }, ConfigTest).New());
+        TestContext(ContextBuilder.Build([typeof(Comment), typeof(Post), typeof(User)], ConfigTest).New());
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class InstanceTests
     [Test]
     public void Instancing_contracts_test()
     {
-        Assert.Throws<ArgumentException>(() => ContextBuilder.Build(new[] { typeof(Comment), typeof(Exception) }));
+        Assert.Throws<ArgumentException>(() => ContextBuilder.Build([typeof(Comment), typeof(Exception)]));
         Assert.Throws<InvalidOperationException>(() => ContextBuilder.Build(BrokenConfigTest));
     }
 

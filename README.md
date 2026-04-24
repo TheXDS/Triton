@@ -6,18 +6,18 @@
 [![Issues](https://img.shields.io/github/issues/TheXDS/Triton)](https://github.com/TheXDS/Triton/issues)
 [![MIT](https://img.shields.io/github/license/TheXDS/Triton)](https://mit-license.org)
 
-## Introducción
-Tritón es una librería auxiliar que facilita el acceso a la API de gestores
-de bases de datos, particularmente Entity Framework Core Provee de servicios,
-clases base, generadores dinámicos y otras herramientas misceláneas.
+## Introduction
+Tritón is a utility library that facilitates access to Database Management System APIs,
+particularly Entity Framework Core. It provides services,
+base classes, dynamic generators, and other miscellaneous tools.
 
 ## Releases
-Tritón se encuentra disponible en NuGet y en mi repositorio privado de GitHub.
+Tritón is available on NuGet and my private GitHub repository.
 
 Release | Link
 --- | ---
-Última versión estable: | [![Versión estable](https://buildstats.info/nuget/TheXDS.Triton)](https://www.nuget.org/packages/TheXDS.Triton/)
-Última versión de desarrollo: | [![Versión de desarrollo](https://buildstats.info/nuget/TheXDS.Triton?includePreReleases=true)](https://www.nuget.org/packages/TheXDS.Triton/)
+Latest stable version: | [![Stable version](https://buildstats.info/nuget/TheXDS.Triton)](https://www.nuget.org/packages/TheXDS.Triton/)
+Latest development version: | [![Development version](https://buildstats.info/nuget/TheXDS.Triton?includePreReleases=true)](https://www.nuget.org/packages/TheXDS.Triton/)
 
 **Package Manager**  
 ```sh
@@ -34,62 +34,62 @@ dotnet add package TheXDS.Triton
 paket add TheXDS.Triton
 ```
 
-**Referencia de paquete**  
+**Package Reference**  
 ```xml
 <PackageReference Include="TheXDS.Triton" Version="1.4.0" />
 ```
 
-**Ventana interactiva (CSI)**  
+**Interactive Window (CSI)**  
 ```
 #r "nuget: TheXDS.Triton, 1.4.0"
 ```
 
-#### Repositorio de GitHub
-Para obtener los paquetes de Tritón directamente desde GitHub, es necesario
-agregar mi repositorio privado. Paar lograr esto, solo es necesario
-ejecutar en una terminal:
+#### GitHub Repository
+To obtain Tritón packages directly from GitHub, it is necessary
+to add my private repository. To do this, simply run
+in a terminal:
 ```sh
 nuget sources add -Name "TheXDS GitHub Repo" -Source https://nuget.pkg.github.com/TheXDS/index.json
 ```
 
-## Compilación
-Tritón requiere de un compilador compatible con C# 10, debido a ciertas
-características especiales del lenguaje que ayudan a disminuir la
-complejidad del código.
+## Build
+Tritón requires a C# 10 compatible compiler, due to certain
+special language features that help reduce code
+complexity.
 
-Tritón también requiere que [.Net SDK 6.0](https://dotnet.microsoft.com/) esté instalado en el sistema.
+Tritón also requires [.NET SDK 6.0](https://dotnet.microsoft.com/) to be installed on the system.
 
-### Compilando Tritón
+### Building Tritón
 ```sh
 dotnet build ./src/Triton.sln
 ```
-Los binarios se encontarán en la carpeta `./Build` en la raíz del repositorio.
+Binaries will be found in the `./Build` folder at the root of the repository.
 
-### Ejecutando pruebas
+### Running Tests
 ```sh
 dotnet test ./src/Triton.sln
 ```
-#### Reporte de cobertura
-Es posible obtener un reporte de la cobertura de código de manera local. Para ello, es necesario instalar 
-[`ReportGenerator`](https://github.com/danielpalme/ReportGenerator) , que leerá los resultados de la ejecución de las pruebas, y generará una página web con el resultado de la cobertura.
+#### Coverage Report
+It is possible to obtain a code coverage report locally. To do this, it is necessary to install
+[`ReportGenerator`](https://github.com/danielpalme/ReportGenerator), which will read the test execution results and generate a web page with the coverage results.
 
-Para instalar `ReportGenerator` ejecuta:
+To install `ReportGenerator` run:
 ```sh
 dotnet tool install -g dotnet-reportgenerator-globaltool
 ```
-Luego de haber instalado `ReportGenerator`, será posible ejecutar el siguiente comando:
+After installing `ReportGenerator`, you can run the following command:
 ```sh
 dotnet test .\src\Triton.sln --collect:"XPlat Code Coverage" --results-directory:.\Build\Tests ; reportgenerator.exe -reports:.\Build\Tests\*\coverage.cobertura.xml -targetdir:.\Build\Coverage\
 ```
-Los resultados de la cobertura se almacenarán en `./Build/Coverage`
+Coverage results will be stored in `./Build/Coverage`
 
-## Contribuir
+## Contribute
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W415UCHY)
 
-Si Tritón te ha sido de utilidad, o te interesa donar para fomentar el
-desarrollo del proyecto, siéntete libre de hacer una donación por medio de
+If Tritón has been useful to you, or you are interested in donating to encourage the
+development of the project, feel free to make a donation via
 [PayPal](https://paypal.me/thexds), [Ko-fi](https://ko-fi.com/W7W415UCHY)
-o ponte en contacto directamente conmigo.
+or get in touch with me directly.
 
-Lamentablemente, no puedo ofrecer otros medios de donación por el momento
-debido a que mi país (Honduras) no es soportado por casi ninguna plataforma.
+Unfortunately, I cannot offer other donation methods at the moment
+due to my country (Honduras) not being supported by most platforms.

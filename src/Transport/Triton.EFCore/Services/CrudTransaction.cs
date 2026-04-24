@@ -1,35 +1,35 @@
 ﻿using System.Linq.Expressions;
+using TheXDS.Triton.EFCore.Services.Base;
+using TheXDS.Triton.Services;
 
-namespace TheXDS.Triton.Services;
+namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Obtiene una transacción compleja que permite operaciones de lectura
-/// y de escritura sobre un contexto de datos común.
+/// Gets a complex transaction that allows read and write operations on a common data context.
 /// </summary>
 /// <typeparam name="T">
-/// Tipo de contexto de datos a utilizar.
+/// Type of data context to use.
 /// </typeparam>
 public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransaction<T> where T : DbContext
 {
-    private readonly ICrudReadTransaction _readTransaction;
-    private readonly ICrudWriteTransaction _writeTransaction;
+    private readonly CrudReadTransaction<T> _readTransaction;
+    private readonly CrudWriteTransaction<T> _writeTransaction;
 
     /// <summary>
-    /// Obtiene a la instancia de contexto activa en esta transacción.
+    /// Gets the active context instance in this transaction.
     /// </summary>
     public T Context => _context;
 
     /// <summary>
-    /// Inicializa una nueva instancia de la clase 
+    /// Initializes a new instance of the class
     /// <see cref="CrudTransaction{T}"/>.
     /// </summary>
     /// <param name="configuration">
-    /// Configuración a pasar a las transacciones subyacentes.
+    /// Configuration to pass to the underlying transactions.
     /// </param>
     /// <param name="options">
-    /// Opciones a utilizar para llamar al contructor del contexto de datos.
-    /// Establezca este parámetro en <see langword="null"/> para utilizar el
-    /// constructor público sin parámetros.
+    /// Options to use when calling the data context constructor.
+    /// Set this parameter to <see langword="null"/> to use the parameterless public constructor.
     /// </param>
     public CrudTransaction(IMiddlewareRunner configuration, DbContextOptions? options = null) : base(configuration, options)
     {
@@ -38,26 +38,23 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Obtiene una entidad cuyo campo llave sea igual al valor
-    /// especificado.
+    /// Gets an entity whose key field equals the specified value.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a obtener.
+    /// Type of the entity model to get.
     /// </typeparam>
     /// <typeparam name="TKey">
-    /// Tipo de campo llave de la entidad a obtener.
+    /// Type of the key field of the entity to get.
     /// </typeparam>
     /// <param name="key">
-    /// Llave de la entidad a obtener.
+    /// Key of the entity to get.
     /// </param>
     /// <param name="entity">
-    /// Parámetro de salida. Entidad obtenida en la operación de
-    /// lectura. Si no existe una entidad con el campo llave
-    /// especificado, se devolverá <see langword="null"/>.
+    /// Output parameter. The entity obtained from the read operation.
+    /// If no entity exists with the specified key field, <see langword="null"/> will be returned.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Read<TModel, TKey>(TKey key, out TModel? entity) where TModel : Model<TKey>, new() where TKey : IComparable<TKey>, IEquatable<TKey>
     {
@@ -65,24 +62,22 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Obtiene una entidad cuyo campo llave sea igual al valor
-    /// especificado.
+    /// Gets an entity whose key field equals the specified value.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a obtener.
+    /// Type of the entity model to get.
     /// </typeparam>
     /// <typeparam name="TKey">
-    /// Tipo de campo llave de la entidad a obtener.
+    /// Type of the key field of the entity to get.
     /// </typeparam>
     /// <param name="key">
-    /// Llave de la entidad a obtener.
+    /// Key of the entity to get.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente, incluyendo como valor de resultado a la
-    /// entidad obtenida en la operación de lectura. Si no existe una
-    /// entidad con el campo llave especificado, el valor de resultado
-    /// será <see langword="null"/>.
+    /// The reported result of the operation executed by the underlying service,
+    /// including the entity obtained from the read operation as the result value.
+    /// If no entity exists with the specified key field, the result value will be
+    /// <see langword="null"/>.
     /// </returns>
     public ServiceResult<TModel?> Read<TModel, TKey>(TKey key)
         where TModel : Model<TKey>, new()
@@ -92,17 +87,16 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Crea una nueva entidad en la base de datos.
+    /// Creates a new entity in the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la nueva entidad.
+    /// Type of the new entity model.
     /// </typeparam>
     /// <param name="newEntity">
-    /// Nueva entidad a agregar a la base de datos.
+    /// New entity to add to the database.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Create<TModel>(params TModel[] newEntity) where TModel : Model
     {
@@ -110,17 +104,16 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Elimina a una entidad de la base de datos.
+    /// Deletes an entity from the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a eliminar.
+    /// Type of the entity model to delete.
     /// </typeparam>
     /// <param name="entity">
-    /// Entidad que deberá ser eliminada de la base de datos.
+    /// Entity that should be deleted from the database.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Delete<TModel>(params TModel[] entity) where TModel : Model
     {
@@ -128,21 +121,19 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Elimina a una entidad de la base de datos.
+    /// Deletes an entity from the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a eliminar.
+    /// Type of the entity model to delete.
     /// </typeparam>
     /// <typeparam name="TKey">
-    /// Tipo del campo llave que identifica a la entidad.
+    /// Type of the key field that identifies the entity.
     /// </typeparam>
     /// <param name="key">
-    /// Llave de la entidad que deberá ser eliminada de la base de
-    /// datos.
+    /// Key of the entity that should be deleted from the database.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Delete<TModel, TKey>(params TKey[] key)
         where TModel : Model<TKey>, new()
@@ -152,18 +143,16 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Actualiza los datos contenidos en una entidad dentro de la base
-    /// de datos.
+    /// Updates the data contained in an entity within the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a actualizar.
+    /// Type of the entity model to update.
     /// </typeparam>
     /// <param name="entity">
-    /// Entidad que contiene la nueva información a escribir.
+    /// Entity containing the new information to write.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Update<TModel>(params TModel[] entity) where TModel : Model
     {
@@ -171,12 +160,10 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Guarda todos los cambios síncronos pendientes de la transacción
-    /// actual.
+    /// Saves all pending synchronous changes of the current transaction.
     /// </summary>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public ServiceResult Commit()
     {
@@ -184,11 +171,10 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Guarda todos los cambios realizados de forma asíncrona.
+    /// Saves all changes made asynchronously.
     /// </summary>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public Task<ServiceResult> CommitAsync()
     {
@@ -196,21 +182,19 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Obtiene de forma asíncrona una entidad cuyo campo llave sea
-    /// igual al valor especificado.
+    /// Asynchronously gets an entity whose key field equals the specified value.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de la entidad a obtener.
+    /// Type of the entity model to get.
     /// </typeparam>
     /// <typeparam name="TKey">
-    /// Tipo de campo llave de la entidad a obtener.
+    /// Type of the key field of the entity to get.
     /// </typeparam>
     /// <param name="key">
-    /// Llave de la entidad a obtener.
+    /// Key of the entity to get.
     /// </param>
     /// <returns>
-    /// El resultado reportado de la operación ejecutada por el
-    /// servicio subyacente.
+    /// The reported result of the operation executed by the underlying service.
     /// </returns>
     public Task<ServiceResult<TModel?>> ReadAsync<TModel, TKey>(TKey key)
         where TModel : Model<TKey>, new()
@@ -220,11 +204,11 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Obtiene la colección completa de entidades del modelo
-    /// especificado almacenadas en la base de datos.
+    /// Gets the complete collection of entities of the specified model
+    /// stored in the database.
     /// </summary>
     /// <typeparam name="TModel">
-    /// Modelo de las entidades a obtener.
+    /// Type of the entity models to get.
     /// </typeparam>
     /// <returns></returns>
     public QueryServiceResult<TModel> All<TModel>() where TModel : Model
@@ -233,7 +217,7 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <summary>
-    /// Libera los recursos utilizados por esta instancia.
+    /// Releases the resources used by this instance.
     /// </summary>
     protected override void OnDispose()
     {
@@ -255,12 +239,6 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     }
 
     /// <inheritdoc/>
-    public ServiceResult CreateOrUpdate<TModel>(params TModel[] entities) where TModel : Model
-    {
-        return _writeTransaction.CreateOrUpdate(entities);
-    }
-
-    /// <inheritdoc/>
     public ServiceResult Delete<TModel>(params string[] stringKeys) where TModel : Model, new()
     {
         return _writeTransaction.Delete<TModel>(stringKeys);
@@ -270,5 +248,53 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     public ServiceResult Discard()
     {
         return _writeTransaction.Discard();
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<TModel?> Read<TModel>(object key) where TModel : Model, new()
+    {
+        return _readTransaction.Read<TModel>(key);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult<Model?> Read(Type model, object key)
+    {
+        return _readTransaction.Read(model, key);
+    }
+
+    /// <inheritdoc/>
+    public QueryServiceResult<Model> All(Type model)
+    {
+        return _readTransaction.All(model);
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<TModel?>> ReadAsync<TModel>(object key) where TModel : Model, new()
+    {
+        return _readTransaction.ReadAsync<TModel>(key);
+    }
+
+    /// <inheritdoc/>
+    public Task<ServiceResult<Model?>> ReadAsync(Type model, object key)
+    {
+        return _readTransaction.ReadAsync(model, key);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Create(params Model[] entities)
+    {
+        return _writeTransaction.Create(entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Update(params Model[] entities)
+    {
+        return _writeTransaction.Update(entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult Delete(params Model[] entities)
+    {
+        return _writeTransaction.Delete(entities);
     }
 }

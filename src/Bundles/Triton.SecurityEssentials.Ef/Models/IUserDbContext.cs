@@ -4,45 +4,45 @@ using TheXDS.Triton.Models;
 namespace TheXDS.Triton.SecurityEssentials.Ef.Models;
 
 /// <summary>
-/// Define una serie de miembros a implementar por un
-/// <see cref="DbContext"/> que incluya las tablas necesarias para
-/// almacenar información de autenticación y permisos de usuarios.
+/// Defines a set of members to be implemented by a
+/// <see cref="DbContext"/> that includes the necessary tables to
+/// store user authentication and permission information.
 /// </summary>
 public interface IUserDbContext
 {
     /// <summary>
-    /// Obtiene o establece una referencia al <see cref="DbSet{TEntity}"/>
-    /// que almacena objetos de tipo <see cref="LoginCredential"/>.
+    /// Gets or sets a reference to the <see cref="DbSet{TEntity}"/>
+    /// that stores objects of type <see cref="LoginCredential"/>.
     /// </summary>
     DbSet<LoginCredential> LoginCredentials { get; set; }
-    
+
     /// <summary>
-    /// Obtiene o establece una referencia al <see cref="DbSet{TEntity}"/>
-    /// que almacena objetos de tipo <see cref="MultiFactorEntry"/>.
+    /// Gets or sets a reference to the <see cref="DbSet{TEntity}"/>
+    /// that stores objects of type <see cref="MultiFactorEntry"/>.
     /// </summary>
     DbSet<MultiFactorEntry> MfaEntries { get; set; }
 
     /// <summary>
-    /// Obtiene o establece una referencia al <see cref="DbSet{TEntity}"/>
-    /// que almacena objetos de tipo <see cref="SecurityDescriptor"/>.
+    /// Gets or sets a reference to the <see cref="DbSet{TEntity}"/>
+    /// that stores objects of type <see cref="SecurityDescriptor"/>.
     /// </summary>
     DbSet<SecurityDescriptor> SecurityDescriptors { get; set; }
 
     /// <summary>
-    /// Obtiene o establece una referencia al <see cref="DbSet{TEntity}"/>
-    /// que almacena objetos de tipo <see cref="Session"/>.
+    /// Gets or sets a reference to the <see cref="DbSet{TEntity}"/>
+    /// that stores objects of type <see cref="Session"/>.
     /// </summary>
     DbSet<Session> Sessions { get; set; }
 
     /// <summary>
-    /// Obtiene o establece una referencia al <see cref="DbSet{TEntity}"/>
-    /// que almacena objetos de tipo <see cref="UserGroup"/>.
+    /// Gets or sets a reference to the <see cref="DbSet{TEntity}"/>
+    /// that stores objects of type <see cref="UserGroup"/>.
     /// </summary>
     DbSet<UserGroup> UserGroups { get; set; }
 
     /// <summary>
-    /// Obtiene o establece una referencia al <see cref="DbSet{TEntity}"/>
-    /// que almacena objetos de tipo <see cref="UserGroupMembership"/>.
+    /// Gets or sets a reference to the <see cref="DbSet{TEntity}"/>
+    /// that stores objects of type <see cref="UserGroupMembership"/>.
     /// </summary>
     DbSet<UserGroupMembership> UserGroupMemberships { get; set; }
 }

@@ -20,12 +20,12 @@ public class User : Model<string>
     /// <summary>
     /// Colección de todos los post creados por el usuario.
     /// </summary>
-    public ICollection<Post> Posts { get; set; } = new List<Post>();
+    public ICollection<Post> Posts { get; set; } = [];
 
     /// <summary>
     /// Colección de todos los comentarios creados por el usuario.
     /// </summary>
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    public ICollection<Comment> Comments { get; set; } = [];
 
     /// <summary>
     /// Inicializa una nueva instancia del modelo <see cref="User"/>.

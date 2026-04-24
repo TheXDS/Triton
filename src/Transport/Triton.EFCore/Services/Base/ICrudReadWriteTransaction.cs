@@ -1,14 +1,15 @@
-﻿namespace TheXDS.Triton.Services.Base;
+﻿using TheXDS.Triton.Services;
+
+namespace TheXDS.Triton.EFCore.Services.Base;
 
 /// <summary>
-/// Define una serie de miembros a implementar por un tipo que permita
-/// realizar operaciones de lectura y de escritura basadas en
-/// transacción sobre una base de datos.
+/// Defines a set of members to be implemented by a type that allows
+/// performing read and write transaction-based operations on a database.
 /// </summary>
 public interface ICrudReadWriteTransaction<TContext> : ICrudReadWriteTransaction where TContext : DbContext
 {
     /// <summary>
-    /// Obtiene a la instancia de contexto activa en esta transacción.
+    /// Gets the active context instance in this transaction.
     /// </summary>
     TContext Context { get; }
 }

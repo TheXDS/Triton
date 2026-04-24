@@ -1,12 +1,10 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Services;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.Services;
 
-public class ServiceResult_T_Tests
+internal class ServiceResult_T_Tests
 {
     [Test]
     public void ServiceResult_with_string_Ctor()
@@ -28,7 +26,7 @@ public class ServiceResult_T_Tests
     {
         var ex = new Exception("Error XYZ");
         var result = new ServiceResult<User>(ex);
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(result.Message, Is.EqualTo(ex.Message));
         Assert.That(result.Reason, Is.Not.Null);
         Assert.That((int)result.Reason!.Value, Is.EqualTo(ex.HResult));
@@ -38,7 +36,7 @@ public class ServiceResult_T_Tests
     public void ServiceResult_from_FailureReason()
     {
         var r = new ServiceResult<User>(FailureReason.ConcurrencyFailure);
-        Assert.That(r.Success, Is.False);
+        Assert.That(r.IsSuccessful, Is.False);
         Assert.That(FailureReason.ConcurrencyFailure, Is.EqualTo(r.Reason));
     }
 
@@ -47,7 +45,7 @@ public class ServiceResult_T_Tests
     {
         var ex = new Exception("Error XYZ");
         var result = (ServiceResult<User>)ex;
-        Assert.That(result.Success, Is.False);
+        Assert.That(result.IsSuccessful, Is.False);
         Assert.That(ex.Message, Is.EqualTo(result.Message));
         Assert.That(result.Reason, Is.Not.Null);
         Assert.That(ex.HResult, Is.EqualTo((int)result.Reason!));

@@ -118,9 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NonVoidMethodExpected" xml:space="preserve">
-    <value>Se esperaba un método que retorna valores de tipo {0}.</value>
+    <value>A method with a {0} return type was expected.</value>
   </data>
   <data name="VoidMethodExpected" xml:space="preserve">
-    <value>Se esperaba un método que no retorna valor (void).</value>
+    <value>A void method was expected.</value>
   </data>
 </root>

@@ -1,11 +1,11 @@
-﻿using TheXDS.Triton.Services;
-using TheXDS.Triton.Tests.Services;
+﻿using TheXDS.Triton.InMemory.Services;
+using TheXDS.Triton.Services;
 
 namespace TheXDS.Triton.Tests.SecurityEssentials;
 
-internal class TestUserService : TritonService, IUserService
+internal class TestUserService(ITransactionFactory factory) : TritonService(factory), IUserService
 {
-    public TestUserService() : base(new TestTransFactory())
+    public TestUserService() : this(new InMemoryTransFactory())
     {
     }
 }

@@ -15,16 +15,16 @@ public class ModelsTests
     public void LoginCredential_Test()
     {
         Guid testId = Guid.NewGuid();
-        List<Session> sessionTest = new();
-        List<MultiFactorEntry> mfaTest = new();
-        List<SecurityDescriptor> descriptorsTest = new();
-        List<UserGroupMembership> membershipTest = new();
+        List<Session> sessionTest = [];
+        List<MultiFactorEntry> mfaTest = [];
+        List<SecurityDescriptor> descriptorsTest = [];
+        List<UserGroupMembership> membershipTest = [];
 
         LoginCredential x = new()
         {
             Id = testId,
             Username = "test1",
-            PasswordHash = new byte[] { 1, 2, 4, 8 },
+            PasswordHash = [1, 2, 4, 8],
             Enabled = false,
             Sessions = sessionTest,
             RegisteredMfa = mfaTest,
@@ -49,8 +49,8 @@ public class ModelsTests
     public void UserGroup_Test()
     {
         Guid testId = Guid.NewGuid();
-        List<UserGroupMembership> membershipTest = new();
-        List<SecurityDescriptor> descriptorsTest = new();
+        List<UserGroupMembership> membershipTest = [];
+        List<SecurityDescriptor> descriptorsTest = [];
         UserGroup x = new()
         {
             Id = testId,
@@ -95,11 +95,11 @@ public class ModelsTests
         UserGroupMembership x = new()
         {
             Id = testId,
-            SecurityObject = l,
+            Member = l,
             Group = g
         };
         Assert.That(x.Id, Is.EqualTo(testId));
-        Assert.That(x.SecurityObject, Is.SameAs(l));
+        Assert.That(x.Member, Is.SameAs(l));
         Assert.That(x.Group, Is.SameAs(g));
     }
 
@@ -123,7 +123,7 @@ public class ModelsTests
     {
         Guid testId = Guid.NewGuid();
         Guid proc = Guid.NewGuid();
-        byte[] data = { 1, 2, 3, 4 };
+        byte[] data = [1, 2, 3, 4];
         LoginCredential l = new();
         MultiFactorEntry x = new()
         {

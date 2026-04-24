@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
@@ -8,17 +6,11 @@ using TheXDS.MCART.Helpers;
 
 namespace TheXDS.Triton.Tests;
 
-public abstract class StringResourceTestClass
+[method: ExcludeFromCodeCoverage]
+internal abstract class StringResourceTestClass(Type resourceClass)
 {
-    private readonly Type resourceClass;
-    private readonly PropertyInfo cultureProperty;
-
-    [ExcludeFromCodeCoverage]
-    protected StringResourceTestClass(Type resourceClass)
-    {
-        this.resourceClass = resourceClass;
-        cultureProperty =  resourceClass.GetProperty("Culture", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static) ?? throw new InvalidOperationException();
-    }
+    private readonly Type resourceClass = resourceClass;
+    private readonly PropertyInfo cultureProperty = resourceClass.GetProperty("Culture", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static) ?? throw new InvalidOperationException();
 
     private void SetCulture(CultureInfo culture)
     {

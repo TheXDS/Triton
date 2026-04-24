@@ -1,0 +1,66 @@
+<Solution>
+  <Folder Name="/Build/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/Build/CI/" />
+  <Folder Name="/Build/CI/Github/">
+    <File Path=".github/dependabot.yml" />
+  </Folder>
+  <Folder Name="/Build/CI/Github/workflows/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/docfx.yml" />
+    <File Path=".github/workflows/publish.yml" />
+  </Folder>
+  <Folder Name="/Build/Targets/">
+    <File Path="BuildTargets/BuildPaths.props" />
+    <File Path="BuildTargets/CompileOptions.targets" />
+    <File Path="BuildTargets/GlobalDirectives.targets" />
+    <File Path="BuildTargets/PackageInfo.props" />
+    <File Path="BuildTargets/PackageVersion.props" />
+  </Folder>
+  <Folder Name="/Bundles/">
+    <Project Path="src/Bundles/ServicePool.Triton.Ef/ServicePool.Triton.Ef.csproj" />
+    <Project Path="src/Bundles/ServicePool.Triton.EfContextBuilder/ServicePool.Triton.EfContextBuilder.csproj" />
+    <Project Path="src/Bundles/ServicePool.Triton/ServicePool.Triton.csproj" />
+    <Project Path="src/Bundles/Triton.CrudNotify/Triton.CrudNotify.csproj" />
+    <Project Path="src/Bundles/Triton.Diagnostics/Triton.Diagnostics.csproj" />
+    <Project Path="src/Bundles/Triton.Dynamic/Triton.Dynamic.csproj" />
+    <Project Path="src/Bundles/Triton.EfContextBuilder/Triton.EfContextBuilder.csproj" />
+    <Project Path="src/Bundles/Triton.Faker/Triton.Faker.csproj" />
+    <Project Path="src/Bundles/Triton.SecurityEssentials.Ef/Triton.SecurityEssentials.Ef.csproj" />
+    <Project Path="src/Bundles/Triton.SecurityEssentials/Triton.SecurityEssentials.csproj" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="src/Core/Triton.Models/Triton.Models.csproj" />
+    <Project Path="src/Core/Triton/Triton.csproj" />
+  </Folder>
+  <Folder Name="/DevTools/">
+    <Project Path="src/DevTools/StringPacker/StringPacker.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="src/Tests/Triton.Tests.Shared/Triton.Tests.Shared.shproj" />
+  </Folder>
+  <Folder Name="/Tests/Bundles/">
+    <Project Path="src/Tests/Bundles/ServicePool.Triton.Tests/ServicePool.Triton.Tests.csproj" />
+    <Project Path="src/Tests/Bundles/Triton.Diagnostics.Tests/Triton.Tests.Diagnostics.csproj" />
+    <Project Path="src/Tests/Bundles/Triton.EFContextBuilder.Tests/Triton.Tests.EFContextBuilder.csproj" />
+    <Project Path="src/Tests/Bundles/Triton.Tests.CrudNotify/Triton.Tests.CrudNotify.csproj" />
+    <Project Path="src/Tests/Bundles/Triton.Tests.Faker/Triton.Tests.Faker.csproj" />
+    <Project Path="src/Tests/Bundles/Triton.Tests.SecurityEssentials/Triton.Tests.SecurityEssentials.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Core/">
+    <Project Path="src/Tests/Core/Triton.Tests/Triton.Tests.csproj" />
+    <Project Path="src/Tests/Triton.Tests.Models/Triton.Tests.Models.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Transport/">
+    <Project Path="src/Tests/Transport/Triton.Tests.EFCore/Triton.Tests.EFCore.csproj" />
+    <Project Path="src/Tests/Transport/Triton.Tests.InMemory/Triton.Tests.InMemory.csproj" />
+  </Folder>
+  <Folder Name="/Transport/">
+    <Project Path="src/Transport/Triton.Dapper/Triton.Dapper.csproj" />
+    <Project Path="src/Transport/Triton.EFCore/Triton.EFCore.csproj" />
+    <Project Path="src/Transport/Triton.InMemory/Triton.InMemory.csproj" />
+    <Project Path="src/Transport/Triton.JsonLocalStore/Triton.JsonLocalStore.csproj" />
+  </Folder>
+</Solution>

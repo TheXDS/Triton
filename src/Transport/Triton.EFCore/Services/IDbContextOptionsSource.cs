@@ -1,21 +1,21 @@
-﻿namespace TheXDS.Triton.Services;
+﻿namespace TheXDS.Triton.EFCore.Services;
 
 /// <summary>
-/// Define una serie de miembros a implementar por un tipo que permita obtener
-/// la configuración a utilizar cuando se instancia un <see cref="DbContext"/>
-/// que acepte recibir un parámetro de tipo <see cref="DbContextOptions"/>.
+/// Defines a set of members to be implemented by a type that allows obtaining
+/// the configuration to use when instantiating a <see cref="DbContext"/>
+/// that accepts a <see cref="DbContextOptions"/> parameter.
 /// </summary>
 public interface IDbContextOptionsSource
 {
     /// <summary>
-    /// Obtiene la configuración a utilizar para crear una nueva instancia de
-    /// la clase <see cref="DbContext"/>.
+    /// Gets the configuration to use for creating a new instance of the
+    /// <see cref="DbContext"/> class.
     /// </summary>
     /// <returns>
-    /// Un <see cref="DbContextOptions"/> con la configuración a utilizar
-    /// cuando se instancia un<see cref="DbContext"/>, o <see langword="null"/>
-    /// cuando se debe llamar al constructor sin parámetros del
-    /// <see cref="DbContext"/> a instanciar.
+    /// A <see cref="DbContextOptions"/> with the configuration to use
+    /// when instantiating a <see cref="DbContext"/>, or <see langword="null"/>
+    /// when the parameterless constructor of the <see cref="DbContext"/> to
+    /// instantiate should be called.
     /// </returns>
     DbContextOptions? GetOptions();
 }

@@ -1,11 +1,9 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Models.Base;
 
 namespace TheXDS.Triton.Tests.Models;
 
-public class TimestampModelTests
+internal class TimestampModelTests
 {
     private class TestClass : TimestampModel<int>
     {
@@ -21,7 +19,7 @@ public class TimestampModelTests
     [Test]
     public void Ctor_Test()
     {
-        Assert.That(new TestClass().Timestamp, Is.EqualTo(default(DateTime)));
+        Assert.That(new TestClass().Timestamp, Is.Null);
 
         var n = DateTime.Now;
         Assert.That(new TestClass(n).Timestamp, Is.EqualTo(n));

@@ -1,23 +1,21 @@
-﻿#pragma warning disable CS1591
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using TheXDS.Triton.Tests.Models;
 
 namespace TheXDS.Triton.Tests.EFCore.Tests;
 
-public partial class CrudOpsTests : TritonEfTestClass
+internal partial class CrudOpsTests : TritonEfTestClass
 {
     [Test]
     public void RelatedDataEagerLoadingTest()
     {
         var q = _srv.GetAllUsersFirst3Posts().ToList();
 
-        /* -= Según la base de datos de prueba: =-
-         * Existen 3 usuarios, y únicamente el primer usuario debe tener un
-         * Post. Los demás usuarios no deben tener ninguno.
-         * 
-         * Por la forma en que el Query está construido, solo se debe
-         * obtener al primer usuario y a su correspondiente post.
+        /* -= Initial test database: =-
+         * There are 3 users, and only the first user should have a
+         * Post. The other users should not have any.
+         *
+         * Based on the way the query is constructed, only the first user
+         * and their corresponding post should be retrieved.
          */
 
         Assert.That(q.Count, Is.EqualTo(1));
