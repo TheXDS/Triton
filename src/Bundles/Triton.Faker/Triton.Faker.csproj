@@ -9,7 +9,7 @@
     <EmbeddedResource Include="Resources\StringTables\*.deflate" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="TheXDS.MCART" Version="1.0.0-alpha.1" />
+    <PackageReference Include="TheXDS.MCART" Version="1.0.0-alpha.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />

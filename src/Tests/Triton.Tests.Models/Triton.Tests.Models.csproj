@@ -15,7 +15,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="TheXDS.MCART" Version="1.0.0-alpha.1" />
+        <PackageReference Include="TheXDS.MCART" Version="1.0.0-alpha.2" />
     </ItemGroup>
 
     <ItemGroup>
