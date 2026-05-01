@@ -23,7 +23,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="thexds.mcart.mvvm" Version="1.0.0-alpha.1" />
+    <PackageReference Include="thexds.mcart.mvvm" Version="1.0.0-alpha.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />
