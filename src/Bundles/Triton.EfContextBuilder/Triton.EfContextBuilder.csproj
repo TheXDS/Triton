@@ -6,7 +6,7 @@
     <ProjectReference Include="..\..\Transport\Triton.EFCore\Triton.EFCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="TheXDS.MCART.TypeFactory" Version="1.0.0-alpha.1" />
+    <PackageReference Include="TheXDS.MCART.TypeFactory" Version="1.0.0-alpha.2" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />
