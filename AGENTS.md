@@ -282,8 +282,7 @@ Resource strings are managed via `.resx` files with auto-generated designer clas
 
 ## Important Notes for Agents
 
-1. **Never add code to `DevTools/StringPacker/`** — this folder is slated for deprecation/deletion.
-2. **Always build from the solution root** using `dotnet build Triton.slnx`. Do not build individual projects unless there's a specific reason.
+1. **Always build from the solution root** using `dotnet build Triton.slnx`. Do not build individual projects unless there's a specific reason.
 3. **When adding a new database transport**, create a new project under `src/Transport/` following the pattern of existing transport projects (EFCore, Dapper, InMemory).
 4. **When adding a new bundle**, create a project under `src/Bundles/` that depends on Core/Transport projects. Bundles may use 3rd-party packages.
 5. **For every source project**, create a corresponding test project under `src/Tests/` mirroring the source folder structure.
