@@ -51,11 +51,11 @@ internal class BasicModelTests
     {
         var t = new TestModel();
         Assert.That(t.Id, Is.Null);
-        Assert.That(t.IdAsString, Is.Not.Null);
+        Assert.That(t.Metadata.IdAsString, Is.Not.Null);
 
         var u = new ConcurrentTestModel();
         Assert.That(u.Id, Is.Zero);
-        Assert.That(u.IdAsString, Is.EqualTo("0"));
+        Assert.That(u.Metadata.IdAsString, Is.EqualTo("0"));
     }
 
     [Test]
@@ -69,6 +69,6 @@ internal class BasicModelTests
     {
         var t = new TestModel("xabc1234");
         Assert.That(t.Id, Is.EqualTo("xabc1234"));
-        Assert.That(t.IdAsString, Is.EqualTo("xabc1234"));
+        Assert.That(t.Metadata.IdAsString, Is.EqualTo("xabc1234"));
     }
 }

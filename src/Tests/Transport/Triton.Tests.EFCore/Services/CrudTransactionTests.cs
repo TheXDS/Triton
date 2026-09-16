@@ -53,7 +53,7 @@ public class CrudTransactionTests
     public void All_reads_from_DbSet()
     {
         using var t = GetTestTransaction();
-        var result = t.All(typeof(User)).ToList().FirstOrDefault(p => p.IdAsString == "user1");
+        var result = t.All(typeof(User)).ToList().FirstOrDefault(p => p.Metadata.IdAsString == "user1");
         Assert.That(result, Is.InstanceOf<User>());
     }
 

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using System.Linq.Expressions;
+using TheXDS.MCART.Exceptions;
 using TheXDS.MCART.Types.Base;
 using TheXDS.MCART.Types.Extensions;
 using TheXDS.Triton.Models.Base;
@@ -305,27 +306,44 @@ public class DapperTransaction : AsyncDisposable, ICrudReadWriteTransaction
     }
 
     /// <inheritdoc/>
-    public ServiceResult CreateOrUpdate<TModel>(params TModel[] entities) where TModel : Model
+    public ServiceResult CreateOrUpdate(params Model[] entities)
     {
-        try
+        #if PreferMetadataOverQuery
+        foreach (var entity in entities)
         {
-            var tblName = GetTableName<TModel>();
-            var createColumns = string.Concat(",", EnumerateColumns<TModel>());
-            var createValues = string.Concat(",", EnumerateProps<TModel>("@"));
-            var updateColumns = EnumColEqProp<TModel>();
-            var idColumn = GetProp<TModel>("Id");
-            foreach (var entity in entities)
+            if (entity.Metadata.IsNew)
             {
-                _connection.Execute($@"IF NOT EXISTS ( SELECT TOP 1 FROM {tblName} WHERE {idColumn} = @Id )
+                if (Create(entity) is { IsSuccessful: false } result) return result;
+            }
+            else
+            {
+                if (Update(entity) is { IsSuccessful: false } result) return result;
+            }
+        }
+        #else
+        foreach (var j in entities.GroupBy(p => p.GetType()))
+        {
+            try
+            {
+                var tblName = GetTableName(j.Key);
+                var createColumns = string.Concat(",", EnumerateColumns(j.Key));
+                var createValues = string.Concat(",", EnumerateProps(j.Key, "@"));
+                var updateColumns = EnumColEqProp(j.Key);
+                var idColumn = GetProp(j.Key, "Id");
+                foreach (var entity in j)
+                {
+                    _connection.Execute($@"IF NOT EXISTS ( SELECT TOP 1 FROM {tblName} WHERE {idColumn} = @Id )
 INSERT INTO {tblName} ({createColumns}) VALUES ({createValues});
 ELSE UPDATE {tblName} SET {updateColumns} WHERE {idColumn} = @Id;", entity, _transaction);
+                }
             }
-            return ServiceResult.Ok;
+            catch (Exception ex)
+            {
+                return ex;
+            }
         }
-        catch (Exception ex)
-        {
-            return ex;
-        }
+        #endif
+        return ServiceResult.Ok;
     }
 
     /// <inheritdoc/>

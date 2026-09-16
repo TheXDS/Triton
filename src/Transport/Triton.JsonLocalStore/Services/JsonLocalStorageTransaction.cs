@@ -34,6 +34,11 @@ internal class JsonLocalStorageTransaction : AsyncDisposable, ICrudReadWriteTran
         throw new NotImplementedException();
     }
 
+    public ServiceResult CreateOrUpdate(params Model[] entities)
+    {
+        throw new NotImplementedException();
+    }
+
     public ServiceResult Delete<TModel>(params TModel[] entities) where TModel : Model
     {
         throw new NotImplementedException();

@@ -82,7 +82,8 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
         {
             foreach (var entity in entities.Select(p => p.NewEntity).NotNull())
             {
-                if (FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.EntityDuplication);
                 }
@@ -96,13 +97,31 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
     }
 
     /// <inheritdoc/>
+    public ServiceResult CreateOrUpdate(params Model[] entities)
+    {
+        foreach (var entity in entities)
+        {
+            if (entity.Metadata.IsNew)
+            {
+                if (Create(entity) is { IsSuccessful: false } result) return result;
+            }
+            else
+            {
+                if (Update(entity) is { IsSuccessful: false } result) return result;
+            }
+        }
+        return ServiceResult.Ok;
+    }
+
+    /// <inheritdoc/>
     public ServiceResult Delete<TModel>(params TModel[] entities) where TModel : Model
     {
         Task<ServiceResult?> OnDelete(IEnumerable<ChangeTrackerItem> entities)
         {
             foreach (var entity in entities.Select(p => p.OldEntity).NotNull())
             {
-                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (!FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.NotFound);
                 }
@@ -121,7 +140,8 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
         {
             foreach (var entity in entities.Select(p => p.OldEntity).NotNull())
             {
-                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (!FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.NotFound);
                 }
@@ -140,9 +160,10 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
     {
         Task<ServiceResult?> OnDelete(IEnumerable<ChangeTrackerItem> entities)
         {
-            foreach (var entity in entities.Where(p => p.ChangeType == ChangeTrackerChangeType.Delete).Select(p => p.OldEntity))
+            foreach (var entity in entities.Where(p => p.ChangeType == ChangeTrackerChangeType.Delete).Select(p => p.OldEntity).NotNull())
             {
-                if (entity is null || !FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (entity is null || !FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.NotFound);
                 }
@@ -159,9 +180,10 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
     {
         Task<ServiceResult?> OnDelete(IEnumerable<ChangeTrackerItem> entities)
         {
-            foreach (var entity in entities.Where(p => p.ChangeType == ChangeTrackerChangeType.Delete).Select(p => p.OldEntity))
+            foreach (var entity in entities.Where(p => p.ChangeType == ChangeTrackerChangeType.Delete).Select(p => p.OldEntity).NotNull())
             {
-                if (entity is null || entity.IdAsString.IsEmpty() || !FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (entity is null || id.IsEmpty() || !FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.NotFound);
                 }
@@ -275,7 +297,8 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
         {
             foreach (var entity in entities.Select(p => p.NewEntity).NotNull())
             {
-                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (!FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.NotFound);
                 }
@@ -294,7 +317,8 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
         {
             foreach (var entity in entities.Select(p => p.NewEntity).NotNull())
             {
-                if (!FullSet().Any(p => p.IdAsString == entity.IdAsString && entity.GetType() == p.GetType()))
+                var id = entity.Metadata.IdAsString;
+                if (!FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == id && entity.GetType() == p.GetType()))
                 {
                     return Task.FromResult<ServiceResult?>(FailureReason.NotFound);
                 }
@@ -324,7 +348,7 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
 
     private TModel? ReadInternal<TModel, TKey>(TKey key) where TModel : Model<TKey> where TKey : notnull, IComparable<TKey>, IEquatable<TKey> => FullSet().OfType<TModel>().FirstOrDefault(p => p.Id.Equals(key));
 
-    private TModel? ReadInternal<TModel>(object key) where TModel : Model => FullSet().OfType<TModel>().FirstOrDefault(p => p.IdAsString == key.ToString());
+    private TModel? ReadInternal<TModel>(object key) where TModel : Model => FullSet().OfType<TModel>().FirstOrDefault(p => p.Metadata.IdAsString == key.ToString());
 
     private IEnumerable<Model> FullSet()
     {
@@ -357,8 +381,8 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
     {
         foreach (var k in j.GroupBy(p => p.Model))
         {
-            var storeKeys = _store.OfType(k.Key).Select(q => q.IdAsString).ToArray();
-            if (j.Any(p => storeKeys.Contains(p.NewEntity!.IdAsString)))
+            var storeKeys = _store.OfType(k.Key).Select(q => q.Metadata.IdAsString).ToArray();
+            if (j.Any(p => storeKeys.Contains((p.NewEntity as IModelMetadata)!.IdAsString)))
             {
                 return FailureReason.EntityDuplication;
             }
@@ -369,7 +393,7 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
 
     private Model? FindOnStore(ChangeTrackerItem item)
     {
-        return _store.OfType(item.Model).FirstOrDefault(p => p.IdAsString == (item.OldEntity?.IdAsString ?? throw new InvalidOperationException()).ToString());
+        return _store.OfType(item.Model).FirstOrDefault(p => p.Metadata.IdAsString == (item.OldEntity?.Metadata.IdAsString ?? throw new InvalidOperationException()).ToString());
     }
 
     private QueryServiceResult<TModel> OnAll<TModel>() where TModel : Model

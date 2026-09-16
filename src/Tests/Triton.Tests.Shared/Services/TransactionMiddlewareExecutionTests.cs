@@ -29,7 +29,7 @@ internal abstract class TransactionMiddlewareExecutionTests<T> where T : ITransa
             ExtraEpilogueAssertions = m =>
             {
                 Assert.That(m[0].OldEntity, Is.Null);
-                Assert.That(m[0].NewEntity?.IdAsString, Is.EqualTo(g));
+                Assert.That(m[0].NewEntity?.Metadata.IdAsString, Is.EqualTo(g));
             }
         }.ExecuteTest(t => Assert.That(t.Create(new User(g, g)).IsSuccessful, Is.True));
     }
@@ -44,7 +44,7 @@ internal abstract class TransactionMiddlewareExecutionTests<T> where T : ITransa
             ExpectedAction = CrudAction.Read,
             ExpectedPrologModelType = typeof(User),
             ExpectedEpilogModelType = typeof(User),
-            ExtraEpilogueAssertions = m => Assert.That(m[0].NewEntity?.IdAsString, Is.EqualTo(g))
+            ExtraEpilogueAssertions = m => Assert.That(m[0].NewEntity?.Metadata.IdAsString, Is.EqualTo(g))
         }.ExecuteTest(
             t => _ = t.Create(u = new(g, "user")),
             t => _ = t.Read<User, string>(g));
@@ -61,7 +61,7 @@ internal abstract class TransactionMiddlewareExecutionTests<T> where T : ITransa
             ExpectedPrologModelType = typeof(User),
             ExpectedEpilogModelType = typeof(User),
             ExtraPrologueAssertions = m => Assert.That(((User?)m[0].NewEntity)?.PublicName, Is.EqualTo(g)),
-            ExtraEpilogueAssertions = m => Assert.That(((User?)m[0].NewEntity)?.IdAsString, Is.EqualTo(g))
+            ExtraEpilogueAssertions = m => Assert.That(((User?)m[0].NewEntity)?.Metadata.IdAsString, Is.EqualTo(g))
         }.ExecuteTest(
             t => _ = t.Create(u = new(g, "user")),
             t =>

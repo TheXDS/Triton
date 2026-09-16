@@ -5,10 +5,13 @@
 /// the entity's ID.
 /// </summary>
 /// <typeparam name="T">The type of the key field in the entity.</typeparam>
-public abstract class Model<T> : Model where T : IComparable<T>, IEquatable<T>
+public abstract class Model<T> : Model, IModelMetadata where T : IComparable<T>, IEquatable<T>
 {
     /// <inheritdoc/>
-    public sealed override string IdAsString => Id?.ToString() ?? string.Empty;
+    string IModelMetadata.IdAsString => Id?.ToString() ?? string.Empty;
+
+    /// <inheritdoc/>
+    bool IModelMetadata.IsNew => Id is null || Id.Equals(default);
 
     /// <summary>
     /// Gets or sets the key field of this entity.

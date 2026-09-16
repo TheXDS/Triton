@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using TheXDS.MCART.Exceptions;
 using TheXDS.Triton.EFCore.Services.Base;
 using TheXDS.Triton.Services;
 
@@ -296,5 +297,36 @@ public class CrudTransaction<T> : CrudTransactionBase<T>, ICrudReadWriteTransact
     public ServiceResult Delete(params Model[] entities)
     {
         return _writeTransaction.Delete(entities);
+    }
+
+    /// <inheritdoc/>
+    public ServiceResult CreateOrUpdate(params Model[] entities)
+    {
+        foreach (var entity in entities)
+        {
+            #if PreferMetadataOverQuery
+            if (entity.Metadata.IsNew)
+            {
+                if (_writeTransaction.Create(entity) is { IsSuccessful: false } result) return result;
+            }
+            else
+            {
+                if (_writeTransaction.Update(entity) is { IsSuccessful: false } result) return result;
+            }
+            #else
+            var existing = _context.Find(entity.GetType(), entity.Metadata.IdAsString);
+            if (existing is null)
+            {
+                var result = _writeTransaction.Create(entity);
+                if (!result.IsSuccessful) return result;
+            }
+            else
+            {
+                var result = _writeTransaction.Update(entity);
+                if (!result.IsSuccessful) return result;
+            }
+            #endif
+        }
+        return ServiceResult.Ok;
     }
 }

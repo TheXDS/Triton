@@ -43,7 +43,7 @@ public abstract class TextJournal : IJournalMiddleware
                         AddUpdatedValues(lines, change);
                         break;
                     case ChangeTrackerChangeType.Delete:
-                        lines.Add($"  - Id: {change.OldEntity!.IdAsString}");
+                        lines.Add($"  - Id: {change.OldEntity!.Metadata.IdAsString}");
                         break;
                 }
             }
@@ -101,6 +101,6 @@ public abstract class TextJournal : IJournalMiddleware
     private static string TruncatedCollection(IEnumerable<Model> entities)
     {
         int count = 0;
-        return $"[ {string.Join(", ", entities.Take(6).Select(p => { count++; return p.IdAsString; }).Take(5))}{(count == 6 ? "..." : null)} ]";
+        return $"[ {string.Join(", ", entities.Take(6).Select(p => { count++; return p.Metadata.IdAsString; }).Take(5))}{(count == 6 ? "..." : null)} ]";
     }
 }

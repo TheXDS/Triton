@@ -6,7 +6,7 @@
 public abstract class Model
 {
     /// <summary>
-    /// Gets the ID of the entity as a string.
+    /// Gets the metadata of this model.
     /// </summary>
-    public abstract string IdAsString { get; }
+    public IModelMetadata Metadata => this as IModelMetadata ?? throw new InvalidOperationException("This model does not implement IModelMetadata.");
 }
