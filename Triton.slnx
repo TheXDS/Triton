@@ -35,9 +35,6 @@
     <Project Path="src/Core/Triton.Models/Triton.Models.csproj" />
     <Project Path="src/Core/Triton/Triton.csproj" />
   </Folder>
-  <Folder Name="/DevTools/">
-    <Project Path="src/DevTools/StringPacker/StringPacker.csproj" />
-  </Folder>
   <Folder Name="/Tests/">
     <Project Path="src/Tests/Triton.Tests.Shared/Triton.Tests.Shared.shproj" />
   </Folder>
