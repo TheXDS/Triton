@@ -250,11 +250,19 @@ DocFX is run in CI (`docfx.yml`) and deployed to GitHub Pages. The `docs/` direc
 - **Bundle projects**: May reference 3rd-party packages (e.g., `thexds.mcart.mvvm`, `TheXDS.MCART`).
 - **Transport projects**: May reference 3rd-party DB packages (e.g., `Microsoft.EntityFrameworkCore`, Dapper).
 
+### Code Structure Rules
+
+- **Max 3 levels of indentation.** If deeper — rethink the logic (segregate into small, manageable methods).
+- Keep functions small, clear, and testable.
+- User-facing strings go in `.resx` files — **no magic strings** (SQL queries and well-known constants are fine).
+- In-code comments should be minimal — code should be self-explanatory. Add comments only to explain *why* something looks odd or overly complex.
+
 ### Test Projects
 
 - All test projects target `net8.0` and set `IsPackable=false`.
 - Shared test code is in `Triton.Tests.Shared` (shared project `.shproj`) and imported via `.projitems`.
 - Test dependencies: `NUnit`, `NUnit3TestAdapter`, `Moq`, `coverlet.collector`, `Microsoft.NET.Test.Sdk`.
+- **Test pairing**: Every new public API must have a corresponding unit test in the matching `*.Tests` project.
 
 ### Embedded Resources
 
@@ -280,14 +288,105 @@ Resource strings are managed via `.resx` files with auto-generated designer clas
 
 ---
 
+## Architecture Notes
+
+### SOLID Philosophy
+
+Use SOLID **responsibly**, not religiously. Key points:
+
+- **No excessive interface segregation** for single implementations. If there's only one correct way to implement a service or generator, a concrete class is fine — no need for separate read/write interfaces just to satisfy ISP.
+- **No unnecessary DI** for simple, testable classes. A well-coupled class that can be integration-tested is often better than layers of abstractions.
+- SRP/ISP are good — but when types are closely related, group them together.
+
+### Boy-Scout Rule
+
+Small improvements to clarity are welcome, but **do not rewrite the entire codebase**. Incremental, focused changes are the way to go.
+
+---
+
+## Testing Patterns
+
+### Test Framework & Structure
+
+- **Framework**: NUnit 4 (`[Test]`, `[TestCaseSource]`, `[SetUp]`, etc.)
+- **Assertions**: `Assert.That(...)`, `Throws.InstanceOf<T>()`
+- **Mocks**: Moq for interface-based dependencies
+- **Test fixture data**: Shared test code in `Triton.Tests.Shared` (shared project `.shproj`) imported via `.projitems`
+
+### Example Test Patterns
+
+**Unit test for a pure function:**
+
+```csharp
+[Test]
+public void Method_returns_expected_result_when_input_is_valid()
+{
+    Assert.That(ClassUnderTest.Method(input), Is.EqualTo(expected));
+}
+```
+
+**Parameterized test with TestCaseSource:**
+
+```csharp
+[TestCaseSource(nameof(GetTestCases))]
+public void Roundtrip_test(object input)
+{
+    var result = ClassUnderTest.Process(input);
+    Assert.That(result, Is.EqualTo(expected));
+}
+```
+
+**Testing with Moq:**
+
+```csharp
+[Test]
+public void Method_calls_dependency_with_correct_parameters()
+{
+    var mockService = new Mock<IService>();
+    mockService.Setup(s => s.DoWork(It.IsAny<string>())).Returns(expected);
+
+    var subject = new MyClass(mockService.Object);
+    // ... act and assert
+}
+```
+
+---
+
 ## Important Notes for Agents
 
 1. **Always build from the solution root** using `dotnet build Triton.slnx`. Do not build individual projects unless there's a specific reason.
-3. **When adding a new database transport**, create a new project under `src/Transport/` following the pattern of existing transport projects (EFCore, Dapper, InMemory).
-4. **When adding a new bundle**, create a project under `src/Bundles/` that depends on Core/Transport projects. Bundles may use 3rd-party packages.
-5. **For every source project**, create a corresponding test project under `src/Tests/` mirroring the source folder structure.
-6. **Shared test code** goes in `src/Tests/Triton.Tests.Shared/` and is imported via `.projitems` into test projects.
-7. **All projects output to `Build/bin/` and `Build/obj/`** — never assume default output paths.
-8. **When modifying CI workflows**, be aware that `build.yml` and `publish.yml` run on `windows-latest`, while `docfx.yml` runs on `ubuntu-latest`.
-9. **Nullable references are enabled globally** — all new code must comply with nullable annotations.
-10. **Version bumps** are centralized in `BuildTargets/PackageVersion.props` — do not hardcode versions in individual projects.
+2. **When adding a new database transport**, create a new project under `src/Transport/` following the pattern of existing transport projects (EFCore, Dapper, InMemory).
+3. **When adding a new bundle**, create a project under `src/Bundles/` that depends on Core/Transport projects. Bundles may use 3rd-party packages.
+4. **For every source project**, create a corresponding test project under `src/Tests/` mirroring the source folder structure.
+5. **Shared test code** goes in `src/Tests/Triton.Tests.Shared/` and is imported via `.projitems` into test projects.
+6. **All projects output to `Build/bin/` and `Build/obj/`** — never assume default output paths.
+7. **When modifying CI workflows**, be aware that `build.yml` and `publish.yml` run on `windows-latest`, while `docfx.yml` runs on `ubuntu-latest`.
+8. **Nullable references are enabled globally** — all new code must comply with nullable annotations.
+
+---
+
+## What NOT to do
+
+- **Do not commit without running `dotnet test Triton.slnx --no-build` and confirming it passes.**
+- **Keep changes minimal and focused** — one concern per commit or PR (single library, single fix, or single feature).
+- **Do not add 3rd-party NuGet packages** to Core projects — they must have no external dependencies beyond internal project references and `Microsoft.SourceLink.GitHub`.
+- **Do not install additional 3rd-party dependencies** on any project without an explicit reason to do so.
+- **Do not modify MSBuild files in `src/`** (`Directory.Build.props`, `Directory.Build.targets`) or `BuildTargets/` unless the task explicitly targets build infrastructure.
+- **Do not hardcode version numbers** in individual projects — versioning is centralized in `BuildTargets/PackageVersion.props`.
+
+---
+
+## Git & Contributing
+
+- **Commit messages:** Use [Conventional Commits](https://www.conventionalcommits.org/) (e.g., `feat:`, `fix:`, `docs:`, `test:`).
+- **Branch naming:** `feature/42-add-bnk-write-support`, `fix/15-refpack-decode-error`
+
+---
+
+## Important Details
+
+1. **Shared test code:** `Triton.Tests.Shared` is a shared project (`.shproj`) imported via `.projitems` into test projects.
+2. **Build props hierarchy:** `src/Directory.Build.props` → `BuildTargets/*.props` → per-project `*.csproj`
+3. **NuGet package ID pattern:** `TheXDS.<AssemblyName>` (e.g., `TheXDS.Triton`, `TheXDS.Triton.EFCore`)
+4. **Source Link:** `Microsoft.SourceLink.GitHub` is included in all projects
+5. **Output paths:** All projects output to `Build/bin/<ProjectName>/` and `Build/obj/<ProjectName>/` (controlled by `BuildTargets/BuildPaths.props`)
