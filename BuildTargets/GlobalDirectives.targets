@@ -2,6 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup Condition="'$(MSBuildProjectExtension)'=='.csproj'">
 		<ImplicitUsings>enable</ImplicitUsings>
-		<ExtraDefineConstants>PreferMetadataOverQuery</ExtraDefineConstants>
+		<ExtraDefineConstants></ExtraDefineConstants>
 	</PropertyGroup>
 </Project>
