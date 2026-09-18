@@ -101,13 +101,13 @@ public class InMemoryCrudTransaction(IMiddlewareRunner runner, ICollection<Model
     {
         foreach (var entity in entities)
         {
-            if (entity.Metadata.IsNew)
+            if (FullSet().Cast<IModelMetadata>().Any(p => p.IdAsString == entity.Metadata.IdAsString && entity.GetType() == p.GetType()))
             {
-                if (Create(entity) is { IsSuccessful: false } result) return result;
+                if (Update(entity) is { IsSuccessful: false } result) return result;
             }
             else
             {
-                if (Update(entity) is { IsSuccessful: false } result) return result;
+                if (Create(entity) is { IsSuccessful: false } result) return result;
             }
         }
         return ServiceResult.Ok;
