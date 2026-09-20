@@ -61,7 +61,7 @@ internal class BasicModelTests
     [Test]
     public void Model_ctor_throws_on_null_id()
     {
-        Assert.Throws<ArgumentNullException>(() => _ = new TestModel(null!));
+        Assert.That(((Action)(() => _ = new TestModel(null!))), Throws.InstanceOf<ArgumentNullException>());
     }
 
     [Test]

@@ -3,12 +3,9 @@
 		<TargetFramework>net8.0</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Dapper" Version="2.1.72" />
+		<PackageReference Include="Dapper" Version="2.1.86" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\Core\Triton\Triton.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.201" />
 	</ItemGroup>
 </Project>

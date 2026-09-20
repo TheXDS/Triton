@@ -31,9 +31,9 @@ internal class TextFileJournalTests : JournalTestsBase
         Directory.CreateDirectory(invalidPath);
         TextFileJournal j = new() { Path = invalidPath };
         Assert.That(j.Path, Is.EqualTo(invalidPath));
-        Assert.That(() => j.Log(CrudAction.Commit, null, new()), Throws.InstanceOf<UnauthorizedAccessException>());
+        Assert.That((Action)(() => j.Log(CrudAction.Commit, null, new())), Throws.InstanceOf<UnauthorizedAccessException>());
         Assert.That(j.Path, Is.Null);
-        Assert.That(() => j.Log(CrudAction.Commit, null, new()), Throws.Nothing);
+        Assert.That((Action)(() => j.Log(CrudAction.Commit, null, new())), Throws.Nothing);
         Directory.Delete(invalidPath);
     }
 
@@ -42,13 +42,13 @@ internal class TextFileJournalTests : JournalTestsBase
     public void Journal_Path_throws_on_invalid_path(string invalidPath)
     {
         TextFileJournal j = new();
-        Assert.That(() => j.Path = invalidPath, Throws.ArgumentException);
+        Assert.That((Action)(() => j.Path = invalidPath), Throws.ArgumentException);
     }
 
     [Test]
     public void Journal_allows_null_on_path()
     {
         TextFileJournal j = new();
-        Assert.That(() => j.Path = null, Throws.Nothing);
+        Assert.That((Action)(() => j.Path = null), Throws.Nothing);
     }
 }

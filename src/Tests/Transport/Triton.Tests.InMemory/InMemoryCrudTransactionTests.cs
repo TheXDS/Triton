@@ -132,6 +132,35 @@ public class InMemoryCrudTransactionTests
     }
 
     [Test]
+    public async Task CreateOrUpdate_creates_new_entities_when_missing()
+    {
+        var newUser = new User("CreateTest", "Test user");
+        ICollection<Model> store = [];
+        using var transaction = new InMemoryCrudTransaction(store);
+
+        var result = transaction.CreateOrUpdate(newUser);
+
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
+        Assert.That(store.Single(), Is.SameAs(newUser));
+    }
+
+    [Test]
+    public async Task CreateOrUpdate_updates_existing_entities_when_found()
+    {
+        var existingUser = new User("abc123", "Existing user");
+        var updatedUser = new User("abc123", "Modified user");
+        ICollection<Model> store = [existingUser];
+        using var transaction = new InMemoryCrudTransaction(store);
+
+        var result = transaction.CreateOrUpdate(updatedUser);
+
+        Assert.That(result.IsSuccessful, Is.True);
+        Assert.That((await transaction.CommitAsync()).IsSuccessful, Is.True);
+        Assert.That(((User)store.Single()).PublicName, Is.EqualTo("Modified user"));
+    }
+
+    [Test]
     public async Task Update_TModel_updates_entities()
     {
         var existingUser = new User("abc123", "Existing user");
@@ -313,7 +342,7 @@ public class InMemoryCrudTransactionTests
         ICollection<Model> store = [];
         using (var transaction = new InMemoryCrudTransaction(store))
         {
-            Assert.That(() => transaction.Commit(), Throws.Nothing);
+            Assert.That((Action)(() => transaction.Commit()), Throws.Nothing);
         }
         Assert.That(store, Is.Empty);
     }

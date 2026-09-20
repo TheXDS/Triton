@@ -21,31 +21,31 @@ internal class QueryServiceResultTests
     [Test]
     public void ElementType_throws_if_null()
     {
-        Assert.That(() => GetEmpty().ElementType, Throws.InvalidOperationException);
+        Assert.That(((Action)(() => _ = GetEmpty().ElementType)), Throws.InvalidOperationException);
     }
 
     [Test]
     public void Expression_throws_if_null()
     {
-        Assert.That(() => GetEmpty().Expression, Throws.InvalidOperationException);
+        Assert.That(((Action)(() => _ = GetEmpty().Expression)), Throws.InvalidOperationException);
     }
 
     [Test]
     public void Provider_throws_if_null()
     {
-        Assert.That(() => GetEmpty().Provider, Throws.InvalidOperationException);
+        Assert.That(((Action)(() => _ = GetEmpty().Provider)), Throws.InvalidOperationException);
     }
 
     [Test]
     public void GetEnumerator_from_IEnumerable_T_throws_if_null()
     {
-        Assert.That(() => ((IEnumerable)GetEmpty()).GetEnumerator(), Throws.InvalidOperationException);
+        Assert.That(((Action)(() => _ = ((IEnumerable)GetEmpty()).GetEnumerator())), Throws.InvalidOperationException);
     }
 
     [Test]
     public void GetEnumerator_from_IEnumerable_throws_if_null()
     {
-        Assert.That(() => ((IEnumerable<User>)GetEmpty()).GetEnumerator(), Throws.InvalidOperationException);
+        Assert.That(((Action)(() => _ = ((IEnumerable<User>)GetEmpty()).GetEnumerator())), Throws.InvalidOperationException);
     }
 
     [Test]

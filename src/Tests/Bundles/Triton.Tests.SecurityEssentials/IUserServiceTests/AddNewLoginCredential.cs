@@ -45,7 +45,7 @@ public class AddNewLoginCredential
         var result = await svcMock.Object.AddNewLoginCredential<Pbkdf2Storage>("test", "password".ToSecureString(), PermissionFlags.Special, PermissionFlags.Special, true, true, testGroups);
 
         Assert.That(result, Is.EqualTo(ServiceResult.Ok));
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(newCredential, Is.Not.Null);
             Assert.That(newCredential?.Id, Is.Not.EqualTo(default(Guid)));
@@ -65,7 +65,7 @@ public class AddNewLoginCredential
             Assert.That(newCredential?.Sessions, Is.Empty);
             Assert.That(newCredential?.RegisteredMfa, Is.Empty);
             Assert.That(newCredential?.Descriptors, Is.Empty);
-        });
+        }
         transactionMock.Verify();
         svcMock.Verify();
     }
@@ -101,7 +101,7 @@ public class AddNewLoginCredential
         var result = await svcMock.Object.AddNewLoginCredential<Pbkdf2Storage>("test", "password".ToSecureString());
 
         Assert.That(result, Is.EqualTo(ServiceResult.Ok));
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(newCredential, Is.Not.Null);
             Assert.That(newCredential?.Id, Is.Not.EqualTo(default(Guid)));
@@ -115,7 +115,7 @@ public class AddNewLoginCredential
             Assert.That(newCredential?.Sessions, Is.Empty);
             Assert.That(newCredential?.RegisteredMfa, Is.Empty);
             Assert.That(newCredential?.Descriptors, Is.Empty);
-        });
+        }
         transactionMock.Verify();
         svcMock.Verify();
     }
@@ -151,7 +151,7 @@ public class AddNewLoginCredential
         var result = await svcMock.Object.AddNewLoginCredential("test", "password".ToSecureString());
 
         Assert.That(result, Is.EqualTo(ServiceResult.Ok));
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(newCredential, Is.Not.Null);
             Assert.That(newCredential?.Id, Is.Not.EqualTo(default(Guid)));
@@ -165,7 +165,7 @@ public class AddNewLoginCredential
             Assert.That(newCredential?.Sessions, Is.Empty);
             Assert.That(newCredential?.RegisteredMfa, Is.Empty);
             Assert.That(newCredential?.Descriptors, Is.Empty);
-        });
+        }
         transactionMock.Verify();
         svcMock.Verify();
     }

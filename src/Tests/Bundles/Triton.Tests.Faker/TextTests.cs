@@ -15,8 +15,8 @@ internal class TextTests
     [Test]
     public void Lorem_contract_Test()
     {
-        Assert.Throws<ArgumentOutOfRangeException>(() => Text.Lorem(0, 1, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => Text.Lorem(1, 0, 1));
-        Assert.Throws<ArgumentOutOfRangeException>(() => Text.Lorem(1, 1, 0));
+        Assert.That(((Action)(() => Text.Lorem(0, 1, 1))), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        Assert.That(((Action)(() => Text.Lorem(1, 0, 1))), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        Assert.That(((Action)(() => Text.Lorem(1, 1, 0))), Throws.InstanceOf<ArgumentOutOfRangeException>());
     }
 }

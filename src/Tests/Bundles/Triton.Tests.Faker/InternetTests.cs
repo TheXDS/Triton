@@ -40,13 +40,13 @@ internal partial class InternetTests
     [Test]
     public void UseFauxDomains_contract_test()
     {
-        Assert.That(() => Internet.UseFauxDomains(0), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        Assert.That(((Action)(() => Internet.UseFauxDomains(0))), Throws.InstanceOf<ArgumentOutOfRangeException>());
     }
 
     [Test]
     public void GetFauxDomains_contract_test()
     {
-        Assert.That(() => Internet.GetFauxDomains(0), Throws.InstanceOf<ArgumentOutOfRangeException>());
+        Assert.That(((Action)(() => Internet.GetFauxDomains(0))), Throws.InstanceOf<ArgumentOutOfRangeException>());
     }
 
     [GeneratedRegex(".+@.+[.].{2,}")]

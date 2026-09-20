@@ -22,6 +22,6 @@ internal class ChangeTrackerItemTests
     {
         var user = new User();
         var post = new Post();
-        Assert.That(() => _ = new ChangeTrackerItem(user, post), Throws.InstanceOf<ModelTypeMismatchException>());
+        Assert.That(((Action)(() => _ = new ChangeTrackerItem(user, post))), Throws.InstanceOf<ModelTypeMismatchException>());
     }
 }

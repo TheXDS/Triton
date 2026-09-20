@@ -35,8 +35,8 @@ public class InstanceTests
     [Test]
     public void Instancing_contracts_test()
     {
-        Assert.Throws<ArgumentException>(() => ContextBuilder.Build([typeof(Comment), typeof(Exception)]));
-        Assert.Throws<InvalidOperationException>(() => ContextBuilder.Build(BrokenConfigTest));
+        Assert.That((Action)(() => ContextBuilder.Build([typeof(Comment), typeof(Exception)])), Throws.InstanceOf<ArgumentException>());
+        Assert.That((Action)(() => ContextBuilder.Build(BrokenConfigTest)), Throws.InstanceOf<InvalidOperationException>());
     }
 
     private static void TestContext(DbContext context)

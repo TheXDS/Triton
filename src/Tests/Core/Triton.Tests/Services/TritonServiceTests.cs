@@ -18,8 +18,8 @@ internal class TritonServiceTests
     [Test]
     public void Full_ctor_contract_test()
     {
-        Assert.That(() => new TritonService(null!, new Mock<ITransactionFactory>().Object), Throws.ArgumentNullException);
-        Assert.That(() => new TritonService(new Mock<IMiddlewareConfigurator>().Object, null!), Throws.ArgumentNullException);
+        Assert.That((Action)(() => _ = new TritonService(null!, new Mock<ITransactionFactory>().Object)), Throws.ArgumentNullException);
+        Assert.That((Action)(() => _ = new TritonService(new Mock<IMiddlewareConfigurator>().Object, null!)), Throws.ArgumentNullException);
     }
 
     [Test]

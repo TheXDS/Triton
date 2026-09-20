@@ -41,7 +41,7 @@ public class CrudTransactionBaseTests
     [Test]
     public void ResultFromException_contract_test()
     {
-        Assert.Throws<ArgumentNullException>(()=>TestClass.Test_ResultFromException(null!));
+        Assert.That((Action)(() => TestClass.Test_ResultFromException(null!)), Throws.ArgumentNullException);
     }
 
     [TestCase(typeof(NullReferenceException), FailureReason.NotFound)]
@@ -125,7 +125,7 @@ public class CrudTransactionBaseTests
             return 1;
         }
 
-        Assert.Throws<InvalidCastException>(() => _ = test.Test_TryCall(CrudAction.Write, TestDelegate, out string returnValue, true));
+        Assert.That((Action)(() => _ = test.Test_TryCall(CrudAction.Write, TestDelegate, out string returnValue, true)), Throws.InstanceOf<InvalidCastException>());
         Assert.That(delegateRan, Is.False);
     }
 
@@ -172,7 +172,7 @@ public class CrudTransactionBaseTests
 
         void TestDelegate(bool arg) => delegateRan = arg;
 
-        Assert.Throws<InvalidOperationException>(() => _ = test.Test_TryCall<int>(CrudAction.Write, TestDelegate, true));
+        Assert.That((Action)(() => _ = test.Test_TryCall<int>(CrudAction.Write, TestDelegate, true)), Throws.InstanceOf<InvalidOperationException>());
         Assert.That(delegateRan, Is.False);
     }
 

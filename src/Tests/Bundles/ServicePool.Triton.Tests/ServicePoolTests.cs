@@ -53,7 +53,7 @@ internal class ServicePoolTests
     public void UseContext_contract_test()
     {
         Pool testPool = new(PoolConfig.FlexRegister);
-        Assert.Throws<ArgumentException>(() => testPool.UseTriton().UseContext(typeof(int)));
+        Assert.That((Action)(() => testPool.UseTriton().UseContext(typeof(int))), Throws.InstanceOf<ArgumentException>());
     }
 
     [Test]
@@ -91,14 +91,14 @@ internal class ServicePoolTests
     public void UseContext_with_DbContextOptionsSource_None_throws_with_configurable_context()
     {
         Pool testPool = new(PoolConfig.FlexResolve);
-        Assert.That(() => testPool.UseTriton().UseContext(typeof(ConfigurableContext), DbContextOptionsSource.None), Throws.InstanceOf<ClassNotInstantiableException>());
+        Assert.That((Action)(() => testPool.UseTriton().UseContext(typeof(ConfigurableContext), DbContextOptionsSource.None)), Throws.InstanceOf<ClassNotInstantiableException>());
     }
 
     [Test]
     public void UseContext_with_DbContextOptionsSource_throws_with_nonconfigurable_context()
     {
         Pool testPool = new(PoolConfig.FlexResolve);
-        Assert.That(() => testPool.UseTriton().UseContext(typeof(TestDbContext), new DbContextOptionsSource<TestDbContext>(o => { })), Throws.InstanceOf<ClassNotInstantiableException>());
+        Assert.That((Action)(() => testPool.UseTriton().UseContext(typeof(TestDbContext), new DbContextOptionsSource<TestDbContext>(o => { }))), Throws.InstanceOf<ClassNotInstantiableException>());
     }
 
     [Test]
@@ -118,7 +118,7 @@ internal class ServicePoolTests
         testPool.UseTriton().UseContext(typeof(BrokenDbContext), new DbContextOptionsSource<ConfigurableContext>(_ => { }));
         testPool.InitNow();
         var s = testPool.OfType<TritonService>().ToArray();
-        Assert.That(() => s.Any(p => p.GetReadTransaction() is not null), Throws.InstanceOf<ClassNotInstantiableException>());
+        Assert.That((Action)(() => _ = s.Any(p => p.GetReadTransaction() is not null)), Throws.InstanceOf<ClassNotInstantiableException>());
     }
 
     [Test]
@@ -252,7 +252,7 @@ internal class ServicePoolTests
     public void ConfigureMiddlewares_contract_test()
     {
         var tc = new Pool().UseTriton();
-        Assert.Throws<ArgumentNullException>(() => tc.ConfigureMiddlewares(null!));
+        Assert.That((Action)(() => tc.ConfigureMiddlewares(null!)), Throws.InstanceOf<ArgumentNullException>());
     }
 
     [ExcludeFromCodeCoverage]
