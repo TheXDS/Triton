@@ -316,4 +316,167 @@ public class CrudTransactionTests
         Assert.That(r, Is.Not.Null);
         Assert.That(r.Length, Is.Not.Zero);
     }
+
+    [Test]
+    public void CreateOrUpdate_creates_new_entity_test()
+    {
+        using (var t = GetTestTransaction())
+        {
+            var r = t.CreateOrUpdate(new User("userNew01", "New User 01"));
+            Assert.That(r.IsSuccessful, Is.True);
+        }
+
+        using (var t = GetTestTransaction())
+        {
+            var r = t.Read<User, string>("userNew01", out var u);
+            Assert.That(r.IsSuccessful, Is.True);
+            Assert.That(u, Is.Not.Null);
+            Assert.That(u!.PublicName, Is.EqualTo("New User 01"));
+        }
+    }
+
+    [Test]
+    public async Task CreateOrUpdate_creates_new_entity_async_test()
+    {
+        await using (var t = GetTestTransaction())
+        {
+            var r = t.CreateOrUpdate(new User("userNew02", "New User 02"));
+            Assert.That(r.IsSuccessful, Is.True);
+            await t.CommitAsync();
+        }
+
+        await using (var t = GetTestTransaction())
+        {
+            var r = await t.ReadAsync<User, string>("userNew02");
+            Assert.That(r.IsSuccessful, Is.True);
+            Assert.That(r.Result, Is.Not.Null);
+            Assert.That(r.Result!.PublicName, Is.EqualTo("New User 02"));
+        }
+    }
+
+    [Test]
+    public void CreateOrUpdate_updates_existing_entity_test()
+    {
+        using (var t = GetTestTransaction())
+        {
+            var r = t.CreateOrUpdate(new User("userUpd01", "Original Name"));
+            Assert.That(r.IsSuccessful, Is.True);
+        }
+
+        using (var t = GetTestTransaction())
+        {
+            t.Read<User, string>("userUpd01", out var u);
+            u!.PublicName = "Updated Name";
+            var r = t.CreateOrUpdate(u);
+            Assert.That(r.IsSuccessful, Is.True);
+        }
+
+        using (var t = GetTestTransaction())
+        {
+            var r = t.Read<User, string>("userUpd01", out var u);
+            Assert.That(r.IsSuccessful, Is.True);
+            Assert.That(u, Is.Not.Null);
+            Assert.That(u!.PublicName, Is.EqualTo("Updated Name"));
+        }
+    }
+
+    [Test]
+    public async Task CreateOrUpdate_updates_existing_entity_async_test()
+    {
+        await using (var t = GetTestTransaction())
+        {
+            var r = t.CreateOrUpdate(new User("userUpd02", "Original Name"));
+            Assert.That(r.IsSuccessful, Is.True);
+            await t.CommitAsync();
+        }
+
+        await using (var t = GetTestTransaction())
+        {
+            t.Read<User, string>("userUpd02", out var u);
+            u!.PublicName = "Updated Name Async";
+            var r = t.CreateOrUpdate(u);
+            Assert.That(r.IsSuccessful, Is.True);
+            await t.CommitAsync();
+        }
+
+        await using (var t = GetTestTransaction())
+        {
+            var r = t.Read<User, string>("userUpd02", out var u);
+            Assert.That(r.IsSuccessful, Is.True);
+            Assert.That(u, Is.Not.Null);
+            Assert.That(u!.PublicName, Is.EqualTo("Updated Name Async"));
+        }
+    }
+
+    [Test]
+    public void CreateOrUpdate_handles_multiple_entities_mixed_test()
+    {
+        using (var t = GetTestTransaction())
+        {
+            var existing = t.Read<User, string>("user1").Result!;
+            existing!.PublicName = "Updated via Mixed";
+            var r = t.CreateOrUpdate(
+                new User("userNew03", "Brand New"),
+                existing
+            );
+            Assert.That(r.IsSuccessful, Is.True);
+        }
+
+        using (var t = GetTestTransaction())
+        {
+            var newResult = t.Read<User, string>("userNew03", out var newU);
+            Assert.That(newResult.IsSuccessful, Is.True);
+            Assert.That(newU, Is.Not.Null);
+            Assert.That(newU!.PublicName, Is.EqualTo("Brand New"));
+
+            var updResult = t.Read<User, string>("user1", out var updU);
+            Assert.That(updResult.IsSuccessful, Is.True);
+            Assert.That(updU, Is.Not.Null);
+            Assert.That(updU!.PublicName, Is.EqualTo("Updated via Mixed"));
+        }
+    }
+
+    [Test]
+    public async Task CreateOrUpdate_handles_multiple_entities_mixed_async_test()
+    {
+        await using (var t = GetTestTransaction())
+        {
+            var r = t.CreateOrUpdate(
+                new User("userNew04", "Brand New Async"),
+                new User("userUpd03", "Original")
+            );
+            Assert.That(r.IsSuccessful, Is.True);
+            await t.CommitAsync();
+        }
+
+        await using (var t = GetTestTransaction())
+        {
+            t.Read<User, string>("userUpd03", out var u);
+            u!.PublicName = "Updated via Mixed Async";
+            var r = t.CreateOrUpdate(
+                new User("userNew05", "Another New"),
+                u
+            );
+            Assert.That(r.IsSuccessful, Is.True);
+            await t.CommitAsync();
+        }
+
+        await using (var t = GetTestTransaction())
+        {
+            var r1 = await t.ReadAsync<User, string>("userNew04");
+            Assert.That(r1.IsSuccessful, Is.True);
+            Assert.That(r1.Result, Is.Not.Null);
+            Assert.That(r1.Result!.PublicName, Is.EqualTo("Brand New Async"));
+
+            var r2 = await t.ReadAsync<User, string>("userUpd03");
+            Assert.That(r2.IsSuccessful, Is.True);
+            Assert.That(r2.Result, Is.Not.Null);
+            Assert.That(r2.Result!.PublicName, Is.EqualTo("Updated via Mixed Async"));
+
+            var r3 = await t.ReadAsync<User, string>("userNew05");
+            Assert.That(r3.IsSuccessful, Is.True);
+            Assert.That(r3.Result, Is.Not.Null);
+            Assert.That(r3.Result!.PublicName, Is.EqualTo("Another New"));
+        }
+    }
 }
